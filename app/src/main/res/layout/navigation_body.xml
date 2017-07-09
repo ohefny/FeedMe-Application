@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_marginTop="20dp"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:id="@+id/topsites_section_nav"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_marginLeft="16dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="8dp">
+    <ImageView
+        android:id="@+id/saved_nav_img"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_save" />
+        <TextView
+            android:id="@+id/saved_title_nav_id"
+            android:layout_width="333dp"
+            android:layout_height="32dp"
+
+            android:gravity="center_vertical"
+            android:text="@string/saved_posts_head_title"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toRightOf="@+id/saved_nav_img"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/top_sites_title_nav_id"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/top_sites_head_title"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@+id/top_sites_img_nav_id"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/topsites_section_nav" />
+    <TextView
+        android:id="@+id/fav_title_nav_id"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/fav_sites_head_title"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@+id/fav_img_nav_id"
+        app:layout_constraintTop_toBottomOf="@+id/top_sites_nav_list"
+        android:layout_marginStart="8dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fav_sites_nav_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:maxHeight="90dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="56dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fav_title_nav_id"
+        android:layout_marginStart="56dp"></android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/cat_title_nav_id"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:text="@string/categories_head_title"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@+id/cat_img_nav_id"
+        app:layout_constraintTop_toBottomOf="@+id/fav_sites_nav_list"
+        android:layout_marginStart="16dp" />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/categories_nav_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:maxHeight="90dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/cat_title_nav_id"
+        android:layout_marginLeft="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="56dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/top_sites_nav_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="56dp"
+        android:maxHeight="90dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/top_sites_title_nav_id"></android.support.v7.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/top_sites_img_nav_id"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topsites_section_nav"
+        app:srcCompat="@android:drawable/ic_menu_myplaces"
+        android:layout_marginStart="16dp" />
+
+    <ImageView
+        android:id="@+id/fav_img_nav_id"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_sites_nav_list"
+        app:srcCompat="@android:drawable/btn_star_big_off"
+        android:layout_marginStart="16dp" />
+
+    <ImageView
+        android:id="@+id/cat_img_nav_id"
+        android:layout_width="24dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fav_sites_nav_list"
+        app:srcCompat="?android:attr/actionModeCopyDrawable"
+        android:layout_marginStart="16dp" />
+
+
+</android.support.constraint.ConstraintLayout>

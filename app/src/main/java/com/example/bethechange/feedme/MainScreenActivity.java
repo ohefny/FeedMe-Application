@@ -1,5 +1,7 @@
 package com.example.bethechange.feedme;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -8,10 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainScreenActivity extends AppCompatActivity {
     private NavigationView mNavigationView;
@@ -20,12 +25,22 @@ public class MainScreenActivity extends AppCompatActivity {
     private FloatingActionButton mFab;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
-
+    private boolean mSearchActivity=false;
+   //TODO if seprate search activity remove this boolean and it's usage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         setupViews();
+        Intent intent = getIntent();
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+            Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
+            mSearchActivity=true;
+        }
+        else
+            getSupportFragmentManager().beginTransaction().add(R.id.frameContainer,new MainScreenFragment(),null).commit();
+
+
     }
 
     private void setupViews() {
@@ -35,7 +50,9 @@ public class MainScreenActivity extends AppCompatActivity {
         mDrawer.closeDrawers();
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mNavHeader = mNavigationView.getHeaderView(0);
+//        mNavHeader = mNavigationView.getHeaderView(0);
+  //      mNavHeader.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        //ToDo:: implement my own header and inflate it using mNavigationView.inflateHeaderView()
         setUpNavigationView();
     }
     private void setUpNavigationView() {
@@ -97,6 +114,7 @@ public class MainScreenActivity extends AppCompatActivity {
         if (mActionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -105,7 +123,19 @@ public class MainScreenActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
 
         // show menu only when home fragment is selected
-        getMenuInflater().inflate(R.menu.main, menu);
+        if(mSearchActivity){
+            getMenuInflater().inflate(R.menu.nosearch,menu);
+        }
+        else {
+            getMenuInflater().inflate(R.menu.main, menu);
+            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+            // Get the SearchView and set the searchable configuration
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+            // Assumes current activity is the searchable activity
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        }
 
         return true;
     }
@@ -120,6 +150,9 @@ public class MainScreenActivity extends AppCompatActivity {
 
 
         super.onBackPressed();
+    }
+    public FloatingActionButton getmFab() {
+        return mFab;
     }
 
 }

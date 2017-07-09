@@ -21,12 +21,11 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/frame"
+    <FrameLayout
+        android:id="@+id/frameContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.example.bethechange.feedme.MainScreenFragment"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"></fragment>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"></FrameLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

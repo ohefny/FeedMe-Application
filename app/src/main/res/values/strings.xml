@@ -6,5 +6,10 @@
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
     <string name="search_hint">search articles/sites</string>
+    <string name="search">Search</string>
+    <string name="top_sites_head_title">Top Sites</string>
+    <string name="fav_sites_head_title">Favorites</string>
+    <string name="categories_head_title">Categories</string>
+    <string name="saved_posts_head_title">Saved</string>
 
 </resources>
