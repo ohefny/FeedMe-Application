@@ -1,7 +1,5 @@
-package com.example.bethechange.feedme;
+package com.example.bethechange.feedme.MainScreen.Views;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,7 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.example.bethechange.feedme.R;
 
 
 public class MainScreenFragment extends Fragment {
@@ -91,7 +90,7 @@ public class MainScreenFragment extends Fragment {
          */
         @Override
         public int getCount() {
-            return 4;
+            return 3;
         }
 
         /**
@@ -105,6 +104,15 @@ public class MainScreenFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
+            switch (position){
+                case 0:
+                    return "Timeline";
+                case 1:
+                    return "My Sites";
+                case 2:
+                    return "Categories";
+
+            }
             return "Item " + (position + 1);
         }
         // END_INCLUDE (pageradapter_getpagetitle)

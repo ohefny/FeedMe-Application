@@ -1,4 +1,4 @@
-package com.example.bethechange.feedme;
+package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -12,11 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import com.example.bethechange.feedme.R;
 
 public class MainScreenActivity extends AppCompatActivity {
     private NavigationView mNavigationView;
