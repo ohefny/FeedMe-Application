@@ -5,11 +5,20 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
-    <string name="search_hint">search articles/sites</string>
+    <string name="search_hint">search feedMeArticles/sites</string>
     <string name="search">Search</string>
     <string name="top_sites_head_title">Top Sites</string>
     <string name="fav_sites_head_title">Favorites</string>
     <string name="categories_head_title">Categories</string>
     <string name="saved_posts_head_title">Saved</string>
+    <string name="pref_last_update_key">last_update</string>
+    <string name="pref_interval_val_key">interval_val</string>
+    <string name="pref_interval_type_key">interval_type</string>
+    <string name="pref_initialized_key">initialized</string>
+    <string name="article_options_description">Article Options</string>
+    <string name="article_img_description">Article Image</string>
+    <string name="title_val_on_btn">Title</string>
+    <string name="snippet_val_btn">Snippet</string>
+    <string name="refresh_news">Refresh News</string>
 
 </resources>

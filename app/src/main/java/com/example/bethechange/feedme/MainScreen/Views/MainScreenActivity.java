@@ -1,23 +1,37 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
+import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.Data.DBUtils;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.R;
+
+import static android.R.attr.animation;
 
 public class MainScreenActivity extends AppCompatActivity {
     private NavigationView mNavigationView;
@@ -27,7 +41,10 @@ public class MainScreenActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private boolean mSearchActivity=false;
-   //TODO if seprate search activity remove this boolean and it's usage
+    private ProgressBar progressBar;
+    private ObjectAnimator animation;
+
+    //TODO if seprate search activity remove this boolean and it's usage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,13 +55,64 @@ public class MainScreenActivity extends AppCompatActivity {
             Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
             mSearchActivity=true;
         }
-        else
-            getSupportFragmentManager().beginTransaction().add(R.id.frameContainer,new MainScreenFragment(),null).commit();
+        ArticlesRepository.getInstance(this);
+        prepareAnimation();
+       // getContentResolver().delete(Contracts.SiteEntry.CONTENT_URI,null,null);
+      //  getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(getSites()));
+        //insertSites();
+    }
+
+    private void prepareAnimation() {
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        animation = ObjectAnimator.ofInt (progressBar, "progress", 0, 500); // see this max value coming back here, we animale towards that value
+        animation.setDuration (5000); //in milliseconds
+        animation.setInterpolator (new DecelerateInterpolator());
+    }
 
 
+    public void showProgressIndicator(){
+        progressBar.setVisibility(View.VISIBLE);
+        animation.start();
+    }
+
+    public void endProgressIndicator(){
+        progressBar.setVisibility(View.GONE);
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT&&animation.isRunning())
+            animation.pause();
+    }
+    public static  Site[] getSites() {
+
+        Site site1=new Site();
+        site1.setTitle("Cnn Top Stories");
+        site1.setUrl("cnn.com");
+        site1.setRssUrl("http://rss.cnn.com/rss/cnn_topstories.rss");
+        site1.setCategoryID(2);
+        Site site2=new Site();
+        site2.setTitle("Washington Post: Today's Highlights");
+        site2.setUrl("washingtonpost.com");
+        site2.setRssUrl("http://www.washingtonpost.com/rss/");
+        site2.setCategoryID(2);
+        Site site3=new Site();
+        site3.setTitle("Reuters: Top News");
+        site3.setUrl("reuters.com");
+        site3.setRssUrl("http://feeds.reuters.com/reuters/topNews");
+        site3.setCategoryID(2);
+        Site site4=new Site();
+        site4.setTitle("BBC News: Americas");
+        site4.setUrl("bbc.co.uk");
+        site4.setRssUrl("http://newsrss.bbc.co.uk/rss/newsonline_world_edition/americas/rss.xml");
+        site4.setCategoryID(2);
+        Site[]sites={site1,site2,site3,site4};//,site2};//,site4};
+        //getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(sites));
+        return sites;
     }
 
     private void setupViews() {
+        TabLayout mSlidingTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        ViewPager mViewPager = (ViewPager)findViewById(R.id.viewpager);
+        mViewPager.setAdapter(new MainPagesAdapter(getSupportFragmentManager(),this));
+        mSlidingTabLayout.setupWithViewPager(mViewPager);
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -112,11 +180,12 @@ public class MainScreenActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mActionBarDrawerToggle.onOptionsItemSelected(item)) {
+        if(item.getItemId()==R.id.fetch_news){
+            ArticlesRepository.getInstance(this).getLatestArticles();
             return true;
         }
+        return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -152,8 +221,16 @@ public class MainScreenActivity extends AppCompatActivity {
 
         super.onBackPressed();
     }
-    public FloatingActionButton getmFab() {
+    public FloatingActionButton getFab() {
         return mFab;
     }
 
+    public void onSavedPostsClicked(View view) {
+    }
+
+    @Override
+    protected void onStop() {
+        ArticlesRepository.destroyInstance(this);
+        super.onStop();
+    }
 }

@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bethechange.feedme">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:name=".FeedMeApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,18 +19,20 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-      <!--TODO : Replace value with search activity if you want seperate search activity
-          TODO : REMOVE THE SECOND META-DATA-->
+            <!--
+          TODO : Replace value with search activity if you want seperate search activity
+          TODO : REMOVE THE SECOND META-DATA
+            -->
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".MainScreenActivity" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-
         </activity>
         <!-- TODO: If decided that search results should be in a different activity -->
         <!--
@@ -38,7 +44,16 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-        </activity> -->
+        </activity>
+        -->
+        <provider
+            android:name=".Data.FeedMeProvider"
+            android:authorities="com.example.bethechange.feedme"
+            android:exported="false" />
+        "
+        <service
+            android:name=".Services.ArticlesDownloaderService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

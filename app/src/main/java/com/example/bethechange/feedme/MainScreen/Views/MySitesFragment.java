@@ -6,20 +6,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.dummy.DummyContent2;
+
+import java.util.List;
 
 
 public class MySitesFragment extends Fragment {
 
-    // TODO: Customize parameters
     private int mColumnCount = 2;
+    private RecyclerView mRecyclerView;
+    private List<Site> mSites;
 
-   // private OnListFragmentInteractionListener mListener;
+    // private OnListFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -38,19 +42,35 @@ public class MySitesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mysites_list, container, false);
+        setupRecyclerView(view);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MySiteRecyclerViewAdapter(DummyContent2.ITEMS));//, mListener));
-        }
         return view;
+    }
+
+    private void setupRecyclerView(View view) {
+        mRecyclerView=(RecyclerView)view.findViewById(R.id.mysites_list)    ;
+        // Set the adapter
+        Context context = view.getContext();
+
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        }
+        mRecyclerView.setAdapter(new MySiteRecyclerViewAdapter(mSites));//, mListener));
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+               //TODO REMOVE SITE
+
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
 

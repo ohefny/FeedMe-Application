@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.dummy.DummyContent2;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,10 +20,11 @@ import com.example.bethechange.feedme.dummy.DummyContent2;
 public class CategoriesFragment extends Fragment {
 
 
-    // TODO: Customize parameter argument names
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
+
     private int mColumnCount = 1;
+    private ArticlesList mArticlesList;
 
 
     /**
@@ -33,7 +34,7 @@ public class CategoriesFragment extends Fragment {
     public CategoriesFragment() {
     }
 
-    // TODO: Customize parameter initialization
+
     @SuppressWarnings("unused")
     public static CategoriesFragment newInstance(int columnCount) {
         CategoriesFragment fragment = new CategoriesFragment();
@@ -66,7 +67,7 @@ public class CategoriesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyArticleRecyclerViewAdapter(DummyContent2.ITEMS));//, mListener));
+            recyclerView.setAdapter(new MyArticleRecyclerViewAdapter(mArticlesList.getArticles()));//, mListener));
         }
         return view;
     }

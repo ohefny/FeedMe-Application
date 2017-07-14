@@ -2,24 +2,53 @@ package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.ArticlesObserver;
+import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
+import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.Data.DBUtils;
+import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
+import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.dummy.DummyContent2;
+import com.example.mvpframeworkedited.BasePresenterFragment;
+import com.example.mvpframeworkedited.PresenterFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class TimelineFragment extends Fragment {
+public class TimelineFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract.View>
+    implements ArticleListContract.View,LoaderManager.LoaderCallbacks{
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private RecyclerView mRecyclerView;
+
+    private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
+    MyArticleRecyclerViewAdapter adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList);
+    private ArticleRemoteLoader mLoader;
+    private int count;
+
 
 
     /**
@@ -42,29 +71,73 @@ public class TimelineFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLoader=new ArticleRemoteLoader(getActivity());
+        //mLoader.setSites(MainScreenActivity.getSites());
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+    }
+
+    @Override
+    protected void onPresenterPrepared(@NonNull ArticlesListPresenter presenter) {
+        super.onPresenterPrepared(presenter);
+
+
+    }
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_article_list, container, false);
+        setupRecyclerView(view);
 
+
+        return view;
+    }
+
+    private void setupRecyclerView(View view) {
         // Set the adapter
+        adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList);
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+             mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyArticleRecyclerViewAdapter(DummyContent2.ITEMS));//, mListener));
+            mRecyclerView.setAdapter(adapter);//, mListener));
         }
-        return view;
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if(direction==ItemTouchHelper.RIGHT){
+                    int pos=viewHolder.getAdapterPosition();
+                    int del=getContext().getContentResolver().delete(Contracts.ArticleEntry.CONTENT_URI,
+                            Contracts.ArticleEntry._ID+" =?",new String[]{adapter.getListItems().get(pos).getArticleID()+""});
+                    //mRecyclerView.removeViewAt(pos);
+                    Log.d(TimelineFragment.class.getSimpleName(),"fuck Deleted :: "+del);
+                   // adapter.notifyItemRemoved(pos);
+                   // adapter.notifyItemRangeChanged(pos, adapter.getItemCount());
+                   // adapter.notifyDataSetChanged();
+                }
+                //TODO REMOVE FeedMeArticle
+            }
+        }).attachToRecyclerView(mRecyclerView);
     }
 
 
@@ -85,15 +158,106 @@ public class TimelineFragment extends Fragment {
       //  mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @NonNull
+    @Override
+    protected String tag() {
+
+        return null;
+    }
+
+    @NonNull
+    @Override
+    protected PresenterFactory<ArticlesListPresenter> getPresenterFactory() {
+
+        return new ArticlesFactory(ArticleType.ALL,getActivity().getSupportLoaderManager(),new CursorLoader(getContext()));
+    }
+
+    @Override
+    public void updateList(ArticlesList articlesList) {
+        if(adapter==null){
+            adapter=new MyArticleRecyclerViewAdapter(articlesList.getArticles());
+            mRecyclerView.setAdapter(adapter);
+        }
+        else {
+            adapter.setListItems(articlesList.getArticles());
+            adapter.notifyDataSetChanged();
+
+        }
+        //if(count++==0)
+        //getActivity().getSupportLoaderManager().initLoader(5,null,this);
+
+
+    }
+
+    @Override
+    public CursorLoader getLoader() {
+        return new CursorLoader(getActivity());
+    }
+
+    @Override
+    public void showProgress() {
+        ((MainScreenActivity)getActivity()).showProgressIndicator();
+    }
+
+    @Override
+    public void endProgress() {
+        ((MainScreenActivity)getActivity()).endProgressIndicator();
+    }
+
+    @Override
+    public void showMessage(String str) {
+        Toast.makeText(getContext(),str,Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        return mLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+
+        System.out.println("Ad");
+        Toast.makeText(getContext(),"Articles Downloaded",Toast.LENGTH_SHORT).show();
+       // addToDB((ArticlesList) data);
+    }
+    private void addToDB(ArticlesList ar) {
+
+        List<FeedMeArticle> mList=new ArrayList<>();
+        ArrayList<FeedMeArticle> articles=ar.getArticles();
+        for(int i = 0; i<5&&i<articles.size(); i++){
+            mList.add(articles.get(i));
+        }
+        ArticlesList mArticleList=new  ArticlesList();
+        mArticleList.setArticles(new ArrayList<FeedMeArticle>(mList));
+        getContext().getContentResolver().bulkInsert(
+                Contracts.ArticleEntry.CONTENT_URI, DBUtils.articlesToCV(mArticleList));
+    }
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+
+    /* Presenter Factory */
+    private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
+
+        private final LoaderManager mManger;
+        private final CursorLoader mLoader;
+        private final int mClass;
+
+
+        ArticlesFactory(int all, LoaderManager supportLoaderManager, CursorLoader articleLocalLoader) {
+                mManger=supportLoaderManager;
+                mLoader=articleLocalLoader;
+                mClass=all;
+        }
+
+        @Override
+        public ArticlesListPresenter create() {
+            return new ArticlesListPresenter(mClass,mManger,mLoader,ArticlesRepository.getInstance(getActivity()));
+        }
+    }
+
 
 }

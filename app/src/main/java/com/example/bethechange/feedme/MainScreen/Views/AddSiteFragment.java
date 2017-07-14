@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bethechange.feedme.R;
+import com.example.mvpframeworkedited.BasePresenterFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,4 +28,9 @@ public class AddSiteFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_add_site, container, false);
     }
 
+    public void onAddCategoryClicked(View view) {
+    }
+
+    public void onAddSiteClicked(View view) {
+    }
 }
