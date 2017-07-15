@@ -20,11 +20,14 @@ public class ArticleListContract {
         void endProgress();
         void showMessage(String str);
         void setInteractor(ArticleListContract.Presenter interactor);
+
+        void showArticle(FeedMeArticle article, boolean onWebView);
     }
     public interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
         void onPerformSave(FeedMeArticle feedMeArticle);
         void onPerformFav(FeedMeArticle feedMeArticle);
 
+        void onOpenArticle(FeedMeArticle article);
     }
 }

@@ -67,7 +67,7 @@ public class CategoriesFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyArticleRecyclerViewAdapter(mArticlesList.getArticles()));//, mListener));
+      //      recyclerView.setAdapter(new MyArticleRecyclerViewAdapter(mArticlesList.getArticles(),getContext()));//, mListener));
         }
         return view;
     }

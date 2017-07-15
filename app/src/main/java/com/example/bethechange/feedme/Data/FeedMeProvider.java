@@ -32,13 +32,13 @@ public class FeedMeProvider extends ContentProvider {
     private UriMatcher buildUriMatcher(){
         UriMatcher uriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH,ARTICLES);
-        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH+"/#",ARTICLE_WITH_ID);
+        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH+"/*",ARTICLE_WITH_ID);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH+"/"+GROUP_BY_SITE, ARTICLE_GROUPED_BY_SITE);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH+"/"+GROUP_BY_CATEGORY,ARTICLE_GROUPED_BY_CATEGORY);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.CATEGORY_PATH,CATEGORIES);
-        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.CATEGORY_PATH+"/#",CATEGORY_WITH_ID);
+        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.CATEGORY_PATH+"/*",CATEGORY_WITH_ID);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SITES_PATH,SITES);
-        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SITES_PATH+"/#",SITE_WITH_ID);
+        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SITES_PATH+"/*",SITE_WITH_ID);
 
         return uriMatcher;
     }
@@ -92,7 +92,7 @@ public class FeedMeProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         switch (sUriMatcher.match(uri)){
             case ARTICLES:
-                return "vnd.android.cursor.dir" + "/" +Contracts.AUTHORITY+"/"+Contracts.ARTICLES_PATH;
+                return "vnd.android.cursor.dir" + "/" +Contracts.ArticleEntry.CONTENT_URI;
             case ARTICLE_WITH_ID:
                 return "vnd.android.cursor.item" + "/" +Contracts.AUTHORITY+"/"+Contracts.ARTICLES_PATH;
             case CATEGORIES:
@@ -236,12 +236,13 @@ public class FeedMeProvider extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        db.insertWithOnConflict(
+                        long id=db.insertWithOnConflict(
                                 Contracts.ArticleEntry.TABLE_NAME,
                                 null,
                                 value,SQLiteDatabase.CONFLICT_IGNORE
                         );
-                        returnCount++;
+                        if(id!=-1)
+                            returnCount++;
                     }
                     db.setTransactionSuccessful();
                 } finally {

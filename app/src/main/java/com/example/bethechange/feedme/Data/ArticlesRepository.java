@@ -2,6 +2,7 @@ package com.example.bethechange.feedme.Data;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -147,7 +148,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
     public  void removeArticle(@NonNull FeedMeArticle feedMeArticle){
          fullArticles.remove(feedMeArticle.getArticleID());
-        // removeValues(Uri.withAppendedPath(Contracts.ArticleEntry.CONTENT_URI,""+feedMeArticle.getArticleID()),null,null);
+        // removeValues(ContentUris.withAppendedId(Contracts.ArticleEntry.CONTENT_URI,feedMeArticle.getArticleID()),null,null);
         removeValues(Contracts.ArticleEntry.CONTENT_URI,Contracts.ArticleEntry._ID+" = ? ",new String[]{feedMeArticle.getArticleID()+""});
         deliverToListeners(false);
     }
@@ -164,8 +165,9 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     @Override
     public void editArticle(FeedMeArticle article) {
         ArticlesList articlesList=new ArticlesList(Collections.singletonList(article));
-        super.startUpdate(0,null,Uri.withAppendedPath(Contracts.ArticleEntry.CONTENT_URI,""+article.getArticleID()),
-                            null,null,null);
+        super.startUpdate(0,null, ContentUris.withAppendedId(Contracts.ArticleEntry.CONTENT_URI,
+                article.getArticleID()),
+                            DBUtils.articlesToCV(articlesList)[0],null,null);
     }
     @Override
     public ArticlesList getArticles(@Nullable Site[]sites) {

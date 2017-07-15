@@ -1,12 +1,13 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DrawableUtils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,28 +16,30 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
-
-import com.example.bethechange.feedme.ArticleType;
-import com.example.bethechange.feedme.ArticlesObserver;
 import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.Data.DBUtils;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class TimelineFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract.View>
-    implements ArticleListContract.View,LoaderManager.LoaderCallbacks{
+    implements ArticleListContract.View,MyArticleRecyclerViewAdapter.ArticleListItemListener{
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -45,12 +48,18 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private RecyclerView mRecyclerView;
 
     private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
-    MyArticleRecyclerViewAdapter adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList);
+    MyArticleRecyclerViewAdapter adapter=
+            new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
     private ArticleRemoteLoader mLoader;
 
     @Override
     public void setInteractor(ArticleListContract.Presenter interactor) {
         this.interactor = interactor;
+    }
+
+    @Override
+    public void showArticle(FeedMeArticle article, boolean onWebView) {
+
     }
 
     private ArticleListContract.Presenter interactor;
@@ -84,6 +93,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        Drawable d=getContext().getResources().getDrawable(R.drawable.circular);
 
     }
 
@@ -113,7 +123,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     private void setupRecyclerView(View view) {
         // Set the adapter
-        adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList);
+        adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
              mRecyclerView = (RecyclerView) view;
@@ -181,7 +191,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public void updateList(ArticlesList articlesList) {
         if(adapter==null){
-            adapter=new MyArticleRecyclerViewAdapter(articlesList.getArticles());
+            adapter=new MyArticleRecyclerViewAdapter(articlesList.getArticles(),getContext(),this);
             mRecyclerView.setAdapter(adapter);
         }
         else {
@@ -195,6 +205,30 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     }
 
+    private void performWebSave(Site site, final FeedMeArticle article) {
+        final WebView webView= new WebView(getContext());
+        webView.setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                String folderName = getContext().getFilesDir().getAbsolutePath() + "/cachedFiles/";
+                File folder = new File(folderName);
+                if (!folder.exists()) {
+                    if(!folder.mkdir())
+                        return;
+                }
+                view.saveWebArchive(folderName+article.getArticleID(), false, new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        //TODO save this value to article Locallocation field
+                    }
+                });
+
+
+            }
+        });
+    }
     @Override
     public CursorLoader getLoader() {
         return new CursorLoader(getActivity());
@@ -215,7 +249,49 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         Toast.makeText(getContext(),str,Toast.LENGTH_SHORT).show();
     }
 
+
+
     @Override
+    public void onSaveClicked(FeedMeArticle article) {
+        interactor.onPerformSave(article);
+    }
+
+    @Override
+    public void onDeleteClicked(FeedMeArticle article) {
+        interactor.onPerformDelete(article);
+    }
+
+    @Override
+    public void onBookmarkClicked(FeedMeArticle article) {
+        interactor.onPerformFav(article);
+    }
+
+    @Override
+    public void onArticleOpened(FeedMeArticle article) {
+        interactor.onOpenArticle(article);
+    }
+
+    @Override
+    public void onSnippetClicked(FeedMeArticle article) {
+
+    }
+
+
+    /* Presenter Factory */
+    private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
+
+        ArticlesFactory() {
+
+        }
+
+        @Override
+        public ArticlesListPresenter create() {
+            return new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()));
+        }
+    }
+
+
+     /* @Override
     public Loader onCreateLoader(int id, Bundle args) {
         return mLoader;
     }
@@ -242,21 +318,6 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public void onLoaderReset(Loader loader) {
 
-    }
-
-
-    /* Presenter Factory */
-    private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
-
-        ArticlesFactory() {
-
-        }
-
-        @Override
-        public ArticlesListPresenter create() {
-            return new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()));
-        }
-    }
-
+    }*/
 
 }

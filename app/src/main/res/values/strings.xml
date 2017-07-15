@@ -20,5 +20,10 @@
     <string name="title_val_on_btn">Title</string>
     <string name="snippet_val_btn">Snippet</string>
     <string name="refresh_news">Refresh News</string>
+    <string name="item_delete">Delete</string>
+    <string name="item_snippet">Snippet</string>
+    <string name="item_bookmark">Bookmark</string>
+    <string name="item_save">Save</string>
+    <string name="dots_item">⋮</string>
 
 </resources>

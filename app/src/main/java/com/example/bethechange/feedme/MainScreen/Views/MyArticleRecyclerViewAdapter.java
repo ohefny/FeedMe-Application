@@ -1,11 +1,14 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,19 +28,21 @@ import java.util.List;
 
 public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticleRecyclerViewAdapter.ViewHolder>  {
 
+    private final Context mContext;
     private List<FeedMeArticle> mValues;
     private SparseBooleanArray mapSnippet=new SparseBooleanArray();
-
+    ArticleListItemListener mListener;
     //TODO::ADD LISTENER TO ARGS
-    MyArticleRecyclerViewAdapter(List<FeedMeArticle> items) {
+    MyArticleRecyclerViewAdapter(List<FeedMeArticle> items, Context context,
+                                 ArticleListItemListener listener) {
         mValues = items;
         mapSnippet=new SparseBooleanArray();
         for(FeedMeArticle ar:items){
             mapSnippet.put(ar.getArticleID(),false);
         }
         Log.d("Snippet",""+mapSnippet.get(0));
-
-       // mListener = listener;
+        mContext=context;
+        mListener = listener;
     }
 
     @Override
@@ -48,7 +53,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder,  int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.mItem = mValues.get(position);
         holder.showSnippet=true;
        // holder.mArticleImg.setText(mValues.get(position).id);
@@ -67,6 +72,13 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             public void onClick(View v) {
 
                 makeViewType(holder,true);
+            }
+        });
+        holder.mArticleOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMenu(v,position,holder);
+
             }
         });
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +101,37 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             }
         });
     }
+    private void showMenu(View view, final int position,final ViewHolder holder)
+    {
+        PopupMenu menu = new PopupMenu (mContext, view);
+        menu.setOnMenuItemClickListener (new PopupMenu.OnMenuItemClickListener ()
+        {
 
+            @Override
+            public boolean onMenuItemClick (MenuItem item)
+            {
+                int id = item.getItemId();
+                switch (id)
+                {
+                    case R.id.item_fav:
+                        mListener.onBookmarkClicked(getListItems().get(position));
+                        break;
+                    case R.id.item_save:
+                        mListener.onSaveClicked(getListItems().get(position));
+                        break;
+                    case R.id.item_snippet:
+                        makeViewType(holder,true);
+                        break;
+                    case R.id.item_delete:
+                        mListener.onDeleteClicked(getListItems().get(position));
+                        break;
+                }
+                return true;
+            }
+        });
+        menu.inflate (R.menu.list_item_options);
+        menu.show();
+    }
     private void makeViewType(ViewHolder holder,boolean change) {
         Log.d("Hashmap ",holder.mItem.getArticleID()+" "+mapSnippet.get(holder.mItem.getArticleID()));
         if(change&&!mapSnippet.get(holder.mItem.getArticleID()))
@@ -150,6 +192,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
 
     class ViewHolder extends RecyclerView.ViewHolder {
          final View mView;
+        TextView mArticleOptions;
         private Button mSnippet;
           TextView mTitleView;
           TextView mSiteView;
@@ -167,7 +210,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             mSnippet=(Button)mView.findViewById(R.id.snippet_btn);
             mDescriptionView=(TextView)mView.findViewById(R.id.snippet_text_tv);
             mArticleImg=(ImageView)mView.findViewById(R.id.article_img);
-           // mArticleOptions= (ImageButton) mView.findViewById(R.id.article_options_btn);
+            mArticleOptions= (TextView) mView.findViewById(R.id.article_options_btn);
 
         }
 
@@ -175,5 +218,12 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
         public String toString() {
             return super.toString() ;//+ " '" + mContentView.getText() + "'";
         }
+    }
+    interface ArticleListItemListener{
+        void onSaveClicked(FeedMeArticle article);
+        void onDeleteClicked(FeedMeArticle article);
+        void onBookmarkClicked(FeedMeArticle article);
+        void onArticleOpened(FeedMeArticle article);
+        void onSnippetClicked(FeedMeArticle article);
     }
 }

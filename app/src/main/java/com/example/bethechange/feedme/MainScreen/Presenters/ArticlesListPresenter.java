@@ -54,17 +54,26 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     public void onPerformDelete(FeedMeArticle feedMeArticle) {
 
         mRepo.removeArticle(feedMeArticle);
+        view().showMessage("Article has been deleted");
     }
 
     @Override
     public void onPerformSave(FeedMeArticle feedMeArticle) {
+
         mRepo.editArticle(feedMeArticle);
+        view().showMessage("Article has been saved");
     }
 
     @Override
     public void onPerformFav(FeedMeArticle feedMeArticle) {
         feedMeArticle.setFav(!feedMeArticle.isFav());
         mRepo.editArticle(feedMeArticle);
+        view().showMessage("Article has been bookmarked");
+    }
+
+    @Override
+    public void onOpenArticle(FeedMeArticle article) {
+        view().showArticle(article,false);
     }
 
     @Override
