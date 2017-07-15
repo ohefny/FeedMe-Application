@@ -1,11 +1,6 @@
 package com.example.bethechange.feedme.MainScreen.Presenters;
 
-import android.database.Cursor;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.example.bethechange.feedme.ArticleType;
@@ -26,28 +21,21 @@ import java.util.ArrayList;
  */
 
 public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleListContract.View>
-    implements LoaderManager.LoaderCallbacks<Cursor>,ArticleListContract.Presenter,
-        ArticlesRepository.ArticlesRepositoryObserver{
-    private static final int LOCAL_LOADER_ID=1;
+    implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver{
     private ArticleRepositoryActions mRepo;
-    private LoaderManager mLoaderManger;
-    private CursorLoader mArticleLoader;
     @ArticleType int mArticleClass;
-    private int mTypeID;
     private int startPage=0;
     private Site[]mSites=null;
     private int pageSizes=1;
-    //Loader needed and maybe repository
     public ArticlesListPresenter(@ArticleType int articleClass,
-                                 @NonNull LoaderManager loaderManager, @NonNull CursorLoader loader,@NonNull ArticleRepositoryActions repo  ){
-       this(articleClass);
-        mLoaderManger=loaderManager;
-        setLoader(loader);
-        //TODO: SET ANY REQUIRED PARAMETERS FOR PROJECTION AND SELECTION AND SO
-     /*   mArticleLoader.setPagesSize(pageSizes);
-        mArticleLoader.setStartPage(startPage);
-        mArticleLoader.setSites(MainScreenActivity.getSites());*/
-      //  loaderManager.initLoader(LOCAL_LOADER_ID,null,this);
+                                 @NonNull ArticleRepositoryActions repo ){
+        this(articleClass);
+        mRepo=repo;
+        mRepo.setListener(this,mSites);
+        setModel(mRepo.getArticles(mSites));
+
+    }
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo ){
         mRepo=repo;
         mRepo.setListener(this,mSites);
         setModel(mRepo.getArticles(mSites));
@@ -60,45 +48,6 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     @Override
     protected void updateView() {
             view().updateList(model);
-    }
-
-    //
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(id==LOCAL_LOADER_ID)
-            return mArticleLoader;
-        return null;
-        //else
-
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(loader==mArticleLoader){
-            setModel(new ArticlesList((DBUtils.cursorToArticles(data))));
-            view().endProgress();
-            startPage+=1;
-            Log.d("ArticleListPresenter","Fuck Call Time "+startPage);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    public void onLocalDataChanged() {
-            if(view()!=null&&mLoaderManger!=null){
-                view().showProgress();
-                setLoader(view().getLoader());
-              //  mLoaderManger.restartLoader(LOCAL_LOADER_ID,null,this);
-            }
-    }
-
-    void setLoader(CursorLoader loader) {
-        mArticleLoader=loader;
-        mArticleLoader.setUri(Contracts.ArticleEntry.CONTENT_URI);
-        mArticleLoader.setSortOrder(Contracts.ArticleEntry.COLUMN_DATE+" DESC");
     }
 
     @Override

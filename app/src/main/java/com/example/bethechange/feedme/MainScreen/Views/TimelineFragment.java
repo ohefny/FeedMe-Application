@@ -175,7 +175,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     protected PresenterFactory<ArticlesListPresenter> getPresenterFactory() {
 
-        return new ArticlesFactory(ArticleType.ALL,getActivity().getSupportLoaderManager(),new CursorLoader(getContext()));
+        return new ArticlesFactory();
     }
 
     @Override
@@ -248,20 +248,13 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     /* Presenter Factory */
     private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
 
-        private final LoaderManager mManger;
-        private final CursorLoader mLoader;
-        private final int mClass;
+        ArticlesFactory() {
 
-
-        ArticlesFactory(int all, LoaderManager supportLoaderManager, CursorLoader articleLocalLoader) {
-                mManger=supportLoaderManager;
-                mLoader=articleLocalLoader;
-                mClass=all;
         }
 
         @Override
         public ArticlesListPresenter create() {
-            return new ArticlesListPresenter(mClass,mManger,mLoader,ArticlesRepository.getInstance(getActivity()));
+            return new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()));
         }
     }
 
