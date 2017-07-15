@@ -47,6 +47,13 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
     MyArticleRecyclerViewAdapter adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList);
     private ArticleRemoteLoader mLoader;
+
+    @Override
+    public void setInteractor(ArticleListContract.Presenter interactor) {
+        this.interactor = interactor;
+    }
+
+    private ArticleListContract.Presenter interactor;
     private int count;
 
 
@@ -127,10 +134,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 if(direction==ItemTouchHelper.RIGHT){
                     int pos=viewHolder.getAdapterPosition();
-                    int del=getContext().getContentResolver().delete(Contracts.ArticleEntry.CONTENT_URI,
-                            Contracts.ArticleEntry._ID+" =?",new String[]{adapter.getListItems().get(pos).getArticleID()+""});
+                    interactor.onPerformDelete(adapter.getListItems().get(pos));
                     //mRecyclerView.removeViewAt(pos);
-                    Log.d(TimelineFragment.class.getSimpleName(),"fuck Deleted :: "+del);
+                    Log.d(TimelineFragment.class.getSimpleName(),"fuck Deleted :: "+pos);
                    // adapter.notifyItemRemoved(pos);
                    // adapter.notifyItemRangeChanged(pos, adapter.getItemCount());
                    // adapter.notifyDataSetChanged();
@@ -206,7 +212,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     @Override
     public void showMessage(String str) {
-        Toast.makeText(getContext(),str,Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(),str,Toast.LENGTH_SHORT).show();
     }
 
     @Override

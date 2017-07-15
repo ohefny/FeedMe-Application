@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticleRepositoryActions;
+import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.Data.DBUtils;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
@@ -25,7 +26,8 @@ import java.util.ArrayList;
  */
 
 public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleListContract.View>
-    implements LoaderManager.LoaderCallbacks<Cursor>,ArticleListContract.Presenter{
+    implements LoaderManager.LoaderCallbacks<Cursor>,ArticleListContract.Presenter,
+        ArticlesRepository.ArticlesRepositoryObserver{
     private static final int LOCAL_LOADER_ID=1;
     private ArticleRepositoryActions mRepo;
     private LoaderManager mLoaderManger;
@@ -47,7 +49,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         mArticleLoader.setSites(MainScreenActivity.getSites());*/
       //  loaderManager.initLoader(LOCAL_LOADER_ID,null,this);
         mRepo=repo;
-        mRepo.setListener(this);
+        mRepo.setListener(this,mSites);
         setModel(mRepo.getArticles(mSites));
 
     }
@@ -101,6 +103,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
     @Override
     public void onPerformDelete(FeedMeArticle feedMeArticle) {
+
         mRepo.removeArticle(feedMeArticle);
     }
 
@@ -116,12 +119,20 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     }
 
     @Override
-    public void newDataDelivered(ArticlesList data) {
+    public void onDataChanged(ArticlesList data) {
         setModel(data);
+        Log.d("Presneter","Fuck Data change: "+startPage+ " size= "+data.getArticles().size());
         if(view()!=null){
             view().endProgress();
-            view().showMessage("Latest News Here..");
+            view().showMessage("Database Updated..");
         }
         startPage+=1;
     }
+
+    @Override
+    public void bindView(@NonNull ArticleListContract.View view) {
+        super.bindView(view);
+        view().setInteractor(this);
+    }
+
 }

@@ -19,11 +19,12 @@ public class ArticleListContract {
         void showProgress();
         void endProgress();
         void showMessage(String str);
+        void setInteractor(ArticleListContract.Presenter interactor);
     }
     public interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
         void onPerformSave(FeedMeArticle feedMeArticle);
         void onPerformFav(FeedMeArticle feedMeArticle);
-        void newDataDelivered(ArticlesList data);
+
     }
 }

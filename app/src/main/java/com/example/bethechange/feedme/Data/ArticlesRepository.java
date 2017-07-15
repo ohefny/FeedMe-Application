@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.ArticlesObserver;
@@ -31,12 +32,14 @@ import java.util.List;
 public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepositoryActions {
     private int queryToken=1;
     private Site[]mSites=null;
-    private ArticleListContract.Presenter mListener;
-    private SparseArray<FeedMeArticle> articlesList;
+    private SparseArray<Pair<ArticlesRepositoryObserver,Site[]>> mListeners=new SparseArray<>();
+    private SparseArray<FeedMeArticle> fullArticles;
     private String sortCriteria=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
     private final int INTIALIZE_TOKEN=0;
     private static ArticlesRepository repoInstance;
     private static ArticlesObserver observer;
+    private boolean freshData;
+
     private ArticlesRepository(ContentResolver cr) {
         super(cr);
         refreshData();
@@ -59,18 +62,20 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
         return repoInstance;
     }
-    public void setListener(ArticleListContract.Presenter mListener) {
-        this.mListener = mListener;
+    public void setListener(ArticlesRepositoryObserver mListener,Site[]sites) {
+       mListeners.put(mListener.hashCode(), new Pair<>(mListener, sites));
     }
 
-    public void unSetListenr() {
-        this.mListener = null;
+    public void unsetListener(ArticlesRepositoryObserver mListener) {
+       mListeners.remove(mListener.hashCode());
     }
 
     @Override
     public void onLocalDataChanged() {
-            if(mListener!=null)
-                queryArticles(queryToken);
+        if(freshData){
+            queryArticles(queryToken);
+            freshData=false;
+        }
     }
 
 
@@ -98,38 +103,56 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-        if(token==INTIALIZE_TOKEN){
-            articlesList=DBUtils.cursorToArticles(cursor);
+        if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
+            fullArticles=DBUtils.cursorToArticles(cursor);
 
         }
         if(token==queryToken){
             queryToken++;
         }
+        //Query Listener with it's registered sites
+        deliverToListeners(false);
         cursor.close();
-        if(mListener!=null)
-            mListener.newDataDelivered(new ArticlesList(DBUtils.cursorToArticles(cursor)));
         super.onQueryComplete(token, cookie, cursor);
     }
 
+    private void deliverToListeners(boolean fresh) {
+        if(mListeners.size()!=0){
+            for(int i=0;i<mListeners.size();i++){
+                Pair<ArticlesRepositoryObserver, Site[]> listener=
+                        mListeners.get(mListeners.keyAt(i));
+                listener.first.onDataChanged(articlesFromSites(listener.second));
+            }
+        }
+    }
+
     private void refreshData() {
+        if(!PrefUtils.updateNow(FeedMeApp.getContext()))
+            return;
         Intent intent=new Intent(FeedMeApp.getContext(),ArticlesDownloaderService.class);
         intent.setAction(ArticlesDownloaderService.ACTION_FETCH_LATEST);
         FeedMeApp.getContext().startService(intent);
+        freshData=true;
     }
     public void getLatestArticles() {
         Intent intent=new Intent(FeedMeApp.getContext(),ArticlesDownloaderService.class);
         intent.setAction(ArticlesDownloaderService.ACTION_FETCH_LATEST);
         intent.putExtra(ArticlesDownloaderService.REFRESH_NOW,true);
         FeedMeApp.getContext().startService(intent);
+        freshData=true;
     }
 
     private void removeValues(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs){
          super.startDelete(0,null,uri,selection ,selectionArgs);
     }
     public  void removeArticle(@NonNull FeedMeArticle feedMeArticle){
-         removeValues(Uri.withAppendedPath(Contracts.ArticleEntry.CONTENT_URI,""+feedMeArticle.getArticleID()),null,null);
+         fullArticles.remove(feedMeArticle.getArticleID());
+        // removeValues(Uri.withAppendedPath(Contracts.ArticleEntry.CONTENT_URI,""+feedMeArticle.getArticleID()),null,null);
+        removeValues(Contracts.ArticleEntry.CONTENT_URI,Contracts.ArticleEntry._ID+" = ? ",new String[]{feedMeArticle.getArticleID()+""});
+        deliverToListeners(false);
     }
     public void insertArticle(final FeedMeArticle article){
+        fullArticles.put(article.getArticleID(),article);
         ArticlesList articlesList=new ArticlesList(Collections.singletonList(article));
         insertValues(Contracts.ArticleEntry.CONTENT_URI,DBUtils.articlesToCV(articlesList));
     }
@@ -146,26 +169,31 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
     @Override
     public ArticlesList getArticles(@Nullable Site[]sites) {
-        if(articlesList==null)
+        if(fullArticles==null)
             queryArticles(queryToken);
         if(mSites==null)
-            return new ArticlesList(articlesList);
+            return new ArticlesList(fullArticles);
         else{
 
-            return new ArticlesList(articlesFromSites(sites));
+            return articlesFromSites(sites);
         }
     }
 
-    private ArrayList<FeedMeArticle> articlesFromSites(@Nullable Site[] sites) {
-        ArrayList<FeedMeArticle> articles=new ArrayList<>();
+    private ArticlesList articlesFromSites(@Nullable Site[] sites) {
+        ArrayList<FeedMeArticle> filteredArticles=new ArrayList<>();
+        if(sites==null)
+            return new ArticlesList(fullArticles);
         for(Site st:sites){
-            for (int i=0;i<articlesList.size();i++){
-                if(articlesList.valueAt(i).getSiteID()==st.getID()){
-                    articles.add(articlesList.valueAt(i));
+            for (int i=0;i<fullArticles.size();i++){
+                if(fullArticles.valueAt(i).getSiteID()==st.getID()){
+                    filteredArticles.add(fullArticles.valueAt(i));
                 }
             }
         }
-        return articles;
+        return new ArticlesList(filteredArticles);
     }
 
+    public interface ArticlesRepositoryObserver {
+        void onDataChanged(ArticlesList data);
+    }
 }

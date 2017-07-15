@@ -24,7 +24,7 @@ public interface ArticleRepositoryActions {
     void insertArticles( List<FeedMeArticle> articles);
     void editArticle(final FeedMeArticle article);
     void onLocalDataChanged();
-    public void setListener(ArticleListContract.Presenter mListener) ;
-    public void unSetListenr();
+    void setListener(ArticlesRepository.ArticlesRepositoryObserver mListener,Site[]sites) ;
+    void unsetListener(ArticlesRepository.ArticlesRepositoryObserver mListener);
     ArticlesList getArticles(@Nullable Site[]sites);
 }
