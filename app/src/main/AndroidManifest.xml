@@ -53,7 +53,9 @@
         "
         <service
             android:name=".Services.ArticlesDownloaderService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".DetailsScreen.DetailsActivity"></activity>
     </application>
 
 </manifest>

@@ -25,5 +25,10 @@
     <string name="item_bookmark">Bookmark</string>
     <string name="item_save">Save</string>
     <string name="dots_item">⋮</string>
+    <string name="action_share">Share Article</string>
+    <string name="extract_api_key">bb23317a91408f9c117d0212e9c68109</string>
+    <string name="extract_api_id">e7a2ec9b</string>
+    <string name="googl_api_key">AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE</string>
+    <string name="googl_api_id">005243230011887027180:95rpocypqje</string>
 
 </resources>

@@ -6,8 +6,22 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">24dp</dimen>
     <dimen name="profile_width">75dp</dimen>
     <dimen name="profile_height">75dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="detail_title_text_size">25sp</dimen>
+    <dimen name="detail_subtitle_text_size">20sp</dimen>
+    <dimen name="detail_body_text_size">18sp</dimen>
+    <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
+    <dimen name="appbar_elevation">4dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_press_translation_z">6dp</dimen>
+    <dimen name="keyline_1">16dp</dimen>
+    <dimen name="keyline_2">72dp</dimen>
+    <dimen name="keyline2_minus">56dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="init_scroll_up_distance">100dp</dimen>
+    <dimen name="dialog_elevation">24dp</dimen>
 </resources>
