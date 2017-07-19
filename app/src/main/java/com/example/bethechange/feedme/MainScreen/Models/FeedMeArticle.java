@@ -7,6 +7,7 @@ import com.pkmmte.pkrss.Article;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Date;
 
 /**
  * Created by BeTheChange on 7/10/2017.
@@ -20,6 +21,9 @@ public class FeedMeArticle {
     private int siteID;
     private boolean fav;
     private boolean saved;
+    private String webArchivePath="";
+    private boolean contentFetched;
+    private String publishedDate="";
     public Article getArticle() {
         return mArticle;
     }
@@ -69,4 +73,30 @@ public class FeedMeArticle {
     public void setArticleID(int mID) {
         this.mID = mID;
     }
+
+    public String getWebArchivePath() {
+        return webArchivePath;
+    }
+
+    public void setWebArchivePath(String webArchivePath) {
+        this.webArchivePath = webArchivePath;
+    }
+
+    public boolean isContentFetched() {
+        return contentFetched;
+    }
+
+    public void setContentFetched(boolean contentFetched) {
+        this.contentFetched = contentFetched;
+    }
+
+    public String getPublishedDate() {
+        return publishedDate;
+    }
+
+    public void setPublishedDate(String publishedDate) {
+        this.publishedDate = publishedDate;
+    }
+
 }
+

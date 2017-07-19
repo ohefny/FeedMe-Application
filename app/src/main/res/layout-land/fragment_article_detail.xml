@@ -66,6 +66,7 @@
                         android:id="@+id/article_body"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
+                        android:text="@string/not_available"
                         android:ellipsize="end"
                         android:maxLines="30"
 

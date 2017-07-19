@@ -1,13 +1,12 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.DrawableUtils;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,16 +21,18 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.DBUtils;
+import com.example.bethechange.feedme.Data.ContentFetcher;
+import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
+import com.example.bethechange.feedme.MainScreen.Views.Adapters.MyArticleRecyclerViewAdapter;
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,21 +51,14 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
     MyArticleRecyclerViewAdapter adapter=
             new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
+
+    private FragmentActivityInteractor listener;
     private ArticleRemoteLoader mLoader;
-
-    @Override
-    public void setInteractor(ArticleListContract.Presenter interactor) {
-        this.interactor = interactor;
-    }
-
-    @Override
-    public void showArticle(FeedMeArticle article, boolean onWebView) {
-
-    }
-
+    private android.webkit.WebView webView;
     private ArticleListContract.Presenter interactor;
     private int count;
-
+    private ProgressDialog dialog;
+    private int position=-1;
 
 
     /**
@@ -76,8 +70,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TimelineFragment newInstance(int columnCount) {
+    public static TimelineFragment newInstance(int columnCount, FragmentActivityInteractor lis) {
         TimelineFragment fragment = new TimelineFragment();
+        fragment.setListener(lis);
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -93,7 +88,11 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        Drawable d=getContext().getResources().getDrawable(R.drawable.circular);
+        dialog = new ProgressDialog(getActivity(),R.style.MyProgressBar);
+        dialog.setCancelable(false);
+        //dialog.setMessage("Loading Your Screen");
+        dialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+
 
     }
 
@@ -115,6 +114,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_article_list, container, false);
+
         setupRecyclerView(view);
 
 
@@ -205,7 +205,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     }
 
-    private void performWebSave(Site site, final FeedMeArticle article) {
+    private void performWebSave(final FeedMeArticle article) {
         final WebView webView= new WebView(getContext());
         webView.setWebViewClient(new WebViewClient() {
 
@@ -221,7 +221,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
                 view.saveWebArchive(folderName+article.getArticleID(), false, new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
-                        //TODO save this value to article Locallocation field
+                        interactor.onWebArchiveSaved(article,value);
                     }
                 });
 
@@ -236,12 +236,14 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     @Override
     public void showProgress() {
-        ((MainScreenActivity)getActivity()).showProgressIndicator();
+        if(!dialog.isShowing())
+            dialog.show();
     }
 
     @Override
     public void endProgress() {
-        ((MainScreenActivity)getActivity()).endProgressIndicator();
+        if(dialog.isShowing())
+            dialog.dismiss();
     }
 
     @Override
@@ -249,10 +251,15 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         Toast.makeText(getContext(),str,Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void saveArticleAsWebArchive(FeedMeArticle feedMeArticle) {
+        performWebSave(feedMeArticle);
+    }
 
 
     @Override
     public void onSaveClicked(FeedMeArticle article) {
+
         interactor.onPerformSave(article);
     }
 
@@ -267,7 +274,8 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     }
 
     @Override
-    public void onArticleOpened(FeedMeArticle article) {
+    public void onArticleOpened(FeedMeArticle article,int pos) {
+        position=pos;
         interactor.onOpenArticle(article);
     }
 
@@ -276,9 +284,44 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     }
 
+    @Override
+    public void setInteractor(ArticleListContract.Presenter interactor) {
+        this.interactor = interactor;
+    }
+
+    @Override
+    public void showArticle(FeedMeArticle article, boolean onWebView) {
+        Log.d("Fuck Show Article",article.getArticle().getSource().toString());
+        if(onWebView)
+            listener.openWebViewFragment(article.getArticle().getSource().toString());
+        else{
+            Intent intent=new Intent(getContext(), DetailsActivity.class);
+            int id=article.getArticleID();
+            intent.putExtra(DetailsActivity.ARTICLE_ID_KEY,id);
+            intent.putExtra(DetailsActivity.ARTICLE_KEY,article.getArticle());
+            startActivity(intent);
+        }
+
+
+
+        //getActivity().startActivity(intent);
+    }
+
+    @Override
+    public void imageUpdated(FeedMeArticle article) {
+       // adapter.getListItems().get(position).getArticle().setImage(article.getArticle().getImage());
+       // adapter.notifyItemChanged(position);
+    }
+
+    public void setListener(FragmentActivityInteractor listener) {
+        this.listener = listener;
+    }
+
 
     /* Presenter Factory */
     private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
+
+
 
         ArticlesFactory() {
 
@@ -286,8 +329,15 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
         @Override
         public ArticlesListPresenter create() {
-            return new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()));
+             ArticlesListPresenter presenter= new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()),
+                    new ContentFetcher(getActivity()));
+            setInteractor(presenter);
+            return presenter;
         }
+    }
+
+    public interface FragmentActivityInteractor {
+        void openWebViewFragment(String link);
     }
 
 

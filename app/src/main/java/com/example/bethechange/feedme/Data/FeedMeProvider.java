@@ -66,6 +66,7 @@ public class FeedMeProvider extends ContentProvider {
                 retCursor=db.query(Contracts.SiteEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             case ARTICLE_WITH_ID:
+                String st=String.valueOf(uri.getPathSegments().get(1));
                 retCursor=db.query(Contracts.ArticleEntry.TABLE_NAME,projection,Contracts.ArticleEntry._ID
                         + " = ?",new String[]{String.valueOf(uri.getPathSegments().get(1))},null,null,sortOrder);
                 break;

@@ -46,6 +46,9 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
                 Contracts.ArticleEntry.COLUMN_SITE +" INTEGER, " +
                 Contracts.ArticleEntry.COLUMN_FAVORITE +" BOOLEAN, " +
                 Contracts.ArticleEntry.COLUMN_SAVED +" BOOLEAN, " +
+                Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED +" BOOLEAN, " +
+                Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH + " TEXT, " +
+                Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE +" TEXT,"+
                 "FOREIGN KEY("+Contracts.ArticleEntry.COLUMN_SITE+") REFERENCES "+
                 Contracts.SiteEntry.TABLE_NAME+"("+Contracts.SiteEntry._ID+ "));";
 

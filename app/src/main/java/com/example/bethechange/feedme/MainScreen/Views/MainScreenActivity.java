@@ -4,8 +4,9 @@ import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -17,23 +18,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.Data.ArticlesRepository;
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.DBUtils;
+import com.example.bethechange.feedme.Data.FeedMeDBHelper;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
 
-import static android.R.attr.animation;
+import java.net.URL;
 
-public class MainScreenActivity extends AppCompatActivity {
+public class MainScreenActivity extends AppCompatActivity implements  TimelineFragment.FragmentActivityInteractor{
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
@@ -43,6 +44,7 @@ public class MainScreenActivity extends AppCompatActivity {
     private boolean mSearchActivity=false;
     private ProgressBar progressBar;
     private ObjectAnimator animation;
+    private WebView webView;
 
     //TODO if seprate search activity remove this boolean and it's usage
     @Override
@@ -50,12 +52,17 @@ public class MainScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         setupViews();
+        FeedMeDBHelper dbHelper=new FeedMeDBHelper(this);
+        SQLiteDatabase wdb = dbHelper.getWritableDatabase();
+      //  wdb.execSQL("ALTER TABLE Article_Table ADD content_fetched BOOLEAN  ;");
+       // wdb.execSQL("ALTER TABLE Article_Table ADD PUBLISHED_DATE TEXT;");
+       // wdb.execSQL("ALTER TABLE Article_Table ADD webarchive_path TEXT;");
         Intent intent = getIntent();
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
             mSearchActivity=true;
         }
-        ArticlesRepository.getInstance(this);
+
         prepareAnimation();
        // getContentResolver().delete(Contracts.SiteEntry.CONTENT_URI,null,null);
       //  getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(getSites()));
@@ -81,28 +88,37 @@ public class MainScreenActivity extends AppCompatActivity {
             animation.pause();
     }
     public static  Site[] getSites() {
+        //http://feeds.feedburner.com/TheAtlantic
+        //https://www.polygon.com/rss/index.xml
+        //http://www.coolhunting.com/atom.xml
+        //http://www.betterlivingthroughdesign.com/feed
+        //http://rss.cnn.com/rss/cnn_topstories.rss
+        //http://www.washingtonpost.com/rss/
+        //http://feeds.reuters.com/reuters/topNews
+        //http://newsrss.bbc.co.uk/rss/newsonline_world_edition/americas/rss.xml
+        String url = "http://stackoverflow.com/feeds/tag?tagnames=rome";
 
         Site site1=new Site();
         site1.setTitle("Cnn Top Stories");
         site1.setUrl("cnn.com");
-        site1.setRssUrl("http://rss.cnn.com/rss/cnn_topstories.rss");
+        site1.setRssUrl("http://feeds.feedburner.com/TheAtlantic");
         site1.setCategoryID(2);
         Site site2=new Site();
         site2.setTitle("Washington Post: Today's Highlights");
         site2.setUrl("washingtonpost.com");
-        site2.setRssUrl("http://www.washingtonpost.com/rss/");
+        site2.setRssUrl("https://www.polygon.com/rss/index.xml");
         site2.setCategoryID(2);
         Site site3=new Site();
         site3.setTitle("Reuters: Top News");
         site3.setUrl("reuters.com");
-        site3.setRssUrl("http://feeds.reuters.com/reuters/topNews");
+        site3.setRssUrl("http://www.coolhunting.com/atom.xml");
         site3.setCategoryID(2);
         Site site4=new Site();
         site4.setTitle("BBC News: Americas");
         site4.setUrl("bbc.co.uk");
-        site4.setRssUrl("http://newsrss.bbc.co.uk/rss/newsonline_world_edition/americas/rss.xml");
+        site4.setRssUrl("http://www.betterlivingthroughdesign.com/feed");
         site4.setCategoryID(2);
-        Site[]sites={site1,site2,site3,site4};//,site2};//,site4};
+        Site[]sites={site3};//{site1,site2,site3,site4};//,site2};//,site4};
         //getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(sites));
         return sites;
     }
@@ -229,8 +245,23 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        ArticlesRepository.getInstance(this);
+        super.onStart();
+    }
+
+    @Override
     protected void onStop() {
         ArticlesRepository.destroyInstance(this);
         super.onStop();
+    }
+
+    @Override
+    public void openWebViewFragment(String link) {
+        if(!(link.contains("https://")||link.contains("http://"))){
+            link="http://"+link;
+        }
+        Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+        startActivity(intent);
     }
 }

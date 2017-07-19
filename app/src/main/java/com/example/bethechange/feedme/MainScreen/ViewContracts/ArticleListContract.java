@@ -15,19 +15,26 @@ import java.util.ArrayList;
 public class ArticleListContract {
     public interface View {
         void updateList(ArticlesList list);
+
         CursorLoader getLoader();
+
         void showProgress();
+
         void endProgress();
+
         void showMessage(String str);
+        void saveArticleAsWebArchive(FeedMeArticle feedMeArticle);
         void setInteractor(ArticleListContract.Presenter interactor);
 
         void showArticle(FeedMeArticle article, boolean onWebView);
+
+        void imageUpdated(FeedMeArticle article);
     }
     public interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
         void onPerformSave(FeedMeArticle feedMeArticle);
         void onPerformFav(FeedMeArticle feedMeArticle);
-
+        void onWebArchiveSaved(FeedMeArticle feedMeArticle,String path);
         void onOpenArticle(FeedMeArticle article);
     }
 }

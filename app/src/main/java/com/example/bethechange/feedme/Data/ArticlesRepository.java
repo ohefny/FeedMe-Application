@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.ArticlesObserver;
@@ -21,6 +22,7 @@ import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.Services.ArticlesDownloaderService;
+import com.pkmmte.pkrss.Article;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,10 +33,11 @@ import java.util.List;
  */
 
 public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepositoryActions {
+    private static Context mContext;
     private int queryToken=1;
     private Site[]mSites=null;
     private SparseArray<Pair<ArticlesRepositoryObserver,Site[]>> mListeners=new SparseArray<>();
-    private SparseArray<FeedMeArticle> fullArticles;
+    private SparseArray<FeedMeArticle> allArticles;
     private String sortCriteria=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
     private final int INTIALIZE_TOKEN=0;
     private static ArticlesRepository repoInstance;
@@ -49,12 +52,17 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
         cr.registerContentObserver(Contracts.ArticleEntry.CONTENT_URI,false,observer);
     }
     public static void destroyInstance(Context context) {
-        context.getContentResolver()
+        if(!context.equals(mContext))
+            return;
+        mContext.getContentResolver()
                 .unregisterContentObserver(observer);
-        repoInstance = null;
+       // repoInstance = null;
+        mContext=null;
     }
 
     public static ArticlesRepository getInstance(Context context){
+        if(mContext==null)
+            mContext=context;
         if(repoInstance==null){
             repoInstance=new ArticlesRepository(context.getContentResolver());
             context.getContentResolver()
@@ -105,7 +113,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
         if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
-            fullArticles=DBUtils.cursorToArticles(cursor);
+            allArticles=DBUtils.cursorToArticles(cursor);
 
         }
         if(token==queryToken){
@@ -147,13 +155,13 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
          super.startDelete(0,null,uri,selection ,selectionArgs);
     }
     public  void removeArticle(@NonNull FeedMeArticle feedMeArticle){
-         fullArticles.remove(feedMeArticle.getArticleID());
+         allArticles.remove(feedMeArticle.getArticleID());
         // removeValues(ContentUris.withAppendedId(Contracts.ArticleEntry.CONTENT_URI,feedMeArticle.getArticleID()),null,null);
         removeValues(Contracts.ArticleEntry.CONTENT_URI,Contracts.ArticleEntry._ID+" = ? ",new String[]{feedMeArticle.getArticleID()+""});
         deliverToListeners(false);
     }
     public void insertArticle(final FeedMeArticle article){
-        fullArticles.put(article.getArticleID(),article);
+        allArticles.put(article.getArticleID(),article);
         ArticlesList articlesList=new ArticlesList(Collections.singletonList(article));
         insertValues(Contracts.ArticleEntry.CONTENT_URI,DBUtils.articlesToCV(articlesList));
     }
@@ -171,24 +179,73 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
     @Override
     public ArticlesList getArticles(@Nullable Site[]sites) {
-        if(fullArticles==null)
+        if(allArticles==null)
             queryArticles(queryToken);
         if(mSites==null)
-            return new ArticlesList(fullArticles);
+            return new ArticlesList(allArticles);
         else{
-
             return articlesFromSites(sites);
         }
     }
 
+    @Override
+    public FeedMeArticle getArticle(int id) {
+       return allArticles.get(id);
+    }
+
+    @Override
+    public FeedMeArticle getNextArticle(int currentArticle) {
+        int idx= allArticles.indexOfKey(currentArticle);
+        return allArticles.valueAt((idx+1)%allArticles.size());
+    }
+
+    @Override
+    public FeedMeArticle getPreviousArticle(int currentArticle) {
+        int idx= allArticles.indexOfKey(currentArticle);
+        if(idx==0){
+            return allArticles.valueAt(allArticles.size()-1);
+        }
+        return allArticles.valueAt(idx-1);
+    }
+
+    @Override
+    public FeedMeArticle getArticleAt(int idx) {
+        return allArticles.valueAt(idx);
+    }
+
+    @Override
+    public int getArticleIndex(int id) {
+        return allArticles.indexOfKey(id);
+    }
+
+    @Override
+    public void getFullArticle(final FeedMeArticle feedMeArticle, final ArticlesRepositoryObserver observer) {
+                ContentFetcher fetcher=new ContentFetcher(
+                        mContext==null?FeedMeApp.getContext():mContext);
+
+            fetcher.fetchArticle(feedMeArticle.getArticle(), new ContentFetcher.ArticleFetcherCallback() {
+                @Override
+                public void articleFetched(Article article,boolean successful) {
+                   if(successful)
+                        feedMeArticle.setContentFetched(true);
+                    feedMeArticle.setArticle(article);
+                    editArticle(feedMeArticle);
+                    observer.onFullArticleFetched(feedMeArticle);
+
+                }
+            });
+
+    }
+
+
     private ArticlesList articlesFromSites(@Nullable Site[] sites) {
         ArrayList<FeedMeArticle> filteredArticles=new ArrayList<>();
         if(sites==null)
-            return new ArticlesList(fullArticles);
+            return new ArticlesList(allArticles);
         for(Site st:sites){
-            for (int i=0;i<fullArticles.size();i++){
-                if(fullArticles.valueAt(i).getSiteID()==st.getID()){
-                    filteredArticles.add(fullArticles.valueAt(i));
+            for (int i=0;i<allArticles.size();i++){
+                if(allArticles.valueAt(i).getSiteID()==st.getID()){
+                    filteredArticles.add(allArticles.valueAt(i));
                 }
             }
         }
@@ -197,5 +254,6 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
     public interface ArticlesRepositoryObserver {
         void onDataChanged(ArticlesList data);
+        void onFullArticleFetched(FeedMeArticle article);
     }
 }

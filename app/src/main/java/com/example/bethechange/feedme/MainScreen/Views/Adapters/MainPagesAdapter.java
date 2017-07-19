@@ -1,4 +1,4 @@
-package com.example.bethechange.feedme.MainScreen.Views;
+package com.example.bethechange.feedme.MainScreen.Views.Adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -18,6 +18,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.bethechange.feedme.MainScreen.Views.BlankFragment;
+import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
+import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
 import com.example.bethechange.feedme.R;
 
 /**
@@ -29,7 +32,7 @@ public class MainPagesAdapter extends FragmentStatePagerAdapter {
     private FragmentActivity mActivity;
 
 
-    public MainPagesAdapter(FragmentManager manager, FragmentActivity activity) {
+    public MainPagesAdapter(FragmentManager manager, MainScreenActivity activity) {
         super(manager);
         mActivity=activity;
     }
@@ -76,7 +79,7 @@ public class MainPagesAdapter extends FragmentStatePagerAdapter {
         switch (position)
         {
             case 0:
-                return TimelineFragment.newInstance(1);
+                return TimelineFragment.newInstance(1,(MainScreenActivity)mActivity);
         }
         return new BlankFragment();
     }

@@ -27,4 +27,10 @@ public interface ArticleRepositoryActions {
     void setListener(ArticlesRepository.ArticlesRepositoryObserver mListener,Site[]sites) ;
     void unsetListener(ArticlesRepository.ArticlesRepositoryObserver mListener);
     ArticlesList getArticles(@Nullable Site[]sites);
+    FeedMeArticle getArticle(int id);
+    FeedMeArticle getNextArticle(int currentArticle);
+    FeedMeArticle getPreviousArticle(int currentArticle);
+    FeedMeArticle getArticleAt(int idx);
+    int getArticleIndex(int id);
+    void getFullArticle(FeedMeArticle article,final ArticlesRepository.ArticlesRepositoryObserver observer);
 }

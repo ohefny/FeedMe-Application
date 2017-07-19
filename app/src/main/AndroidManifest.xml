@@ -55,7 +55,9 @@
             android:name=".Services.ArticlesDownloaderService"
             android:exported="false" />
 
-        <activity android:name=".DetailsScreen.DetailsActivity"></activity>
+        <activity android:name=".DetailsScreen.DetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
     </application>
 
 </manifest>

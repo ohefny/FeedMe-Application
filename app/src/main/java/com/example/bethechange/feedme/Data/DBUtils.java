@@ -22,6 +22,8 @@ import java.util.List;
 public class DBUtils {
 
     public static FeedMeArticle cursorToArticle(Cursor cursor){
+        //// TODO: Uncomment contentfetched and webarchive when updating db schema
+        cursor.moveToNext();
         FeedMeArticle feedMeArticle = new FeedMeArticle();
         feedMeArticle.getArticle().setTitle(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_TITLE)));
         feedMeArticle.getArticle().setAuthor(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_AUTHOR)));
@@ -36,28 +38,17 @@ public class DBUtils {
         feedMeArticle.setSiteID(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SITE)));
         feedMeArticle.setFav(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_FAVORITE)) != 0);
         feedMeArticle.setSaved(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SAVED)) != 0);
+        feedMeArticle.setContentFetched(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED)) != 0);
+        feedMeArticle.setWebArchivePath(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH)));
+        feedMeArticle.setWebArchivePath(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE)));
         return feedMeArticle;
     }
     public static  SparseArray<FeedMeArticle> cursorToArticles(Cursor cursor) {
         SparseArray<FeedMeArticle> articles=new SparseArray<>();
         try {
-            while (cursor.moveToNext()) {
-                FeedMeArticle feedMeArticle = new FeedMeArticle();
-                feedMeArticle.getArticle().setTitle(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_TITLE)));
-                feedMeArticle.getArticle().setAuthor(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_AUTHOR)));
-                feedMeArticle.getArticle().setContent(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_CONTENT)));
-                feedMeArticle.getArticle().setComments(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_COMMENTS)));
-                feedMeArticle.getArticle().setDate(cursor.getLong(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_DATE)));
-                feedMeArticle.getArticle().setDescription(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_DESCRIPTION)));
-                feedMeArticle.getArticle().setImage(Uri.parse(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_IMAGE))));
-                feedMeArticle.getArticle().setSource(Uri.parse(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SOURCE))));
-                feedMeArticle.getArticle().setTags(Arrays.asList(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_TAGS)).split(",")));
-                feedMeArticle.setArticleID(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry._ID)));
-                feedMeArticle.setSiteID(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SITE)));
-                feedMeArticle.setFav(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_FAVORITE)) != 0);
-                feedMeArticle.setSaved(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SAVED)) != 0);
+            while (!cursor.isAfterLast()) {
+                FeedMeArticle feedMeArticle=cursorToArticle(cursor);
                 articles.put(feedMeArticle.getArticleID(),feedMeArticle);
-
             }
 
         } catch (Exception ex) {
@@ -130,7 +121,11 @@ public class DBUtils {
             contentValues.put(Contracts.ArticleEntry.COLUMN_TAGS, tagsToString(feedMeArticle.getArticle().getTags()));
             contentValues.put(Contracts.ArticleEntry.COLUMN_SAVED, feedMeArticle.isSaved());
             contentValues.put(Contracts.ArticleEntry.COLUMN_FAVORITE, feedMeArticle.isFav());
+            contentValues.put(Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED, feedMeArticle.isContentFetched());
+            contentValues.put(Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH, feedMeArticle.getWebArchivePath());
+            contentValues.put(Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE,feedMeArticle.getPublishedDate());
             contentValues.put(Contracts.ArticleEntry._ID,feedMeArticle.getArticleID());
+
             contentValuesList.add(contentValues);
         }
         return contentValuesList.toArray(new ContentValues[]{});

@@ -1,29 +1,24 @@
-package com.example.bethechange.feedme.MainScreen.Views;
+package com.example.bethechange.feedme.MainScreen.Views.Adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.bethechange.feedme.FeedMeApp;
-import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.R;
 import com.squareup.picasso.Picasso;
 
 
-import java.util.HashMap;
 import java.util.List;
 
 public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticleRecyclerViewAdapter.ViewHolder>  {
@@ -33,8 +28,8 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
     private SparseBooleanArray mapSnippet=new SparseBooleanArray();
     ArticleListItemListener mListener;
     //TODO::ADD LISTENER TO ARGS
-    MyArticleRecyclerViewAdapter(List<FeedMeArticle> items, Context context,
-                                 ArticleListItemListener listener) {
+    public MyArticleRecyclerViewAdapter(List<FeedMeArticle> items, Context context,
+                                        ArticleListItemListener listener) {
         mValues = items;
         mapSnippet=new SparseBooleanArray();
         for(FeedMeArticle ar:items){
@@ -85,7 +80,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             @Override
             public void onClick(View v) {
                 //TODO:NOTIFY THE LISTENER WITH THE CLICK
-                Log.d("Fuck Article ",holder.mItem.getArticle().getSource().toString());
+                mListener.onArticleOpened(getListItems().get(position),position);
              /*   if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
@@ -219,11 +214,11 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             return super.toString() ;//+ " '" + mContentView.getText() + "'";
         }
     }
-    interface ArticleListItemListener{
+    public interface ArticleListItemListener{
         void onSaveClicked(FeedMeArticle article);
         void onDeleteClicked(FeedMeArticle article);
         void onBookmarkClicked(FeedMeArticle article);
-        void onArticleOpened(FeedMeArticle article);
+        void onArticleOpened(FeedMeArticle article,int pos);
         void onSnippetClicked(FeedMeArticle article);
     }
 }

@@ -1,4 +1,0 @@
--FlipAdapter for show snippet in more cool way
--GooglCustomSearchAPI to get site image
--Fetch article from freefullrsstext/fivefilter/ or some extraction website
--make save fetch article and add to content if fail download it as webpage mht 

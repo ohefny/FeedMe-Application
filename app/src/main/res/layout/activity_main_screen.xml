@@ -22,6 +22,7 @@
         android:max="500"
         android:progress="0"
         android:progressDrawable="@drawable/circular" />
+   
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

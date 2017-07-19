@@ -27,9 +27,11 @@ public class Contracts {
             public static final String COLUMN_TAGS = "tags";
             public static final String COLUMN_SITE = "site";
             public static final String COLUMN_CONTENT= "content";
-
             public static final String COLUMN_FAVORITE ="favorite" ;
             public static final String COLUMN_SAVED="saved";
+            public static final String COLUMN_CONTENT_FETCHED = "content_fetched" ;
+            public static final String COLUMN_WEBARCHIVE_PATH = "webarchive_path";
+            public static final String COLUMN_PUBLISHED_DATE ="published_date" ;
         }
 
         public static final class SiteEntry implements BaseColumns {

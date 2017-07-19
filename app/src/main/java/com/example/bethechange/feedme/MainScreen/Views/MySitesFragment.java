@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.MainScreen.Views.Adapters.MySiteRecyclerViewAdapter;
 import com.example.bethechange.feedme.R;
 
 import java.util.List;

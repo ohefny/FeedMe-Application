@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/item_fav"
+        app:showAsAction="collapseActionView"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/item_bookmark"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_save"
+        app:showAsAction="collapseActionView"
+        android:icon="@drawable/ic_save"
+        android:title="@string/item_save"
+        android:visible="true"/>
+
+    <item
+        android:id="@+id/item_read"
+        android:icon="@drawable/ic_mark_read"
+        app:showAsAction="collapseActionView"
+        android:title="@string/item_mark_read"
+        android:visible="true"/>
+
+    <item
+        android:id="@+id/item_browser"
+        android:icon="@drawable/ic_browser"
+        app:showAsAction="collapseActionView"
+        android:title="@string/item_browser"
+        android:visible="true"/>
+
+
+</menu>

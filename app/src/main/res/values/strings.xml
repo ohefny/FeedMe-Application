@@ -28,7 +28,14 @@
     <string name="action_share">Share Article</string>
     <string name="extract_api_key">bb23317a91408f9c117d0212e9c68109</string>
     <string name="extract_api_id">e7a2ec9b</string>
-    <string name="googl_api_key">AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE</string>
+    <!-- <string name="googl_api_key">AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE</string>-->
     <string name="googl_api_id">005243230011887027180:95rpocypqje</string>
+    <string name="googl_api_key">AIzaSyCBpYjocDnbupnAxbK6XqN5D-mrohReaIU</string>
+    <string name="not_available">Content is not available choose Open Browser action to surf in browser</string>
+    <string name="open_browser">Open Browser</string>
+    <string name="item_browser">Open Browser</string>
+    <string name="item_mark_read">Mark as Read</string>
+    <string name="by_unknown">By UnKnown</string>
+
 
 </resources>
