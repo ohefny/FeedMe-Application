@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 public class CustomAspectImage extends android.support.v7.widget.AppCompatImageView{
     int heightRatio=3;
     int widthRatio=2;
+    //private float mAspectRatio = 1.5f;
+
     public CustomAspectImage(Context context) {
         super(context);
     }
@@ -24,7 +26,7 @@ public class CustomAspectImage extends android.support.v7.widget.AppCompatImageV
     public void setAspectRatio(int h,int w){
         heightRatio=h;
         widthRatio=w;
-
+        requestLayout();
     }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -36,4 +38,8 @@ public class CustomAspectImage extends android.support.v7.widget.AppCompatImageV
         else
             super.onMeasure(widthMeasureSpec,heightMeasureSpec);
     }
+    /*
+
+*/
+
 }

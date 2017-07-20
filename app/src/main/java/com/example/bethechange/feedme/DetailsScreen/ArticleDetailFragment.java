@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.DetailsScreen;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.Toolbar;
@@ -19,12 +21,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.bethechange.feedme.CustomAspectImage;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
@@ -35,7 +37,6 @@ import com.example.mvpframeworkedited.PresenterFactory;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -69,6 +70,7 @@ implements DetailsContract.ItemView{
     private ObjectAnimator animation;
     private boolean mVisible;
     private CountDownTimer cd;
+    private ImageView erroView;
 
     public ArticleDetailFragment() {
         // Required empty public constructor
@@ -89,13 +91,24 @@ implements DetailsContract.ItemView{
         if(savedInstanceState!=null){
             article_id=savedInstanceState.getInt(ARTICLE_ID);
         }
-        dialog = new ProgressDialog(getActivity(),R.style.MyProgressBar);
+        dialog = new ProgressDialog(getActivity());//,R.style.MyProgressBar);
         dialog.setCancelable(true);
         dialog.setMessage("Fetching Article");
         //dialog.setMessage("Loading Your Screen");
         dialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                showError();
+            }
+        });
 
-        cd=new CountDownTimer(15000, 1000) {
+
+    }
+
+    @NonNull
+    private CountDownTimer getCountDownTimer() {
+        return new CountDownTimer(15000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -114,13 +127,13 @@ implements DetailsContract.ItemView{
                     });
             }
         };
-
     }
 
     @Override
     public void showProgress() {
         if(!dialog.isShowing())
             dialog.show();
+        cd=getCountDownTimer();
         cd.start();
 
     }
@@ -130,8 +143,30 @@ implements DetailsContract.ItemView{
         if(dialog.isShowing()){
             dialog.dismiss();
             cd.cancel();
+            showError();
         }
 
+    }
+
+    private void showError() {
+        if(!feedMeArticle.isContentFetched()){
+            bodyView.setText(getResources().getString(R.string.not_available));
+            erroView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void showMessage(String str, final Uri source) {
+        //TODO Replace with snackbar
+        Snackbar mySnackbar = Snackbar.make(mRootView, str, Snackbar.LENGTH_LONG);
+        mySnackbar.setAction("Open Browser", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onOpenBrowser(source);
+            }
+        });
+        mySnackbar.show();
+        //Toast.makeText(getContext(),s,Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -194,7 +229,7 @@ implements DetailsContract.ItemView{
                         mInteractor.onPerformSave(feedMeArticle);
                         break;
                     case R.id.item_browser:
-                        mListener.onOpenBrowser(feedMeArticle);
+                        mListener.onOpenBrowser(feedMeArticle.getArticle().getSource());
                         break;
                     case R.id.item_fav:
                         mInteractor.onPerformFav(feedMeArticle);
@@ -211,6 +246,7 @@ implements DetailsContract.ItemView{
         });
         mAppBarLayout= (AppBarLayout) mRootView.findViewById(R.id.app_bar_layout);
         bodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        erroView=(ImageView)mRootView.findViewById(R.id.error_img);
 
        /* if(savedInstanceState!=null&&savedInstanceState.getBoolean(DATA_LOADED)){
             mBody=savedInstanceState.getString(BODY_KEY);
@@ -261,6 +297,7 @@ implements DetailsContract.ItemView{
             if(feedMeArticle!=null&&feedMeArticle.isContentFetched()) {
                 String body=android.text.Html.fromHtml(feedMeArticle.getArticle().getContent()).toString();
                 bodyView.setText(body);
+                erroView.setVisibility(View.INVISIBLE);
                 viewBound=true;
             }
 
@@ -389,7 +426,7 @@ implements DetailsContract.ItemView{
      * >Communicating with Other Fragments</a> for more information.
      */
      interface OnPageActions{
-        void onOpenBrowser(FeedMeArticle feedMeArticle);
+        void onOpenBrowser(Uri link);
 
         ArticlesRepository getRepo();
     }

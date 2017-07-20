@@ -1,36 +1,23 @@
 package com.example.bethechange.feedme.DetailsScreen;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.content.ContentUris;
-import android.database.Cursor;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.ViewGroup;
-import android.webkit.ValueCallback;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.TextView;
 
 import com.example.bethechange.feedme.Data.ArticlesRepository;
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.DBUtils;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterActivity;
 import com.example.mvpframeworkedited.PresenterFactory;
-import com.google.gson.Gson;
-import com.pkmmte.pkrss.Article;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -119,8 +106,8 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
 
 
     @Override
-    public void onOpenBrowser(FeedMeArticle feedMeArticle) {
-        String link=feedMeArticle.getArticle().getSource().toString();
+    public void onOpenBrowser(Uri uri) {
+        String link=uri.toString();
         if(!(link.contains("https://")||link.contains("http://"))){
             link="http://"+link;
         }

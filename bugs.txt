@@ -1,2 +1,3 @@
 - monitor article content to see if the problem appears againx
 - remember to rebuild data base and uncomment contentFetched,webarchive,published_date
+- dialog don't appear again after one fails in details fragment

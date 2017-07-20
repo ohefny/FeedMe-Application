@@ -36,7 +36,9 @@
                         android:id="@+id/photo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop" />
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                         />
                     <!-- android:transitionName="@string/article_img_transition" -->
                     <View
                         android:layout_width="match_parent"
@@ -59,18 +61,29 @@
                     app:contentPadding="16dp"
                     >
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lineSpacingExtra="8dp"
-                        android:id="@+id/article_body"
-                        android:textColor="@android:color/black"
-                        android:textSize="18sp"
-                        android:text="@string/not_available"
-                        android:ellipsize="end"
-                        android:maxLines="30"
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="8dp"
+                            android:id="@+id/article_body"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            android:text="@string/not_available"
+                            android:ellipsize="end"
+                            android:maxLines="30"
 
-                        />
+                            />
+
+                    <ImageView
+                        android:id="@+id/error_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:contentDescription="@string/error_loading_article_Img"
+                        android:src="@drawable/document_error_flat"
+                        android:visibility="visible" />
+
+
                 </android.support.v7.widget.CardView>
 
             </ScrollView>

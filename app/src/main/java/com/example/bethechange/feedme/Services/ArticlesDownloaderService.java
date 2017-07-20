@@ -1,15 +1,13 @@
 package com.example.bethechange.feedme.Services;
 
 import android.app.IntentService;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.Context;
 
 import com.example.bethechange.feedme.Data.ArticleFetcher;
-import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.DBUtils;
-import com.example.bethechange.feedme.Data.PrefUtils;
+import com.example.bethechange.feedme.Utils.DBUtils;
+import com.example.bethechange.feedme.Utils.PrefUtils;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 
 /**

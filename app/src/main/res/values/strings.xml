@@ -36,6 +36,7 @@
     <string name="item_browser">Open Browser</string>
     <string name="item_mark_read">Mark as Read</string>
     <string name="by_unknown">By UnKnown</string>
+    <string name="error_loading_article_Img">Error Loading Article</string>
 
 
 </resources>

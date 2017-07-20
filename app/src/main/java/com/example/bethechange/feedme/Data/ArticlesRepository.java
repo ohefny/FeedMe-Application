@@ -12,7 +12,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.ArticlesObserver;
@@ -20,8 +19,9 @@ import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
-import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.Services.ArticlesDownloaderService;
+import com.example.bethechange.feedme.Utils.DBUtils;
+import com.example.bethechange.feedme.Utils.PrefUtils;
 import com.pkmmte.pkrss.Article;
 
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
         if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
-            allArticles=DBUtils.cursorToArticles(cursor);
+            allArticles= DBUtils.cursorToArticles(cursor);
 
         }
         if(token==queryToken){

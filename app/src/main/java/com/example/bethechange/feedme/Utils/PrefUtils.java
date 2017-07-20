@@ -1,25 +1,16 @@
-package com.example.bethechange.feedme.Data;
+package com.example.bethechange.feedme.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
 
-import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.IntervalTypes;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.R;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.squareup.okhttp.internal.http.HttpDate.format;
 
 /**
  * Created by BeTheChange on 7/12/2017.

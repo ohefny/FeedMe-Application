@@ -1,6 +1,7 @@
 package com.example.bethechange.feedme.MainScreen.ViewContracts;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
@@ -22,7 +23,7 @@ public class ArticleListContract {
 
         void endProgress();
 
-        void showMessage(String str);
+        void showMessage(String str, Uri source);
         void saveArticleAsWebArchive(FeedMeArticle feedMeArticle);
         void setInteractor(ArticleListContract.Presenter interactor);
 

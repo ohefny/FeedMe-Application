@@ -3,12 +3,12 @@ package com.example.bethechange.feedme.Data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.Utils.DBUtils;
 import com.pkmmte.pkrss.Article;
 import com.pkmmte.pkrss.Callback;
 import com.pkmmte.pkrss.PkRSS;
@@ -83,7 +83,7 @@ public class ArticleFetcher {
 
         ArticlesList mArticleList=new  ArticlesList();
         mArticleList.setArticles(new ArrayList<FeedMeArticle>(articles));
-        ContentValues[]cv=DBUtils.articlesToCV(mArticleList);
+        ContentValues[]cv= DBUtils.articlesToCV(mArticleList);
         return cv;
     }
 

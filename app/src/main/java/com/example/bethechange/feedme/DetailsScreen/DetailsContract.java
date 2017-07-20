@@ -1,5 +1,7 @@
 package com.example.bethechange.feedme.DetailsScreen;
 
+import android.net.Uri;
+
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 
@@ -22,6 +24,8 @@ interface DetailsContract {
         void setFeedMeArticle(FeedMeArticle model);
         void showProgress();
         void endProgress();
+
+        void showMessage(String s, Uri source);
     }
     interface ItemPresenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);

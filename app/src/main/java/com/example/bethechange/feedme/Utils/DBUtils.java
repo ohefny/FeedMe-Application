@@ -1,10 +1,11 @@
-package com.example.bethechange.feedme.Data;
+package com.example.bethechange.feedme.Utils;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.SparseArray;
 
+import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.Category;

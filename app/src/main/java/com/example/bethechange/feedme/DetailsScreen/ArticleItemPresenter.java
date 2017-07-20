@@ -6,6 +6,7 @@ import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
 
 /**
@@ -13,17 +14,20 @@ import com.example.mvpframeworkedited.BasePresenter;
  */
 
 public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsContract.ItemView>
-        implements DetailsContract.ItemPresenter,ArticlesRepository.ArticlesRepositoryObserver{
+        implements DetailsContract.ItemPresenter,ArticlesRepository.ArticlesRepositoryObserver,NetworkUtils.InternetWatcher{
+    private final FeedMeArticle article;
     ArticlesRepository mRepo;
-    boolean isFetching;
-    public ArticleItemPresenter(ArticlesRepository repo,int arID) {
+    private boolean isFetching;
+    ArticleItemPresenter(ArticlesRepository repo, int arID) {
         super();
         mRepo=repo;
         //mRepo.setListener(this,sites);
-        FeedMeArticle article=mRepo.getArticle(arID);
+        article=mRepo.getArticle(arID);
         if(!article.isContentFetched()){
             isFetching=true;
+            NetworkUtils.isInternetAccessible(this);
             mRepo.getFullArticle(article,this);
+
         }
         setModel(article);
     }
@@ -59,7 +63,7 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
 
     @Override
     public void isVisible() {
-        if(isFetching)
+        if(isFetching&&view()!=null)
             view().showProgress();
     }
 
@@ -78,10 +82,23 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
     @Override
     public void onFullArticleFetched(FeedMeArticle article) {
 
-        isFetching=false;
-        if(view()!=null)
+
+        if(isFetching&&view()!=null){
             view().endProgress();
+
+        }
+        isFetching=false;
         setModel(article);
 
+    }
+
+    @Override
+    public void internetAvailable(boolean isAvailable) {
+        if(!isAvailable&&view()!=null){
+            view().endProgress();
+            view().showMessage("No Internet Available Check Internet ",
+                    article.getArticle().getSource());
+
+        }
     }
 }

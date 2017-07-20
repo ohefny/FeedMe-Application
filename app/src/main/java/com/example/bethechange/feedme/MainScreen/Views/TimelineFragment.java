@@ -3,9 +3,10 @@ package com.example.bethechange.feedme.MainScreen.Views;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,21 +19,19 @@ import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+
 import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
 import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
-import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MyArticleRecyclerViewAdapter;
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -59,6 +58,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private int count;
     private ProgressDialog dialog;
     private int position=-1;
+    private View mRootView;
 
 
     /**
@@ -88,9 +88,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        dialog = new ProgressDialog(getActivity(),R.style.MyProgressBar);
+        dialog = new ProgressDialog(getActivity());//,R.style.MyProgressBar);
         dialog.setCancelable(false);
-        //dialog.setMessage("Loading Your Screen");
+        dialog.setMessage("Fetching The Article");
         dialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
 
 
@@ -113,12 +113,12 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_article_list, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
 
-        setupRecyclerView(view);
+        setupRecyclerView(mRootView);
 
 
-        return view;
+        return mRootView;
     }
 
     private void setupRecyclerView(View view) {
@@ -247,8 +247,15 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     }
 
     @Override
-    public void showMessage(String str) {
-        Toast.makeText(getContext(),str,Toast.LENGTH_SHORT).show();
+    public void showMessage(String str, final Uri source) {
+        Snackbar mySnackbar = Snackbar.make(mRootView, str, Snackbar.LENGTH_LONG);
+        mySnackbar.setAction("Open Browser", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.openWebViewFragment(source.toString());
+            }
+        });
+        mySnackbar.show();
     }
 
     @Override

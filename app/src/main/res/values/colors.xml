@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorProgressIndicator">#6d5321</color>
+    <color name="photoPlaceholderColor">#d9d9d9</color>
 </resources>

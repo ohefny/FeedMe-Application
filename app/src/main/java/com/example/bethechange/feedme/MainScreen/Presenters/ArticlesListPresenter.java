@@ -1,6 +1,5 @@
 package com.example.bethechange.feedme.MainScreen.Presenters;
 
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -8,25 +7,22 @@ import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticleRepositoryActions;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.DBUtils;
-import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
+import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
-
-import java.util.ArrayList;
 
 /**
  * Created by BeTheChange on 7/10/2017.
  */
 
 public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleListContract.View>
-    implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver{
+    implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver, NetworkUtils.InternetWatcher {
     private ContentFetcher mFetcher;
     private ArticleRepositoryActions mRepo;
+    private FeedMeArticle requestedArticle;
     @ArticleType int mArticleClass;
     private int startPage=0;
     private Site[]mSites=null;
@@ -61,14 +57,14 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     public void onPerformDelete(FeedMeArticle feedMeArticle) {
 
         mRepo.removeArticle(feedMeArticle);
-        view().showMessage("Article has been deleted");
+        view().showMessage("Article has been deleted", requestedArticle.getArticle().getSource());
     }
 
     @Override
     public void onPerformSave(FeedMeArticle feedMeArticle) {
         feedMeArticle.setSaved(true);
         mRepo.getFullArticle(feedMeArticle,this);
-        view().showMessage("Article has been saved");
+        view().showMessage("Article has been saved", requestedArticle.getArticle().getSource());
     }
 
     @Override
@@ -76,7 +72,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         view().saveArticleAsWebArchive(feedMeArticle);
         feedMeArticle.setFav(!feedMeArticle.isFav());
         mRepo.editArticle(feedMeArticle);
-        view().showMessage("Article has been bookmarked");
+        view().showMessage("Article has been bookmarked", requestedArticle.getArticle().getSource());
     }
 
     @Override
@@ -88,16 +84,30 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     @Override
     public void onOpenArticle(final FeedMeArticle article) {
 
-        if((article.isSaved()||article.isContentFetched())
-                &&view()!=null){
-            view().showArticle(article,article.getArticle().getContent().isEmpty());
-        }
-        else{
+        if ((article.isSaved() || article.isContentFetched())
+                && view() != null) {
+            view().showArticle(article, article.getArticle().getContent().isEmpty());
+        } else {
             view().showProgress();
-            openArticle=true;
-            mRepo.getFullArticle(article,this);
+            openArticle = true;
+            requestedArticle = article;
+            NetworkUtils.isInternetAccessible(this);
+            mRepo.getFullArticle(requestedArticle,this);
 
+        }
+    }
 
+    @Override
+    public void internetAvailable(boolean isAvailable) {
+        if (!isAvailable)
+        {
+            if(view()!=null) {
+                view().endProgress();
+                view().showMessage("No Internet Available Check Internet ",
+                        requestedArticle.getArticle().getSource());
+
+            }openArticle=false;
+            //onFullArticleFetched(requestedArticle);
         }
     }
 
@@ -107,7 +117,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         Log.d("Presneter","Fuck Data change: "+startPage+ " size= "+data.getArticles().size());
         if(view()!=null){
             view().endProgress();
-            view().showMessage("Database Updated..");
+            view().showMessage("Database Updated..", requestedArticle.getArticle().getSource());
         }
         startPage+=1;
     }
@@ -124,11 +134,12 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
            // view().imageUpdated(fetchedArticle);
             view().endProgress();
             //if getcontent is empty then show the article on web
-            view().showArticle(fetchedArticle,fetchedArticle.getArticle().getContent()==null||
-                    fetchedArticle.getArticle().getContent().isEmpty());
+            view().showArticle(fetchedArticle,!fetchedArticle.isContentFetched()&&
+                    (fetchedArticle.getArticle().getContent()==null||fetchedArticle.getArticle().getContent().isEmpty()));
 
 
         }
         openArticle=false;
     }
 }
+
