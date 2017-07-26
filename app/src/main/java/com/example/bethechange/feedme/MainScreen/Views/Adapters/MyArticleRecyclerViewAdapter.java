@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.MainScreen.Views.Adapters;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -55,10 +56,10 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
         holder.mTitleView.setText(mValues.get(position).getArticle().getTitle());
         holder.mDescriptionView.setText(mValues.get(position).getArticle().getDescription());
         Picasso.with(FeedMeApp.getContext())
-                .load(holder.mItem.getArticle().getImage())
-                .placeholder(R.drawable.thumbnail)
-                .error(R.drawable.thumbnail)
-                .into(holder.mArticleImg);
+                    .load(holder.mItem.getArticle().getImage())
+                    .placeholder(R.drawable.thumbnail)
+                    .error(R.drawable.thumbnail)
+                    .into(holder.mArticleImg);
         makeViewType(holder,false);
         Log.d(getClass().getSimpleName(),"Fuck Link :: "+holder.mItem.getArticle().getImage().toString());
         // holder.mSiteView.setText(mValues.get(position).getArticle().getDescription());
@@ -81,11 +82,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             public void onClick(View v) {
                 //TODO:NOTIFY THE LISTENER WITH THE CLICK
                 mListener.onArticleOpened(getListItems().get(position),position);
-             /*   if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                } */
+
             }
         });
         holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -95,6 +92,8 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
                 return false;
             }
         });
+        if(holder.mItem.getSite()!=null&&!TextUtils.isEmpty(holder.mItem.getSite().getTitle()))
+            holder.mSiteView.setText(holder.mItem.getSite().getTitle());
     }
     private void showMenu(View view, final int position,final ViewHolder holder)
     {

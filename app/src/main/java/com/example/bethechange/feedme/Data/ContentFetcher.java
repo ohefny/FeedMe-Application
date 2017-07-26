@@ -26,7 +26,7 @@ import java.util.Random;
  */
 
 public class ContentFetcher extends AsyncTaskLoader implements Callback {
-    Context mContext;
+    private Context mContext;
     public ContentFetcher(Context context){
         super(context);
         mContext=context;
@@ -104,9 +104,10 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
         boolean getImage=false;
 
         String key="AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE";
-        if (article.getImage() == null||article.getImage().toString().length()==0) {
-            getImage=true;
-        }
+      //  if (article.getImage() == null||article.getImage().toString().length()==0) {
+       //     getImage=true;
+       // }
+        getImage=true;
         try {
             switch (choice){
                 case 0:
@@ -285,7 +286,7 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
     interface ArticleFetcherCallback{
         void articleFetched(Article article,boolean successful);
     }
-    interface ImageFetcherCallback{
+    public interface ImageFetcherCallback{
         void imageFetched(String str);
     }
 }

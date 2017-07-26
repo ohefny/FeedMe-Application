@@ -7,10 +7,14 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,14 +31,18 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.Data.FeedMeDBHelper;
+import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
+import com.example.bethechange.feedme.Utils.DBUtils;
 
 import java.net.URL;
 
-public class MainScreenActivity extends AppCompatActivity implements  TimelineFragment.FragmentActivityInteractor{
+public class MainScreenActivity extends AppCompatActivity implements
+        TimelineFragment.FragmentActivityInteractor,MySitesFragment.FragmentActivityInteractor{
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
@@ -45,26 +53,31 @@ public class MainScreenActivity extends AppCompatActivity implements  TimelineFr
     private ProgressBar progressBar;
     private ObjectAnimator animation;
     private WebView webView;
+    private MainPagesAdapter mAdapter;
+    private int currentPage;
 
     //TODO if seprate search activity remove this boolean and it's usage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        mAdapter=new MainPagesAdapter(getSupportFragmentManager(),this);
         setupViews();
-        FeedMeDBHelper dbHelper=new FeedMeDBHelper(this);
-        SQLiteDatabase wdb = dbHelper.getWritableDatabase();
-      //  wdb.execSQL("ALTER TABLE Article_Table ADD content_fetched BOOLEAN  ;");
-       // wdb.execSQL("ALTER TABLE Article_Table ADD PUBLISHED_DATE TEXT;");
-       // wdb.execSQL("ALTER TABLE Article_Table ADD webarchive_path TEXT;");
+
         Intent intent = getIntent();
+
         if(Intent.ACTION_SEARCH.equals(intent.getAction())){
             Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
             mSearchActivity=true;
         }
 
         prepareAnimation();
-       // getContentResolver().delete(Contracts.SiteEntry.CONTENT_URI,null,null);
+        //FeedMeDBHelper dbHelper=new FeedMeDBHelper(this);
+        //SQLiteDatabase wdb = dbHelper.getWritableDatabase();
+        // wdb.execSQL("ALTER TABLE Article_Table ADD PUBLISHED_DATE TEXT;");
+        // wdb.execSQL("ALTER TABLE Article_Table ADD webarchive_path TEXT;");
+        // getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI, DBUtils.sitesToCV(getSites()));
+        // getContentResolver().delete(Contracts.SiteEntry.CONTENT_URI,null,null);
       //  getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(getSites()));
         //insertSites();
     }
@@ -77,16 +90,6 @@ public class MainScreenActivity extends AppCompatActivity implements  TimelineFr
     }
 
 
-    public void showProgressIndicator(){
-        progressBar.setVisibility(View.VISIBLE);
-        animation.start();
-    }
-
-    public void endProgressIndicator(){
-        progressBar.setVisibility(View.GONE);
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT&&animation.isRunning())
-            animation.pause();
-    }
     public static  Site[] getSites() {
         //http://feeds.feedburner.com/TheAtlantic
         //https://www.polygon.com/rss/index.xml
@@ -99,42 +102,86 @@ public class MainScreenActivity extends AppCompatActivity implements  TimelineFr
         String url = "http://stackoverflow.com/feeds/tag?tagnames=rome";
 
         Site site1=new Site();
-        site1.setTitle("Cnn Top Stories");
-        site1.setUrl("cnn.com");
-        site1.setRssUrl("http://feeds.feedburner.com/TheAtlantic");
-        site1.setCategoryID(2);
+        site1.setTitle("BBC Top Stories");
+        site1.setUrl("bbc.com");
+        site1.setRssUrl("http://newsrss.bbc.co.uk/rss/newsonline_world_edition/americas/rss.xml");
+        site1.setCategoryID(1);
+        site1.setmImgSrc("http://m.files.bbci.co.uk/modules/bbc-morph-news-waf-page-meta/1.2.0/bbc_news_logo.png?cb=1");
         Site site2=new Site();
         site2.setTitle("Washington Post: Today's Highlights");
         site2.setUrl("washingtonpost.com");
-        site2.setRssUrl("https://www.polygon.com/rss/index.xml");
-        site2.setCategoryID(2);
+        site2.setRssUrl("http://feeds.washingtonpost.com/rss/politics");
+        site2.setmImgSrc("http://www.jayheinz.com/wp-content/themes/synthetik/functions/timthumb.php?src=http://jayheinz.com/wp-content/uploads/2010/08/WashPost.jpg&h=290&w=580&zc=1");
+        site2.setCategoryID(1);
         Site site3=new Site();
-        site3.setTitle("Reuters: Top News");
-        site3.setUrl("reuters.com");
+        site3.setTitle("Cool Hunting");
+        site3.setUrl("coolhunting.com");
         site3.setRssUrl("http://www.coolhunting.com/atom.xml");
-        site3.setCategoryID(2);
+        site3.setmImgSrc("http://www.flat33.com/upload/CoolHuntingLogo_c_400.jpg");
+        site3.setCategoryID(1);
         Site site4=new Site();
-        site4.setTitle("BBC News: Americas");
-        site4.setUrl("bbc.co.uk");
+        site4.setTitle("Better Living Through Design");
+        site4.setUrl("betterlivingthroughdesign.com");
         site4.setRssUrl("http://www.betterlivingthroughdesign.com/feed");
-        site4.setCategoryID(2);
-        Site[]sites={site3};//{site1,site2,site3,site4};//,site2};//,site4};
-        //getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(sites));
+        site4.setmImgSrc("https://cdn.shopify.com/s/files/1/0156/3912/files/Better_Living_Through_Design.jpg");
+        site4.setCategoryID(1);
+        Site[]sites={site1,site3,site2,site4};//,site2};//,site4};
         return sites;
     }
 
     private void setupViews() {
         TabLayout mSlidingTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        ViewPager mViewPager = (ViewPager)findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new MainPagesAdapter(getSupportFragmentManager(),this));
-        mSlidingTabLayout.setupWithViewPager(mViewPager);
+        final ViewPager mViewPager = (ViewPager)findViewById(R.id.viewpager);
+        mViewPager.setAdapter(mAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                currentPage=position;
+                if(position==1)
+                    mFab.setImageResource(R.drawable.ic_fab_add);
+                else {
+                    mFab.setImageResource(R.drawable.ic_arrow_up);
+                    ((TimelineFragment)mAdapter.getCurrentFragment()).fragmentVisible();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        mSlidingTabLayout.setupWithViewPager(mViewPager);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawer.closeDrawers();
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (currentPage){
+                    case 0:
+                        ((TimelineFragment)mAdapter.getCurrentFragment()).fabClicked();
+                        break;
+                    case 1:
+                        ((MySitesFragment)mAdapter.getCurrentFragment()).fabClicked();
+                        break;
+                    case 2:
+                        ((CategoriesFragment)mAdapter.getCurrentFragment()).fabClicked();
+                        break;
+
+                }
+
+
+            }
+        });
 //        mNavHeader = mNavigationView.getHeaderView(0);
   //      mNavHeader.setBackgroundColor(getResources().getColor(R.color.colorAccent));
         //ToDo:: implement my own header and inflate it using mNavigationView.inflateHeaderView()
@@ -247,12 +294,14 @@ public class MainScreenActivity extends AppCompatActivity implements  TimelineFr
     @Override
     protected void onStart() {
         ArticlesRepository.getInstance(this);
+        SitesRepository.getInstance(this);
         super.onStart();
     }
 
     @Override
     protected void onStop() {
         ArticlesRepository.destroyInstance(this);
+        SitesRepository.destroyInstance(this);
         super.onStop();
     }
 

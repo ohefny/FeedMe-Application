@@ -6,46 +6,49 @@ import android.util.Log;
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticleRepositoryActions;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
+import com.example.bethechange.feedme.Data.SitesRepository;
+import com.example.bethechange.feedme.Data.SitesRepositoryActions;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
 
+import java.util.ArrayList;
+
 /**
  * Created by BeTheChange on 7/10/2017.
  */
 
 public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleListContract.View>
-    implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver, NetworkUtils.InternetWatcher {
+    implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver,
+        NetworkUtils.InternetWatcher, CategoriesRepository.CategoriesListener {
+    private CategoriesRepository catRepo;
     private ContentFetcher mFetcher;
-    private ArticleRepositoryActions mRepo;
+    private ArticleRepositoryActions articlesRepo;
     private FeedMeArticle requestedArticle;
-    @ArticleType int mArticleClass;
+    private Category mCategory;
     private int startPage=0;
     private Site[]mSites=null;
     private int pageSizes=1;
     private boolean openArticle;
 
-    public ArticlesListPresenter(@ArticleType int articleClass,
-                                 @NonNull ArticleRepositoryActions repo ){
-        this(articleClass);
-        mRepo=repo;
-        mRepo.setListener(this,mSites);
-        setModel(mRepo.getArticles(mSites));
-
-    }
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, ContentFetcher fetcher){
-        mRepo=repo;
-        mRepo.setListener(this,mSites);
-        setModel(mRepo.getArticles(mSites));
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher){
+        articlesRepo=repo;
+        articlesRepo.setListener(this,mSites);
+        this.catRepo=catRepo;
+        catRepo.getCategories(this);
+        setModel(articlesRepo.getArticles(mSites));
         mFetcher=fetcher;
 
     }
-    public ArticlesListPresenter(@ArticleType int articleClass){
-
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,Category category){
+        this(repo,catRepo,fetcher);
+        mCategory=category;
 
     }
     @Override
@@ -56,29 +59,29 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     @Override
     public void onPerformDelete(FeedMeArticle feedMeArticle) {
 
-        mRepo.removeArticle(feedMeArticle);
-        view().showMessage("Article has been deleted", requestedArticle.getArticle().getSource());
+        articlesRepo.removeArticle(feedMeArticle);
+        view().showMessage("Article has been deleted", null);
     }
 
     @Override
     public void onPerformSave(FeedMeArticle feedMeArticle) {
         feedMeArticle.setSaved(true);
-        mRepo.getFullArticle(feedMeArticle,this);
-        view().showMessage("Article has been saved", requestedArticle.getArticle().getSource());
+        articlesRepo.getFullArticle(feedMeArticle,this);
+        view().showMessage("Article has been saved", null);
     }
 
     @Override
     public void onPerformFav(FeedMeArticle feedMeArticle) {
         view().saveArticleAsWebArchive(feedMeArticle);
         feedMeArticle.setFav(!feedMeArticle.isFav());
-        mRepo.editArticle(feedMeArticle);
-        view().showMessage("Article has been bookmarked", requestedArticle.getArticle().getSource());
+        articlesRepo.editArticle(feedMeArticle);
+        view().showMessage("Article has been bookmarked", null);
     }
 
     @Override
     public void onWebArchiveSaved(FeedMeArticle feedMeArticle, String path) {
         feedMeArticle.setWebArchivePath(path);
-        mRepo.editArticle(feedMeArticle);
+        articlesRepo.editArticle(feedMeArticle);
     }
 
     @Override
@@ -92,9 +95,23 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
             openArticle = true;
             requestedArticle = article;
             NetworkUtils.isInternetAccessible(this);
-            mRepo.getFullArticle(requestedArticle,this);
+            articlesRepo.getFullArticle(requestedArticle,this);
 
         }
+    }
+
+    @Override
+    public void onCategorySelected(Category item) {
+        if(item==null)
+            articlesRepo.setListener(this,null);
+        else
+            articlesRepo.setListener(this,catRepo.getSites(item).toArray(new Site[]{}));
+        setModel(articlesRepo.getArticles(catRepo.getSites(item).toArray(new Site[]{})));
+    }
+
+    @Override
+    public void onViewVisible() {
+        catRepo.getCategories(this);
     }
 
     @Override
@@ -113,12 +130,14 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
     @Override
     public void onDataChanged(ArticlesList data) {
-        setModel(data);
-        Log.d("Presneter","Fuck Data change: "+startPage+ " size= "+data.getArticles().size());
         if(view()!=null){
             view().endProgress();
-            view().showMessage("Database Updated..", requestedArticle.getArticle().getSource());
+            if(data.getArticles().size()!=model.getArticles().size())
+                view().showMessage("Updates has been made..", null);
         }
+        setModel(data);
+        Log.d("Presneter","Fuck Data change: "+startPage+ " size= "+data.getArticles().size());
+
         startPage+=1;
     }
 
@@ -140,6 +159,13 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
         }
         openArticle=false;
+    }
+
+
+    @Override
+    public void categoriesFetched(ArrayList<Category> cats) {
+        if(view()!=null)
+            view().updateCategoriesSpinner(cats);
     }
 }
 

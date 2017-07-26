@@ -34,4 +34,13 @@ public class Category {
         this.mShared = mShared;
     }
 
+    @Override
+    public String toString() {
+        return mTitle;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Category) && this.getId()==((Category)obj).getId();
+    }
 }

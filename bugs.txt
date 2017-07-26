@@ -1,3 +1,5 @@
-- monitor article content to see if the problem appears againx
+- monitor article content to see if the problem appears again (maybe solved with
+setPageChangedListener)
 - remember to rebuild data base and uncomment contentFetched,webarchive,published_date
 - dialog don't appear again after one fails in details fragment
+- fetching articles when Details Mode some time fetching fails

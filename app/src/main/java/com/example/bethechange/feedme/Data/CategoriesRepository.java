@@ -1,0 +1,59 @@
+package com.example.bethechange.feedme.Data;
+
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.util.SparseArray;
+
+import com.example.bethechange.feedme.MainScreen.Models.Category;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
+import com.example.bethechange.feedme.Utils.DBUtils;
+
+import java.util.ArrayList;
+
+/**
+ * Created by BeTheChange on 7/25/2017.
+ */
+
+public class CategoriesRepository extends AsyncQueryHandler{
+    private static final int CATEGORIES_TOKEN =101;
+    private final SitesRepository sitesRepo;
+    private ArrayList<Category>cats=new ArrayList<>();
+    private SparseArray<CategoriesListener> listeners=new SparseArray<>();
+    public CategoriesRepository(ContentResolver cr,SitesRepository repository) {
+        super(cr);
+        sitesRepo=repository;
+
+        startQuery(CATEGORIES_TOKEN,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
+    }
+
+    public ArrayList<Category> getCategories(CategoriesListener listener) {
+        listeners.put(listener.hashCode(),listener);
+        startQuery(listener.hashCode(),null, Contracts.CategoryEntry.CONTENT_URI,
+                        null,null,null,null);
+        return cats;
+
+    }
+    public ArrayList<Site> getSites(Category category){
+        return sitesRepo.getSites(category);
+    }
+    @Override
+    protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+        super.onQueryComplete(token, cookie, cursor);
+        cats=DBUtils.cursorToCategories(cursor);
+        if(token==CATEGORIES_TOKEN){
+            for(int i=0;i<listeners.size();i++){
+                listeners.valueAt(i).categoriesFetched(cats);
+            }
+        }
+        else {
+            listeners.get(token).categoriesFetched(cats);
+        }
+    }
+
+    public interface CategoriesListener{
+     void categoriesFetched(ArrayList<Category>cats);
+ }
+
+}

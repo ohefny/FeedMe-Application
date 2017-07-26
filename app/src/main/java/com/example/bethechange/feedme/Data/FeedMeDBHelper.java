@@ -5,6 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.bethechange.feedme.MainScreen.Models.Category;
+import com.example.bethechange.feedme.Utils.DBUtils;
+
 /**
  * Created by BeTheChange on 7/10/2017.
  */
@@ -24,10 +27,11 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
                 Contracts.CategoryEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 Contracts.CategoryEntry.COLUMN_SHARED +" BOOLEAN " +");";
         final String SQL_CREATE_SITE_TABLE="CREATE TABLE " + Contracts.SiteEntry.TABLE_NAME + " ("+
-                Contracts.SiteEntry._ID + " INTEGER PRIMARY KEY," +
+                Contracts.SiteEntry._ID + " BIGINT PRIMARY KEY," +
                 Contracts.SiteEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 Contracts.SiteEntry.COLUMN_RSS_URL + " TEXT NOT NULL, " +
                 Contracts.SiteEntry.COLUMN_URL + " TEXT NOT NULL, " +
+                Contracts.SiteEntry.COLUMN_IMG_URL + " TEXT , " +
                 Contracts.SiteEntry.COLUMN_CATEGORY +" INTEGER, " +
                 Contracts.SiteEntry.COLUMN_BLOCKED +" BOOLEAN, " +
                 "FOREIGN KEY("+Contracts.SiteEntry.COLUMN_CATEGORY+") REFERENCES "+
@@ -58,7 +62,6 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_CATEGORY_TABLE);
         db.execSQL(SQL_CREATE_SITE_TABLE);
         db.execSQL(SQL_CREATE_ARTICLE_TABLE);
-            Log.d("Database ","Successfully created");
         }
         catch (Exception ex){
             Log.d("Database ","Failed to create");

@@ -31,12 +31,23 @@
     <!-- <string name="googl_api_key">AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE</string>-->
     <string name="googl_api_id">005243230011887027180:95rpocypqje</string>
     <string name="googl_api_key">AIzaSyCBpYjocDnbupnAxbK6XqN5D-mrohReaIU</string>
-    <string name="not_available">Content is not available choose Open Browser action to surf in browser</string>
+    <string name="not_available">Content is not available check your internet or choose Open Browser action to surf in browser</string>
     <string name="open_browser">Open Browser</string>
     <string name="item_browser">Open Browser</string>
     <string name="item_mark_read">Mark as Read</string>
     <string name="by_unknown">By UnKnown</string>
     <string name="error_loading_article_Img">Error Loading Article</string>
+    <string name="add_new_category">Add New Category</string>
+    <string name="verify_rss_link">Verifying...</string>
+    <string name="item_edit">Edit</string>
+    <string name="item_site_delete">Delete</string>
+    <string name="item_site_open">Open</string>
+    <string name="title_error_msg">Please Enter Title</string>
+    <string name="site_already_exist">This site already exist</string>
+    <string name="category_title_edittext">Category Title</string>
+    <string name="cat_empty_title">Category Title Can\'t be empty</string>
+    <string name="add_btn_title">Add</string>
+    <string name="edit_btn_title">Edit</string>
 
 
 </resources>

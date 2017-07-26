@@ -20,17 +20,18 @@ import android.view.ViewGroup;
 
 import com.example.bethechange.feedme.MainScreen.Views.BlankFragment;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
+import com.example.bethechange.feedme.MainScreen.Views.MySitesFragment;
 import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
 import com.example.bethechange.feedme.R;
 
 /**
  * Created by BeTheChange on 7/10/2017.
  */
-public class MainPagesAdapter extends FragmentStatePagerAdapter {
+public class MainPagesAdapter extends FragmentPagerAdapter {
 
     private static final String LOG_TAG = "MainPagesAdapter";
     private FragmentActivity mActivity;
-
+    private Fragment mCurrentFragment;
 
     public MainPagesAdapter(FragmentManager manager, MainScreenActivity activity) {
         super(manager);
@@ -80,11 +81,25 @@ public class MainPagesAdapter extends FragmentStatePagerAdapter {
         {
             case 0:
                 return TimelineFragment.newInstance(1,(MainScreenActivity)mActivity);
+            case 1:
+                return MySitesFragment.newInstance();
         }
         return new BlankFragment();
     }
 
-    /**
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        if (getCurrentFragment() != object) {
+            mCurrentFragment = ((Fragment) object);
+        }
+
+        super.setPrimaryItem(container, position, object);
+    }
+    public Fragment getCurrentFragment() {
+        return mCurrentFragment;
+    }
+
+/**
      * Instantiate the {@link View} which should be displayed at {@code position}. Here we
      * inflate a layout from the apps resources and then change the text view to signify the position.
      */

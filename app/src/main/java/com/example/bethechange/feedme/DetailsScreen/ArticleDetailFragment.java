@@ -294,7 +294,7 @@ implements DetailsContract.ItemView{
 
 
             //bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
-            if(feedMeArticle!=null&&feedMeArticle.isContentFetched()) {
+            if(feedMeArticle!=null&&feedMeArticle.isContentFetched()&&feedMeArticle.getArticle().getContent()!=null) {
                 String body=android.text.Html.fromHtml(feedMeArticle.getArticle().getContent()).toString();
                 bodyView.setText(body);
                 erroView.setVisibility(View.INVISIBLE);

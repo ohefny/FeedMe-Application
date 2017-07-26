@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,12 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
+import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.R;
+import com.example.mvpframeworkedited.BasePresenterFragment;
+import com.example.mvpframeworkedited.PresenterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CategoriesFragment extends Fragment {
+public class CategoriesFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract> {
 
 
 
@@ -91,4 +96,19 @@ public class CategoriesFragment extends Fragment {
     }
 
 
+    public void fabClicked() {
+
+    }
+
+    @NonNull
+    @Override
+    protected String tag() {
+        return null;
+    }
+
+    @NonNull
+    @Override
+    protected PresenterFactory<ArticlesListPresenter> getPresenterFactory() {
+        return null;
+    }
 }

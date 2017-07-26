@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
+
 /**
  * Created by BeTheChange on 7/11/2017.
  */
@@ -119,21 +121,23 @@ public class FeedMeProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case ARTICLES:
                 long mId = db.insertWithOnConflict(Contracts.ArticleEntry.TABLE_NAME, null, values,
-                        SQLiteDatabase.CONFLICT_IGNORE);
+                        CONFLICT_IGNORE);
                 if (mId > 0)
                     retUri = ContentUris.withAppendedId(uri, mId);
                 else
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case CATEGORIES:
-                long RId = db.insertOrThrow(Contracts.CategoryEntry.TABLE_NAME, null, values);
+                long RId = db.insertWithOnConflict(Contracts.CategoryEntry.TABLE_NAME, null,
+                        values,CONFLICT_IGNORE);
                 if (RId > 0)
                     retUri = ContentUris.withAppendedId(uri, RId);
                 else
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case SITES:
-                long TId = db.insertOrThrow(Contracts.SiteEntry.TABLE_NAME, null, values);
+                long TId = db.insertWithOnConflict(Contracts.SiteEntry.TABLE_NAME, null, values,
+                        CONFLICT_IGNORE);
                 if (TId > 0)
                     retUri = ContentUris.withAppendedId(uri, TId);
                 else
@@ -228,8 +232,7 @@ public class FeedMeProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        final SQLiteDatabase db = mFeedMeDBHelper.getWritableDatabase();
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {final SQLiteDatabase db = mFeedMeDBHelper.getWritableDatabase();
 
         switch (sUriMatcher.match(uri)) {
             case ARTICLES:
@@ -240,7 +243,7 @@ public class FeedMeProvider extends ContentProvider {
                         long id=db.insertWithOnConflict(
                                 Contracts.ArticleEntry.TABLE_NAME,
                                 null,
-                                value,SQLiteDatabase.CONFLICT_IGNORE
+                                value, CONFLICT_IGNORE
                         );
                         if(id!=-1)
                             returnCount++;

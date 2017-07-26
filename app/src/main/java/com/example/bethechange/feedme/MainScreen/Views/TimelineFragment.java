@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.CursorLoader;
+import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,12 +20,17 @@ import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
+import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
@@ -59,6 +65,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private ProgressDialog dialog;
     private int position=-1;
     private View mRootView;
+    private AppCompatSpinner mSpinner;
+    private ArrayAdapter<Category> mSpinAdapter;
+    private Category temp=new Category();
 
 
     /**
@@ -82,6 +91,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        temp.setTitle("All");
         mLoader=new ArticleRemoteLoader(getActivity());
         //mLoader.setSites(MainScreenActivity.getSites());
 
@@ -95,7 +105,10 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
 
     }
-
+    public void fragmentVisible(){
+        if(interactor!=null)
+            interactor.onViewVisible();
+    }
     @Override
     protected void onPresenterPrepared(@NonNull ArticlesListPresenter presenter) {
         super.onPresenterPrepared(presenter);
@@ -111,11 +124,26 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
-
         setupRecyclerView(mRootView);
+        mSpinner= (AppCompatSpinner) mRootView.findViewById(R.id.categories_spinner_id);
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position==0)
+                    interactor.onCategorySelected(null);
+                else
+                    interactor.onCategorySelected(mSpinAdapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        mSpinner.setAdapter(mSpinAdapter);
 
 
         return mRootView;
@@ -124,16 +152,15 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private void setupRecyclerView(View view) {
         // Set the adapter
         adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-             mRecyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            mRecyclerView.setAdapter(adapter);//, mListener));
+        Context context = view.getContext();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.articles_recycler);
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        mRecyclerView.setAdapter(adapter);//, mListener));
+
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -249,6 +276,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public void showMessage(String str, final Uri source) {
         Snackbar mySnackbar = Snackbar.make(mRootView, str, Snackbar.LENGTH_LONG);
+        if(source!=null)
         mySnackbar.setAction("Open Browser", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -320,8 +348,27 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
        // adapter.notifyItemChanged(position);
     }
 
+    @Override
+    public void updateCategoriesSpinner(ArrayList<Category> cats) {
+        if(mSpinAdapter==null){
+            cats.add(0, temp);
+            mSpinAdapter=new ArrayAdapter<Category>(getContext(),R.layout.simple_category_item,cats);
+            mSpinner.setAdapter(mSpinAdapter);
+        }
+        else {
+            mSpinAdapter.clear();
+            cats.add(0, temp);
+            mSpinAdapter.addAll(cats);
+            mSpinAdapter.notifyDataSetChanged();
+        }
+    }
+
     public void setListener(FragmentActivityInteractor listener) {
         this.listener = listener;
+    }
+
+    public void fabClicked() {
+        mRecyclerView.smoothScrollToPosition(0);
     }
 
 
@@ -336,14 +383,16 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
         @Override
         public ArticlesListPresenter create() {
-             ArticlesListPresenter presenter= new ArticlesListPresenter(ArticlesRepository.getInstance(getActivity()),
-                    new ContentFetcher(getActivity()));
+             ArticlesListPresenter presenter= new ArticlesListPresenter(
+                     ArticlesRepository.getInstance(getActivity()),
+                     new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
+                    ,new ContentFetcher(getActivity()));
             setInteractor(presenter);
             return presenter;
         }
     }
 
-    public interface FragmentActivityInteractor {
+    interface FragmentActivityInteractor {
         void openWebViewFragment(String link);
     }
 

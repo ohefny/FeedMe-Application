@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class ArticleListContract {
         void showArticle(FeedMeArticle article, boolean onWebView);
 
         void imageUpdated(FeedMeArticle article);
+
+        void updateCategoriesSpinner(ArrayList<Category> cats);
     }
     public interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
@@ -37,5 +40,7 @@ public class ArticleListContract {
         void onPerformFav(FeedMeArticle feedMeArticle);
         void onWebArchiveSaved(FeedMeArticle feedMeArticle,String path);
         void onOpenArticle(FeedMeArticle article);
+        void onCategorySelected(Category item);
+        void onViewVisible();
     }
 }

@@ -72,6 +72,7 @@ public class DBUtils {
                 site.setCategoryID(cursor.getInt(cursor.getColumnIndex(Contracts.SiteEntry.COLUMN_CATEGORY)));
                 site.setUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteEntry.COLUMN_URL)));
                 site.setRssUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteEntry.COLUMN_RSS_URL)));
+                site.setmImgSrc(cursor.getString(cursor.getColumnIndex(Contracts.SiteEntry.COLUMN_IMG_URL)));
                 site.setID(cursor.getInt(cursor.getColumnIndex(Contracts.SiteEntry._ID)));
                 site.setBlocked(cursor.getInt(cursor.getColumnIndex(Contracts.SiteEntry.COLUMN_BLOCKED))>0);
                 sites.add(site);
@@ -158,6 +159,8 @@ public class DBUtils {
             contentValues.put(Contracts.SiteEntry.COLUMN_RSS_URL,site.getRssUrl());
             contentValues.put(Contracts.SiteEntry.COLUMN_CATEGORY,site.getCategoryID());
             contentValues.put(Contracts.SiteEntry.COLUMN_BLOCKED,site.isBlocked());
+            contentValues.put(Contracts.SiteEntry._ID,site.getID());
+            contentValues.put(Contracts.SiteEntry.COLUMN_IMG_URL,site.getmImgSrc());
             contentValuesList.add(contentValues);
         }
         return contentValuesList.toArray(new ContentValues[]{});

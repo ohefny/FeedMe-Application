@@ -10,18 +10,19 @@
         android:id="@+id/article_title_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         tools:text="Article Title sado dsao dasods adsosda odsosado asodas 2"
         android:textSize="16sp"
         android:maxLength="100"
         android:ellipsize="end"
         android:textStyle="bold"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toEndOf="@+id/article_img"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/article_img"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/snippet_text_tv"
@@ -47,22 +48,24 @@
         android:text="site title"
         android:gravity="center_vertical"
         android:textSize="16sp"
-        android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/article_img"
-        android:layout_marginStart="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp" />
+        android:layout_marginBottom="0dp"
+        app:layout_constraintLeft_toRightOf="@+id/article_img"
+        android:layout_marginStart="8dp" />
 
     <ImageView
         android:id="@+id/article_img"
         android:layout_width="147dp"
         android:layout_height="100dp"
-        android:layout_marginStart="0dp"
+        android:scaleType="centerCrop"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/article_img_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/thumbnail" />
+        app:srcCompat="@drawable/thumbnail"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
 
     <Button
@@ -70,10 +73,12 @@
         android:layout_width="80dp"
         android:layout_height="33dp"
         android:text="Snippet"
+        android:textColor="@color/colorAccent"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="0dp"
         android:layout_marginEnd="8dp"
+        style="?android:attr/borderlessButtonStyle"
         app:layout_constraintEnd_toStartOf="@+id/article_options_btn"
 
         />
@@ -86,9 +91,12 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:text="@string/dots_item"
+        android:textColor="@color/colorAccent"
         android:textAppearance="?android:textAppearanceLarge"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp" />
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent" />
 </android.support.constraint.ConstraintLayout>

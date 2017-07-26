@@ -3,9 +3,11 @@ package com.example.bethechange.feedme.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.bethechange.feedme.Data.Contracts;
 import com.example.bethechange.feedme.IntervalTypes;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.R;
 
@@ -71,6 +73,13 @@ public final class PrefUtils {
         editor.putString(INTERVAL_TYPE_KEY, IntervalTypes.HOURS);
         editor.putLong(LAST_UPDATE_KEY,0);
         editor.apply();
+        //TODO::remember to replace with real sites
+        Category category=new Category();
+        category.setTitle("UnCategorized");
+        category.setId(1);
+        //db.insert(Contracts.CategoryEntry.TABLE_NAME,null, DBUtils.categoriesToCV(new Category[]{category})[0]);
+        Log.d("Database ","Successfully created");
+        context.getContentResolver().insert(Contracts.CategoryEntry.CONTENT_URI,DBUtils.categoriesToCV(new Category[]{category})[0]);
         context.getContentResolver().
                 bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(MainScreenActivity.getSites()));
     }

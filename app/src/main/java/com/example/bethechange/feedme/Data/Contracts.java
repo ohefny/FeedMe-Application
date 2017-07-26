@@ -42,6 +42,8 @@ public class Contracts {
             public static final String COLUMN_RSS_URL = "rss_link";
             public static final String COLUMN_CATEGORY = "site_category";
             public static final String COLUMN_BLOCKED = "blocked";
+            public static final String COLUMN_IMG_URL = "img_link";
+
 
 
 

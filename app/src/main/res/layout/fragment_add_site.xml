@@ -1,8 +1,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     tools:context="com.example.bethechange.feedme.MainScreen.Views.AddSiteFragment">
 
 
@@ -19,93 +19,104 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="29dp"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp" />
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/cat_spinner_id"
+        app:layout_constraintVertical_bias="1.0" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Site Title"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="16dp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rss Link"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="54dp"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:layout_marginStart="16dp" />
-
-    <EditText
-        android:id="@+id/site_tilte_imput_id"
-        android:layout_width="0dp"
+    <AutoCompleteTextView
+        android:id="@+id/site_title_input_id"
+        android:hint="Site Title"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="16dp"
-        app:layout_constraintLeft_toRightOf="@+id/textView"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <EditText
         android:id="@+id/site_rss_input_id"
-        android:layout_width="0dp"
+        android:layout_width="320dp"
+        android:hint="Feeds Url"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textUri"
         android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@+id/site_tilte_imput_id"
-        app:layout_constraintLeft_toRightOf="@+id/textView2"
-        android:layout_marginLeft="16dp" />
+        app:layout_constraintTop_toBottomOf="@+id/site_title_input_id"
+        android:layout_marginStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="16dp" />
 
     <TextView
         android:id="@+id/cat_tv_id"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="53dp"
+        android:layout_height="50dp"
         android:text="Categories"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        android:gravity="center_vertical"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/cat_editText" />
 
     <Spinner
         android:id="@+id/cat_spinner_id"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="40dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintLeft_toRightOf="@+id/cat_tv_id"
-        app:layout_constraintTop_toBottomOf="@+id/site_rss_input_id" />
-
-    <ImageButton
-        android:id="@+id/add_logo_img_id"
-        android:layout_width="214dp"
-        android:layout_height="140dp"
-        android:layout_marginBottom="24dp"
+        app:layout_constraintRight_toLeftOf="@+id/add_cat_btn_id"
+        app:layout_constraintTop_toBottomOf="@+id/cat_editText"
+        android:layout_marginEnd="8dp"
+        tools:layout_editor_absoluteY="199dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:onClick="onAddSiteClicked"
-        app:layout_constraintBottom_toTopOf="@+id/add_btn_id"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        android:layout_marginRight="8dp" />
 
     <ImageButton
         android:id="@+id/add_cat_btn_id"
         android:layout_width="39dp"
-        android:layout_height="38dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="32dp"
-        android:onClick="onAddCategoryClicked"
+        android:layout_height="50dp"
+        android:scaleType="center"
+        android:layout_marginRight="2dp"
+        android:background="#000"
+
         app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_fab_add"
+        android:contentDescription="@string/add_new_category"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/cat_editText" />
+
+    <TextView
+        android:id="@+id/error_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/site_already_exist"
+        android:textColor="@android:color/holo_red_light"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/add_btn_id"
+        android:layout_marginStart="32dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/cat_editText"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/category_title_edittext"
+        android:ems="10"
+        android:visibility="invisible"
+        android:inputType="textPersonName"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/site_rss_input_id"
-        app:srcCompat="@android:drawable/ic_input_add" />
+
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

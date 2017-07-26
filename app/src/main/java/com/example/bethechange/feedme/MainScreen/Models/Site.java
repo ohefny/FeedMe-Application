@@ -8,9 +8,8 @@ public class Site{
     private String mTitle="";
     private String mUrl="";
     private String mRssUrl="";
+    private String mImgSrc="";
     private Category mCategory;
-
-
     private int categoryID;
     private int mID;
     private boolean mBlocked;
@@ -44,6 +43,7 @@ public class Site{
 
     public void setUrl(String mUrl) {
         this.mUrl = mUrl;
+        mID=mUrl.hashCode();
     }
 
     public String getRssUrl() {
@@ -52,6 +52,7 @@ public class Site{
 
     public void setRssUrl(String mRssUrl) {
         this.mRssUrl = mRssUrl;
+
     }
 
     public Category getCategory() {
@@ -68,6 +69,13 @@ public class Site{
 
     public boolean isBlocked() {
         return mBlocked;
+    }
+    public String getmImgSrc() {
+        return mImgSrc;
+    }
+
+    public void setmImgSrc(String mImgSrc) {
+        this.mImgSrc = mImgSrc;
     }
 
 }

@@ -181,7 +181,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     public ArticlesList getArticles(@Nullable Site[]sites) {
         if(allArticles==null)
             queryArticles(queryToken);
-        if(mSites==null)
+        if(sites==null)
             return new ArticlesList(allArticles);
         else{
             return articlesFromSites(sites);
