@@ -18,8 +18,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.SEARCH" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
@@ -29,13 +27,10 @@
             -->
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".MainScreenActivity" />
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:value=".SearchActivity" />
         </activity>
         <!-- TODO: If decided that search results should be in a different activity -->
-        <!--
+
         <activity android:name=".SearchActivity">
 
             <intent-filter>
@@ -45,19 +40,25 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        -->
+
         <provider
             android:name=".Data.FeedMeProvider"
             android:authorities="com.example.bethechange.feedme"
             android:exported="false" />
-        "
+
         <service
             android:name=".Services.ArticlesDownloaderService"
             android:exported="false" />
 
-        <activity android:name=".DetailsScreen.DetailsActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+        <activity
+            android:name=".DetailsScreen.DetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CustomScreen.CustomeListActivity">
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchActivity" />
+
+        </activity>
     </application>
 
 </manifest>

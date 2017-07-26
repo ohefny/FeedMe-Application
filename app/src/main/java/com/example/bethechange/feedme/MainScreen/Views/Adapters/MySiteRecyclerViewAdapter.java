@@ -46,7 +46,7 @@ public class MySiteRecyclerViewAdapter extends RecyclerView.Adapter<MySiteRecycl
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_site, parent, false);
+                .inflate(R.layout.site_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -66,11 +66,9 @@ public class MySiteRecyclerViewAdapter extends RecyclerView.Adapter<MySiteRecycl
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }*/
+                if (null != mListener) {
+                    mListener.onOpenSiteArticles(holder.mItem);
+                }
             }
         });
     }

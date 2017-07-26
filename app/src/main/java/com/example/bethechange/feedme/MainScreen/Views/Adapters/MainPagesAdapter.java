@@ -1,24 +1,18 @@
 package com.example.bethechange.feedme.MainScreen.Views.Adapters;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.bethechange.feedme.MainScreen.Views.BlankFragment;
+import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.MainScreen.Views.MySitesFragment;
 import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
@@ -43,7 +37,7 @@ public class MainPagesAdapter extends FragmentPagerAdapter {
      */
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
 
@@ -55,8 +49,7 @@ public class MainPagesAdapter extends FragmentPagerAdapter {
                 return  addImageToTitle("Timeline",R.drawable.ic_launcher);
             case 1:
                 return  addImageToTitle("My Sites",R.drawable.ic_launcher);
-            case 2:
-                return  addImageToTitle("Categories",R.drawable.ic_launcher);
+
 
         }
         return "Item " + (position + 1);
@@ -80,11 +73,11 @@ public class MainPagesAdapter extends FragmentPagerAdapter {
         switch (position)
         {
             case 0:
-                return TimelineFragment.newInstance(1,(MainScreenActivity)mActivity);
+                return TimelineFragment.newInstance(1,(MainScreenActivity)mActivity, ArticleType.CATEGORY);
             case 1:
                 return MySitesFragment.newInstance();
         }
-        return new BlankFragment();
+       return null;
     }
 
     @Override

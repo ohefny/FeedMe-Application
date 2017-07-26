@@ -14,8 +14,8 @@ import java.util.ArrayList;
  * Created by BeTheChange on 7/10/2017.
  */
 
-public class ArticleListContract {
-    public interface View {
+public interface ArticleListContract {
+     interface View {
         void updateList(ArticlesList list);
 
         CursorLoader getLoader();
@@ -34,7 +34,7 @@ public class ArticleListContract {
 
         void updateCategoriesSpinner(ArrayList<Category> cats);
     }
-    public interface Presenter{
+     interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
         void onPerformSave(FeedMeArticle feedMeArticle);
         void onPerformFav(FeedMeArticle feedMeArticle);

@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.CategoriesRepository;
@@ -32,6 +33,7 @@ import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MyArticleRecyclerViewAdapter;
@@ -57,7 +59,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     MyArticleRecyclerViewAdapter adapter=
             new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
 
-    private FragmentActivityInteractor listener;
+    private ArticlesActivityInteractor listener;
     private ArticleRemoteLoader mLoader;
     private android.webkit.WebView webView;
     private ArticleListContract.Presenter interactor;
@@ -68,6 +70,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private AppCompatSpinner mSpinner;
     private ArrayAdapter<Category> mSpinAdapter;
     private Category temp=new Category();
+    @ArticleType int type=ArticleType.CATEGORY;
+    private Site mSite;
+    private Category mCategory;
 
 
     /**
@@ -79,14 +84,26 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TimelineFragment newInstance(int columnCount, FragmentActivityInteractor lis) {
+    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type) {
         TimelineFragment fragment = new TimelineFragment();
         fragment.setListener(lis);
+        fragment.setType(type);
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
     }
+    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type,Site site) {
+        TimelineFragment fragment=newInstance(columnCount,lis,type);
+        fragment.setSite(site);
+        return fragment;
+    }
+    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type,Category category) {
+        TimelineFragment fragment=newInstance(columnCount,lis,type);
+        fragment.setCategory(category);
+        return fragment;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,26 +143,30 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
+        if(type==ArticleType.CATEGORY) {
+            mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
+            mSpinner = (AppCompatSpinner) mRootView.findViewById(R.id.categories_spinner_id);
+            mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (position == 0)
+                        interactor.onCategorySelected(null);
+                    else
+                        interactor.onCategorySelected(mSpinAdapter.getItem(position));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+            mSpinner.setAdapter(mSpinAdapter);
+        }
+        else{
+            mRootView = inflater.inflate(R.layout.fragment_site, container, false);
+        }
+
         setupRecyclerView(mRootView);
-        mSpinner= (AppCompatSpinner) mRootView.findViewById(R.id.categories_spinner_id);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position==0)
-                    interactor.onCategorySelected(null);
-                else
-                    interactor.onCategorySelected(mSpinAdapter.getItem(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        mSpinner.setAdapter(mSpinAdapter);
-
-
         return mRootView;
     }
 
@@ -212,7 +233,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     protected PresenterFactory<ArticlesListPresenter> getPresenterFactory() {
 
-        return new ArticlesFactory();
+        return new ArticlesFactory(type);
     }
 
     @Override
@@ -318,6 +339,10 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     public void onSnippetClicked(FeedMeArticle article) {
 
     }
+    public void setType(int type) {
+        this.type = type;
+    }
+
 
     @Override
     public void setInteractor(ArticleListContract.Presenter interactor) {
@@ -363,7 +388,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         }
     }
 
-    public void setListener(FragmentActivityInteractor listener) {
+    public void setListener(ArticlesActivityInteractor listener) {
         this.listener = listener;
     }
 
@@ -371,59 +396,50 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         mRecyclerView.smoothScrollToPosition(0);
     }
 
+    public void setSite(Site site) {
+        this.mSite = site;
+    }
+
+    public void setCategory(Category category) {
+        this.mCategory = category;
+    }
+
 
     /* Presenter Factory */
     private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
 
+        @ArticleType int type;
 
-
-        ArticlesFactory() {
-
+        ArticlesFactory(@ArticleType int type ) {
+            this.type=type;
         }
 
         @Override
         public ArticlesListPresenter create() {
-             ArticlesListPresenter presenter= new ArticlesListPresenter(
-                     ArticlesRepository.getInstance(getActivity()),
-                     new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
-                    ,new ContentFetcher(getActivity()));
+            //TODO :: ADD BOOKMARK AND SAVE STATUS
+            ArticlesListPresenter presenter=null;
+             if(type==ArticleType.CATEGORY){
+                  presenter= new ArticlesListPresenter(
+                         ArticlesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
+                        ,new ContentFetcher(getActivity()),type,mCategory);
+
+             }
+             else if(type==ArticleType.SITE){
+                 presenter= new ArticlesListPresenter(
+                         ArticlesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
+                         ,new ContentFetcher(getActivity()),type,new Site[]{mSite});
+             }
             setInteractor(presenter);
             return presenter;
         }
     }
 
-    interface FragmentActivityInteractor {
+    public interface ArticlesActivityInteractor {
         void openWebViewFragment(String link);
     }
 
 
-     /* @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        return mLoader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-
-        System.out.println("Ad");
-        Toast.makeText(getContext(),"Articles Downloaded",Toast.LENGTH_SHORT).show();
-       // addToDB((ArticlesList) data);
-    }
-    private void addToDB(ArticlesList ar) {
-
-        List<FeedMeArticle> mList=new ArrayList<>();
-        ArrayList<FeedMeArticle> articles=ar.getArticles();
-        for(int i = 0; i<5&&i<articles.size(); i++){
-            mList.add(articles.get(i));
-        }
-        ArticlesList mArticleList=new  ArticlesList();
-        mArticleList.setArticles(new ArrayList<FeedMeArticle>(mList));
-        getContext().getContentResolver().bulkInsert(
-                Contracts.ArticleEntry.CONTENT_URI, DBUtils.articlesToCV(mArticleList));
-    }
-    @Override
-    public void onLoaderReset(Loader loader) {
-
-    }*/
 
 }

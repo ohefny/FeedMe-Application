@@ -23,7 +23,8 @@ public interface MySitesContract {
         void endProgress();
         void showMessage(String str);
         void showEditDialog(Site site);
-    }
+        void openSite(Site site);
+     }
      interface Presenter{
         void onPerformDelete(Site site);
         void onPerformAdd(Site site);

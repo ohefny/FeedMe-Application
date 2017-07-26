@@ -10,7 +10,6 @@
         android:id="@+id/fetch_news"
         android:title="@string/refresh_news"
         app:showAsAction="ifRoom"
-        
         android:icon="@drawable/ic_save"
         />
 </menu>

@@ -42,7 +42,7 @@ import com.example.bethechange.feedme.Utils.DBUtils;
 import java.net.URL;
 
 public class MainScreenActivity extends AppCompatActivity implements
-        TimelineFragment.FragmentActivityInteractor,MySitesFragment.FragmentActivityInteractor{
+        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor{
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
@@ -71,7 +71,7 @@ public class MainScreenActivity extends AppCompatActivity implements
             mSearchActivity=true;
         }
 
-        prepareAnimation();
+        prepareProgress();
         //FeedMeDBHelper dbHelper=new FeedMeDBHelper(this);
         //SQLiteDatabase wdb = dbHelper.getWritableDatabase();
         // wdb.execSQL("ALTER TABLE Article_Table ADD PUBLISHED_DATE TEXT;");
@@ -82,7 +82,7 @@ public class MainScreenActivity extends AppCompatActivity implements
         //insertSites();
     }
 
-    private void prepareAnimation() {
+    private void prepareProgress() {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         animation = ObjectAnimator.ofInt (progressBar, "progress", 0, 500); // see this max value coming back here, we animale towards that value
         animation.setDuration (5000); //in milliseconds
@@ -144,9 +144,9 @@ public class MainScreenActivity extends AppCompatActivity implements
                 currentPage=position;
                 if(position==1)
                     mFab.setImageResource(R.drawable.ic_fab_add);
-                else {
+                else if(position==0) {
                     mFab.setImageResource(R.drawable.ic_arrow_up);
-                    ((TimelineFragment)mAdapter.getCurrentFragment()).fragmentVisible();
+                    ((TimelineFragment)mAdapter.getItem(0)).fragmentVisible();
                 }
             }
 
@@ -173,9 +173,7 @@ public class MainScreenActivity extends AppCompatActivity implements
                     case 1:
                         ((MySitesFragment)mAdapter.getCurrentFragment()).fabClicked();
                         break;
-                    case 2:
-                        ((CategoriesFragment)mAdapter.getCurrentFragment()).fabClicked();
-                        break;
+
 
                 }
 

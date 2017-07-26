@@ -27,6 +27,7 @@ import java.util.ArrayList;
 public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleListContract.View>
     implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver,
         NetworkUtils.InternetWatcher, CategoriesRepository.CategoriesListener {
+    private final @ArticleType int type;
     private CategoriesRepository catRepo;
     private ContentFetcher mFetcher;
     private ArticleRepositoryActions articlesRepo;
@@ -37,23 +38,37 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     private int pageSizes=1;
     private boolean openArticle;
 
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher){
-        articlesRepo=repo;
-        articlesRepo.setListener(this,mSites);
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type){
+        this.articlesRepo=repo;
         this.catRepo=catRepo;
-        catRepo.getCategories(this);
-        setModel(articlesRepo.getArticles(mSites));
-        mFetcher=fetcher;
+        this.mFetcher=fetcher;
+        this.type=type;
+        if(type==ArticleType.CATEGORY) {
+            articlesRepo.setListener(this,null);
+            catRepo.getCategories(this);
+            setModel(articlesRepo.getArticles(null));
+        }
 
     }
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,Category category){
-        this(repo,catRepo,fetcher);
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type,Category category){
+        this(repo,catRepo,fetcher,type);
         mCategory=category;
+
+    }
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type,Site[]sites){
+        this(repo,catRepo,fetcher,type);
+        mSites=sites;
+        if(type==ArticleType.SITE) {
+            articlesRepo.setListener(this,mSites);
+            setModel(articlesRepo.getArticles(mSites));
+        }
+
 
     }
     @Override
     protected void updateView() {
-            view().updateList(model);
+
+        view().updateList(model);
     }
 
     @Override

@@ -1,10 +1,10 @@
--FlipAdapter for show snippet in more cool way
--Article with no img show site img instead
--Handle offline situations
--Implement Category and sites fragment
+-Implement CustomeScreen to fetch favs and saved posts
 -Implement Settings activity to make use choose prefs
--Implement Add Site and fetch site logo with google api
-
+-FlipAdapter for show snippet in more cool way
+-Article with no img show site img instead (done)
+-Handle offline situations (done)
+-Implement Category and sites fragment(done)
+-Implement Add Site and fetch site logo with google api(done)
 -GooglCustomSearchAPI to get site image (done)
 -Fetch article from freefullrsstext/fivefilter/ or some extraction website (done)
 -make save fetch article and add to content if fail download it as webpage mht (done) 

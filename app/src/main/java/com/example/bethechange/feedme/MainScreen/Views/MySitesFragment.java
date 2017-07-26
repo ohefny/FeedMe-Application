@@ -1,6 +1,7 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -24,8 +25,11 @@ import com.example.bethechange.feedme.MainScreen.Presenters.MySitesPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.MySitesContract;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MySiteRecyclerViewAdapter;
 import com.example.bethechange.feedme.R;
+import com.example.bethechange.feedme.CustomScreen.CustomeListActivity;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -179,6 +183,13 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
     @Override
     public void showEditDialog(Site site) {
         openDialog(site);
+    }
+
+    @Override
+    public void openSite(Site site) {
+        Intent intent=new Intent(getContext(), CustomeListActivity.class);
+        intent.putExtra(CustomeListActivity.SITE_KEY,new Gson().toJson(site,site.getClass()));
+        startActivity(intent);
     }
 
     @NonNull

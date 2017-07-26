@@ -79,6 +79,7 @@ public class MySitesPresenter extends BasePresenter<ArrayList<Site>,MySitesContr
 
     @Override
     public void onOpenSiteArticles(Site site) {
+        view().openSite(site);
 
     }
 
