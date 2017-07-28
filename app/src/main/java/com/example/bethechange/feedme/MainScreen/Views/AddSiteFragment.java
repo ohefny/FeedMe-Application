@@ -33,12 +33,7 @@ import com.squareup.okhttp.internal.Util;
 import java.net.URI;
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssCheckedListener{
-
-
     private ArrayList<Category> categories=new ArrayList<>();
     private Spinner spinner;
     private AutoCompleteTextView titleView;
@@ -50,7 +45,7 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
     private TextView errorView;
     private ImageButton catBtn;
     private EditText catTitle;
-    private boolean catTiltleEnabled;
+    private boolean catTitleEnabled;
     public AddSiteFragment() {
 
         // Required empty public constructor
@@ -86,7 +81,7 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
         catBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    if(catTiltleEnabled){
+                    if(catTitleEnabled){
                         if(TextUtils.isEmpty(catTitle.getText().toString())){
                             catTitle.setError(getString(R.string.cat_empty_title));
                             return;
@@ -97,10 +92,10 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
                         catTitle.setVisibility(View.INVISIBLE);
                         catBtn.setImageResource(R.drawable.ic_fab_add);
                         //spinner.setSelection(categories.size()-1);
-                        catTiltleEnabled=false;
+                        catTitleEnabled=false;
                     }
                     else {
-                        catTiltleEnabled=true;
+                        catTitleEnabled=true;
                         catTitle.setVisibility(View.VISIBLE);
                         catBtn.setImageResource(R.drawable.ic_verify);
                     }

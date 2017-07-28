@@ -18,6 +18,8 @@ interface DetailsContract {
     interface DetailsPresenter{
         int getItemsCount();
         int getArticleID(int pos);
+        int getArticlePos(int arId);
+        int getStartingPos();
     }
     interface ItemView{
         void saveArticleAsWebArchive(FeedMeArticle feedMeArticle);

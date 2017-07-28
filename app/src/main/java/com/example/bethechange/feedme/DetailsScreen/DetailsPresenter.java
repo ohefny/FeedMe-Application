@@ -1,8 +1,7 @@
 package com.example.bethechange.feedme.DetailsScreen;
 
-import android.support.annotation.NonNull;
-
 import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.Data.ArticleRepositoryActions;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
@@ -15,24 +14,12 @@ import java.util.ArrayList;
  * Created by BeTheChange on 7/18/2017.
  */
 
-public class DetailsPresenter extends BasePresenter<ArticlesList,DetailsContract.DetailsView>
-    implements DetailsContract.DetailsPresenter, ArticlesRepository.ArticlesRepositoryObserver {
-    private final ArticlesRepository mRepo;
-
-    public DetailsPresenter(ArticlesRepository repository,Site[]sites){
-        mRepo=repository;
-        //TODO::change null with site/sites(category)
-        mRepo.setListener(this,sites);
-        ArticlesList ls=mRepo.getArticles(sites);
-        setModel(ls);
-    }
-    public DetailsPresenter(ArticlesRepository repository, @ArticleType int type){
-        mRepo=repository;
-        mRepo.setListener(this,null);
-        if(type==ArticleType.SAVED){
-            ArticlesList ls=mRepo.getSavedArticles();
-        }
-
+class DetailsPresenter extends BasePresenter<ArrayList<Integer>,DetailsContract.DetailsView>
+    implements DetailsContract.DetailsPresenter{
+    int startingPos=0;
+    DetailsPresenter( ArrayList<Integer>ids,int startingId){
+        setModel(ids);
+        startingPos=getArticlePos(startingId);
     }
     @Override
     protected void updateView() {
@@ -40,27 +27,30 @@ public class DetailsPresenter extends BasePresenter<ArticlesList,DetailsContract
     }
 
     @Override
-    public void onDataChanged(ArticlesList data) {
-        if(data.getArticles().size()!=model.getArticles().size()){
-            if(view()!=null)
-                view().sizeChanged(data.getArticles().size());
-        }
-        setModel(data);
-    }
-
-    @Override
-    public void onFullArticleFetched(FeedMeArticle article) {
-
-    }
-
-
-    @Override
     public int getItemsCount() {
-        return model.getArticles().size();
+        if(model!=null)
+            return model.size();
+        return 0;
     }
 
     @Override
     public int getArticleID(int pos) {
-        return model.getArticles().get(pos).getArticleID();
+        if(model!=null)
+            return model.get(pos);
+        return 0;
+    }
+
+    @Override
+    public int getArticlePos(int arId) {
+        for(int i=0;i<model.size();i++)
+            if(model.get(i)==arId)
+                return i;
+
+        return 0;
+    }
+
+    @Override
+    public int getStartingPos() {
+        return startingPos;
     }
 }

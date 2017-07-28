@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.MainScreen.Presenters;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.Data.SitesRepositoryActions;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
@@ -17,17 +18,20 @@ import java.util.ArrayList;
  */
 
 public class MySitesPresenter extends BasePresenter<ArrayList<Site>,MySitesContract.View>
-        implements SitesRepository.SitesObserver,MySitesContract.Presenter {
+        implements SitesRepository.SitesObserver,MySitesContract.Presenter, CategoriesRepository.CategoriesListener {
 
     private final boolean fetching;
+    private final CategoriesRepository catRepo;
     private SitesRepositoryActions repo;
     private Category category;
     private ArrayList<Category> cats=new ArrayList<>();
 
-    public MySitesPresenter(SitesRepositoryActions repo, Category category){
+    public MySitesPresenter(SitesRepositoryActions repo, CategoriesRepository categoriesRepository, Category category){
         super();
         this.repo=repo;
         this.category=category;
+        this.catRepo=categoriesRepository;
+        cats=catRepo.getCategories(this);
         setModel(new ArrayList<Site>());
         repo.setObserver(this);
         fetching=true;
@@ -42,9 +46,6 @@ public class MySitesPresenter extends BasePresenter<ArrayList<Site>,MySitesContr
     @Override
     protected void updateView() {
         view().updateList(model);
-        /*ArrayList<String>strs=new ArrayList<>();
-        for(Category cat:cats)
-            strs.add(cat.getTitle());*/
         view().updateSpinner(cats);
     }
 
@@ -57,8 +58,7 @@ public class MySitesPresenter extends BasePresenter<ArrayList<Site>,MySitesContr
             view().showMessage("Site deleted");
         }
         setModel(repo.getSites(category));
-        cats.clear();
-        cats.addAll(repo.getCategorise());
+
 
     }
 
@@ -97,5 +97,12 @@ public class MySitesPresenter extends BasePresenter<ArrayList<Site>,MySitesContr
     @Override
     public void onCategoryAdded(Category cat) {
         repo.addCategory(cat);
+    }
+
+    @Override
+    public void categoriesFetched(ArrayList<Category> cats) {
+        this.cats=cats;
+        if(view()!=null)
+            view().updateSpinner(cats);
     }
 }

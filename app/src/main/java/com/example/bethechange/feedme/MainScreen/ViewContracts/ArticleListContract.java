@@ -17,23 +17,15 @@ import java.util.ArrayList;
 public interface ArticleListContract {
      interface View {
         void updateList(ArticlesList list);
-
-        CursorLoader getLoader();
-
         void showProgress();
-
         void endProgress();
-
         void showMessage(String str, Uri source);
         void saveArticleAsWebArchive(FeedMeArticle feedMeArticle);
         void setInteractor(ArticleListContract.Presenter interactor);
-
         void showArticle(FeedMeArticle article, boolean onWebView);
-
         void imageUpdated(FeedMeArticle article);
-
         void updateCategoriesSpinner(ArrayList<Category> cats);
-         void deleteWebArchive(FeedMeArticle feedMeArticle);
+        void deleteWebArchive(FeedMeArticle feedMeArticle);
      }
      interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
@@ -43,5 +35,6 @@ public interface ArticleListContract {
         void onOpenArticle(FeedMeArticle article);
         void onCategorySelected(Category item);
         void onViewVisible();
-    }
+        ArrayList<Integer> getArticlesIds();
+     }
 }

@@ -23,17 +23,17 @@ import java.util.ArrayList;
 
 public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,DetailsContract.DetailsView>
         implements ArticleDetailFragment.OnPageActions,DetailsContract.DetailsView{
-
-    public static final String ARTICLE_KEY ="ARTICLE_KEY" ;
     public static final String ARTICLE_ID_KEY = "ARTICLE_ID_KEY";
+    public static final String ARTICLES_IDS = "ARTICLES_IDS";
     private FeedMeArticle feedmeArticle;
     private ArticlesRepository repo;
     private int startingPos=0;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private DetailsContract.DetailsPresenter interactor;
-    private Site[]sites=null;
-    private ArrayList<WeakReference<ArticleDetailFragment>> fragments=new ArrayList<>();
+    private ArrayList<Integer>articlesIds=new ArrayList<>();
+    private int arId=-1;
+
     public void setInteractor(DetailsContract.DetailsPresenter interactor) {
         this.interactor = interactor;
     }
@@ -43,18 +43,11 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
         repo = ArticlesRepository.getInstance(this);
-        int arId=-1;
-        if(savedInstanceState!=null)
-             arId= getIntent().getExtras().getInt(ARTICLE_ID_KEY,-1);
-        else if (getIntent() != null)
-             arId = getIntent().getExtras().getInt(ARTICLE_ID_KEY,-1);
-
-        if (arId != -1){
-            startingPos=repo.getArticleIndex(arId);
-
+        Intent intent =getIntent();
+        if (intent != null){
+             arId = intent.getExtras().getInt(ARTICLE_ID_KEY,-1);
+             articlesIds=intent.getIntegerArrayListExtra(ARTICLES_IDS);
         }
-
-
     }
 
     @Override
@@ -69,7 +62,6 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
         mPager.setAdapter(mPagerAdapter);
         mPager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
-
         mPager.setCurrentItem(startingPos);
     }
 
@@ -88,6 +80,8 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
     @Override
     protected void onPresenterPrepared(@NonNull DetailsPresenter presenter) {
         super.onPresenterPrepared(presenter);
+        interactor=presenter;
+        startingPos=interactor.getStartingPos();
         setupViews();
     }
 
@@ -130,16 +124,6 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
         mPagerAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    protected void setPrepared(boolean prepared) {
-        super.setPrepared(prepared);
-        if(prepared) {
-            interactor = getPresenter();
-        }
-    }
-
-
-
     private class DetailsAdapter extends FragmentStatePagerAdapter {
          DetailsAdapter(FragmentManager fm) {
             super(fm);
@@ -149,11 +133,6 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, 0, object);
 
-            //mCurrentDetailsFragment=fragment;
-            //if (fragment != null) {
-            //mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-            //updateUpButtonPosition();
-            //}
         }
 
         @Override
@@ -174,7 +153,7 @@ public class DetailsActivity extends BasePresenterActivity<DetailsPresenter,Deta
         @Override
         public DetailsPresenter create() {
             //TODO: this null sites should be replaced with sites passed by mainactivity
-            DetailsPresenter pres= new DetailsPresenter(repo,sites);
+            DetailsPresenter pres= new DetailsPresenter(articlesIds,arId);
             setInteractor(pres);
             return pres;
         }

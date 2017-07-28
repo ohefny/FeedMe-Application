@@ -41,9 +41,9 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     private final int SEARCH_TOKEN=101;
     private Site[]mSites=null;
     private SparseArray<Pair<ArticlesRepositoryObserver,Site[]>> mListeners=new SparseArray<>();
-    private SparseArray<ArticlesRepositoryObserver> searchListeners=new SparseArray<>();
+    private SparseArray<ArticlesRepositoryObserver> queryListeners=new SparseArray<>();
     private SparseArray<FeedMeArticle> allArticles;
-    private String sortCriteria=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
+    private final String SORT_CRITERIA=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
     private final int INTIALIZE_TOKEN=0;
     private static ArticlesRepository repoInstance;
     private static ArticlesObserver observer;
@@ -103,7 +103,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     private void queryArticles(int token){
 
         if(mSites==null){
-            super.startQuery(token,null, Contracts.ArticleEntry.CONTENT_URI,null,null,null,sortCriteria);
+            super.startQuery(token,null, Contracts.ArticleEntry.CONTENT_URI,null,null,null,SORT_CRITERIA);
         }
         else {
             String []selections=new String[mSites.length];
@@ -111,7 +111,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
                 selections[i]=mSites[i].getID()+"";
             }
             super.startQuery(token,null,Contracts.ArticleEntry.CONTENT_URI,null,
-                    Contracts.ArticleEntry._ID+"=?",selections,sortCriteria);
+                    Contracts.ArticleEntry._ID+"=?",selections,SORT_CRITERIA);
         }
     }
 
@@ -120,7 +120,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
         if(token==SEARCH_TOKEN){
             ArticlesList ls=new ArticlesList();
             ls.setArticles(CollectionUtils.sparseToArray(DBUtils.cursorToArticles(cursor)));
-            searchListeners.get(cookie.hashCode()).onDataChanged(ls);
+            queryListeners.get(cookie.hashCode()).onDataChanged(ls);
 
         }
         else if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
@@ -223,6 +223,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
         return allArticles.valueAt(idx-1);
     }
 
+
     @Override
     public FeedMeArticle getArticleAt(int idx) {
         return allArticles.valueAt(idx);
@@ -285,9 +286,31 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
 
     @Override
+    public ArticlesList getArticlesWithIds(ArrayList<Integer> ids,ArticlesRepositoryObserver mListener) {
+       ArticlesList ls=new ArticlesList();
+       ArrayList<FeedMeArticle>articles=new ArrayList<>();
+       if(allArticles.size()>0)
+           for(int i=0;i<ids.size();i++)
+              articles.add(allArticles.get(ids.get(0)));
+
+       else {
+
+           String inClause = ids.toArray().toString();
+           inClause = inClause.replace("[","(");
+           inClause = inClause.replace("]",")");
+           System.out.println("in clause= "+inClause);
+           queryListeners.put(mListener.hashCode(),mListener);
+           startQuery(SEARCH_TOKEN,mListener.hashCode(), Contracts.ArticleEntry.CONTENT_URI,null,
+                   Contracts.ArticleEntry._ID+" in "+inClause,null,SORT_CRITERIA);
+       }
+       ls.setArticles(articles);
+       return ls;
+    }
+
+    @Override
     public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepositoryObserver mListener) {
         String query="%"+model.getQuery()+"%";
-        searchListeners.put(query.hashCode(),mListener);
+        queryListeners.put(query.hashCode(),mListener);
         switch (model.getSearchIn()){
             case ArticleType.CATEGORY:
                 if(model.getSearchInId()==-1)

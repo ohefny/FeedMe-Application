@@ -12,7 +12,9 @@ import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
+import com.pkmmte.pkrss.Article;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,5 +39,7 @@ public interface ArticleRepositoryActions {
     void getFullArticle(FeedMeArticle article,final ArticlesRepository.ArticlesRepositoryObserver observer);
     ArticlesList getSavedArticles();
     ArticlesList getBookmarkedArticles();
+    ArticlesList getArticlesWithIds(ArrayList<Integer>ids,ArticlesRepository.ArticlesRepositoryObserver mListener);
+
     public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepository.ArticlesRepositoryObserver mListener);
 }

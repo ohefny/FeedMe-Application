@@ -1,5 +1,6 @@
 package com.example.bethechange.feedme.MainScreen.Presenters;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -167,6 +168,16 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     @Override
     public void onViewVisible() {
         catRepo.getCategories(this);
+    }
+
+    @Override
+    public ArrayList<Integer> getArticlesIds() {
+        ArrayList<Integer>ids=new ArrayList<>();
+        if(model!=null&&model.getArticles().size()>0){
+            for(int i=0;i<model.getArticles().size();i++)
+                ids.add(model.getArticles().get(i).getArticleID());
+        }
+        return ids;
     }
 
     @Override

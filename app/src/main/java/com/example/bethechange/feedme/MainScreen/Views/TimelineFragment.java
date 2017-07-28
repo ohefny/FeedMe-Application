@@ -31,6 +31,7 @@ import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
 import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
+import com.example.bethechange.feedme.MainScreen.ArticlesFactory;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
@@ -219,7 +220,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     protected PresenterFactory<ArticlesListPresenter> getPresenterFactory() {
 
-        return new ArticlesFactory(type);
+        return new ArticlesFactory(type,getActivity(),model,mCategory,mSite);
     }
 
     @Override
@@ -262,10 +263,6 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
             }
         });
-    }
-    @Override
-    public CursorLoader getLoader() {
-        return new CursorLoader(getActivity());
     }
 
     @Override
@@ -351,7 +348,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
             Intent intent=new Intent(getContext(), DetailsActivity.class);
             int id=article.getArticleID();
             intent.putExtra(DetailsActivity.ARTICLE_ID_KEY,id);
-            intent.putExtra(DetailsActivity.ARTICLE_KEY,article.getArticle());
+            intent.putExtra(DetailsActivity.ARTICLES_IDS,interactor.getArticlesIds());
             startActivity(intent);
         }
 
@@ -409,47 +406,6 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         this.model = model;
     }
 
-
-    /* Presenter Factory */
-    private class ArticlesFactory implements PresenterFactory<ArticlesListPresenter> {
-
-        @ArticleType int type;
-
-        ArticlesFactory(@ArticleType int type ) {
-            this.type=type;
-        }
-
-        @Override
-        public ArticlesListPresenter create() {
-            ArticlesListPresenter presenter=null;
-             if(type==ArticleType.CATEGORY){
-                  presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver())
-                        ,new ContentFetcher(getActivity()),type,mCategory);
-
-             }
-             else if(type==ArticleType.SITE){
-                 presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver())
-                         ,new ContentFetcher(getActivity()),type,new Site[]{mSite});
-             }
-             else if(type==ArticleType.SEARCH)
-                 presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver())
-                         ,new ContentFetcher(getActivity()),type,model);
-             else
-                 presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver())
-                         ,new ContentFetcher(getActivity()),type);
-
-            setInteractor(presenter);
-            return presenter;
-        }
-    }
 
     public interface ArticlesActivityInteractor {
         void openWebViewFragment(String link);

@@ -2,7 +2,10 @@ package com.example.bethechange.feedme.Data;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.MainScreen.Models.Category;
@@ -20,9 +23,12 @@ public class CategoriesRepository extends AsyncQueryHandler{
     private static final int CATEGORIES_TOKEN =101;
     private ArrayList<Category>cats=new ArrayList<>();
     private SparseArray<CategoriesListener> listeners=new SparseArray<>();
+
     public CategoriesRepository(ContentResolver cr) {
         super(cr);
-        startQuery(CATEGORIES_TOKEN,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
+        CategoriesObserver observer = new CategoriesObserver(new Handler(Looper.getMainLooper()));
+        cr.registerContentObserver(Contracts.CategoryEntry.CONTENT_URI,true, observer);
+        queryCategories();
     }
 
     public ArrayList<Category> getCategories(CategoriesListener listener) {
@@ -50,9 +56,23 @@ public class CategoriesRepository extends AsyncQueryHandler{
             listeners.get(token).categoriesFetched(cats);
         }
     }
+    private void queryCategories(){
+        startQuery(CATEGORIES_TOKEN,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
+    }
 
     public interface CategoriesListener{
      void categoriesFetched(ArrayList<Category>cats);
  }
+    private class CategoriesObserver extends ContentObserver{
+        CategoriesObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            queryCategories();
+        }
+    }
 
 }

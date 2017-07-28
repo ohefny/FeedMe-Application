@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
@@ -132,7 +133,7 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
     @Override
     public void onDetach() {
         super.onDetach();
-       // mListener = null;
+        mListener = null;
     }
 
     @Override
@@ -215,7 +216,7 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
             @Override
             public MySitesPresenter create() {
                 //todo::change null with choosed category
-                return new MySitesPresenter(SitesRepository.getInstance(getActivity()),mCategory);
+                return new MySitesPresenter(SitesRepository.getInstance(getActivity()),new CategoriesRepository(getContext().getContentResolver()),mCategory);
             }
         };
     }
