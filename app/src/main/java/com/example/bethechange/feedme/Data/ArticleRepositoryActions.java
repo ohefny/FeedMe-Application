@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
+import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.CustomScreen.SearchModel;
 import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
@@ -33,4 +35,7 @@ public interface ArticleRepositoryActions {
     FeedMeArticle getArticleAt(int idx);
     int getArticleIndex(int id);
     void getFullArticle(FeedMeArticle article,final ArticlesRepository.ArticlesRepositoryObserver observer);
+    ArticlesList getSavedArticles();
+    ArticlesList getBookmarkedArticles();
+    public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepository.ArticlesRepositoryObserver mListener);
 }

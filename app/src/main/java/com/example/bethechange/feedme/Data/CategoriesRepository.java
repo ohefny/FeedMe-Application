@@ -18,13 +18,10 @@ import java.util.ArrayList;
 
 public class CategoriesRepository extends AsyncQueryHandler{
     private static final int CATEGORIES_TOKEN =101;
-    private final SitesRepository sitesRepo;
     private ArrayList<Category>cats=new ArrayList<>();
     private SparseArray<CategoriesListener> listeners=new SparseArray<>();
-    public CategoriesRepository(ContentResolver cr,SitesRepository repository) {
+    public CategoriesRepository(ContentResolver cr) {
         super(cr);
-        sitesRepo=repository;
-
         startQuery(CATEGORIES_TOKEN,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
     }
 
@@ -35,8 +32,10 @@ public class CategoriesRepository extends AsyncQueryHandler{
         return cats;
 
     }
-    public ArrayList<Site> getSites(Category category){
-        return sitesRepo.getSites(category);
+    public void addCategory(Category cat){
+        startInsert(CATEGORIES_TOKEN,null, Contracts.CategoryEntry.CONTENT_URI,DBUtils.categoriesToCV(new Category[]{cat})[0]);
+        startQuery(CATEGORIES_TOKEN,null, Contracts.CategoryEntry.CONTENT_URI,
+                null,null,null,null);
     }
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {

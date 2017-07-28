@@ -6,9 +6,11 @@ import android.os.Handler;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.example.bethechange.feedme.R;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.pkmmte.pkrss.Article;
 import com.pkmmte.pkrss.Callback;
 import com.pkmmte.pkrss.PkRSS;
+import com.pkmmte.pkrss.downloader.OkHttpDownloader;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -20,6 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by BeTheChange on 7/16/2017.
@@ -153,6 +156,7 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
                 .addHeader("X-AYLIEN-TextAPI-Application-ID", extractID)
                 .build();
         OkHttpClient okHttpClient=new OkHttpClient();
+        okHttpClient.setReadTimeout(15, TimeUnit.SECONDS);
         if(listener!=null){
             okHttpClient.newCall(request).enqueue(new com.squareup.okhttp.Callback() {
                  Article tempAr = ar;
@@ -231,6 +235,7 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
                 .appendQueryParameter("exc","1")
                 .appendQueryParameter("submit","Create Full Text RSS").toString();
         if(listener!=null){
+
             PkRSS.with(mContext).load(link).page(0).callback(new Callback() {
                 @Override
                 public void onPreload() {
@@ -244,7 +249,7 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
                             article.setImage(ls.get(0).getImage());
                         }
                         article.setContent(android.text.Html.fromHtml(ls.get(0).getDescription()).toString());
-
+                        article.setDate(ls.get(0).getDate());
                     }
                     listener.articleFetched(article,true);
 

@@ -60,7 +60,8 @@ public class MySiteRecyclerViewAdapter extends RecyclerView.Adapter<MySiteRecycl
                 showMenu(v,position,holder);
             }
         });
-        Picasso.with(mContext).load(holder.mItem.getmImgSrc()).into(holder.logoView);
+        Picasso.with(mContext).load(holder.mItem.getmImgSrc()).error(R.drawable.logo_placeholder).
+                placeholder(R.drawable.logo_placeholder).resize(120,120).into(holder.logoView);
         //holder.logoView.setText(mValues.get(position);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

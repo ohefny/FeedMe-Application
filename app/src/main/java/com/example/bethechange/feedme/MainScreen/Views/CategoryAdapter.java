@@ -1,6 +1,7 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.database.DataSetObserver;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SpinnerAdapter;
@@ -14,65 +15,26 @@ import java.util.ArrayList;
  * Created by BeTheChange on 7/22/2017.
  */
 
-class CategoryAdapter implements SpinnerAdapter {
+class CategoryAdapter extends RecyclerView.Adapter {
     private ArrayList<Category> mCategories=new ArrayList<>();
-    private MySitesContract.Presenter mListener;
-    CategoryAdapter(MySitesContract.Presenter listener, ArrayList<Category>cats){
+    //private MySitesContract.Presenter mListener;
+    CategoryAdapter(ArrayList<Category>cats){
         mCategories=cats;
-        mListener=listener;
+       // mListener=listener;
     }
+
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return null;
     }
 
     @Override
-    public void registerDataSetObserver(DataSetObserver observer) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
     }
 
     @Override
-    public void unregisterDataSetObserver(DataSetObserver observer) {
-
-    }
-
-    @Override
-    public int getCount() {
-        return mCategories.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mCategories.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return mCategories.get(position).getId();
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return 1;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return mCategories.isEmpty();
+    public int getItemCount() {
+        return 0;
     }
 }

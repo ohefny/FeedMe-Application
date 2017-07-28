@@ -192,32 +192,6 @@ public class ArticleFetcher {
             }
             return ls;
         }
-      /*  List<Article> getJsonFeeds(String url, int serverNum) {
-            String baseUrl = "https://api.rss2json.com/v1/api.json";
-            List<Article>ls=new ArrayList<>();
-
-            String link = Uri.parse(baseUrl).buildUpon()
-                    .appendQueryParameter("count", "20")
-                    .appendQueryParameter("rss_url", url)
-                    .appendQueryParameter("api_key", "f4glg6u8tcakm4yxwxinl5n9frtknhaqsi9jcayg")
-                    .appendQueryParameter("order_dir", "desc")
-                    .appendQueryParameter("order_by", "pubDate")
-                    .toString();
-            Request request = new Request.Builder()
-                    .url(link)
-                    .build();
-            OkHttpClient okHttpClient=new OkHttpClient();
-            Response response= null;
-            try {
-                response = okHttpClient.newCall(request).execute();
-                ls= formatJsonToArticle(response,20,RSS2JSON_SERVER);
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            }
-            return ls;
-
-        }*/
 
         private List<Article> formatJsonToArticle(Response response,int count,int server) {
             List<Article>list=new ArrayList<>();
@@ -231,18 +205,22 @@ public class ArticleFetcher {
 
 
                     for (int i = 0; i < count; i++) {
+                        Article article = new Article();
                         try {
                             JSONObject item = items.getJSONObject(i);
-                            Article article = new Article();
                             article.setTitle(item.optString("title"));
                             article.setSource(Uri.parse(item.optString("link")));
                             article.setImage(Uri.parse(item.optString("thumbnail")));
-                            article.setDescription(item.optString("description"));
+                            article.setDescription(android.text.Html.fromHtml(item.optString("description")).toString());
                             article.setAuthor(item.optString("author"));
                             list.add(article);
-                            article.setDate(Date.parse(item.optString("pubDate")));
+                            if(item.optString("pubDate").isEmpty())
+                                article.setDate(System.currentTimeMillis());
+                            else
+                                article.setDate(Date.parse(item.optString("pubDate")));
+                            //article.setDate();
                         } catch (IllegalArgumentException ex) {
-                            continue;
+                            article.setDate(System.currentTimeMillis());
                         }
                     }
                 }
@@ -260,9 +238,9 @@ public class ArticleFetcher {
                             article.setTitle(item.optString("title"));
                             article.setSource(Uri.parse(item.optString("link")));
 
-                            article.setDescription(item.optString("description"));
+                            article.setDescription(android.text.Html.fromHtml(item.optString("description")).toString());
                             if(item.has("content_encoded"))
-                                article.setContent(item.optString("content_encoded"));
+                                article.setContent(android.text.Html.fromHtml(item.optString("content_encoded")).toString());
                             else
                                 article.setContent(item.optString("description"));
                             //article.setAuthor(item.getString("author"));
@@ -277,8 +255,7 @@ public class ArticleFetcher {
 
                             list.add(article);
                             article.setDate(Date.parse(item.optString("pubDate")));
-                        } catch (IllegalArgumentException ex) {
-                            continue;
+                        } catch (IllegalArgumentException ignored) {
                         }
                     }
 

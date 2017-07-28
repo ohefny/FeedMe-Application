@@ -24,7 +24,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.example.bethechange.feedme.ArticleType;
-import com.example.bethechange.feedme.Data.ArticleRemoteLoader;
+import com.example.bethechange.feedme.CustomScreen.CustomListActivity;
+import com.example.bethechange.feedme.CustomScreen.SearchModel;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
@@ -40,6 +41,7 @@ import com.example.bethechange.feedme.MainScreen.Views.Adapters.MyArticleRecycle
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,23 +51,15 @@ import java.util.List;
 public class TimelineFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract.View>
     implements ArticleListContract.View,MyArticleRecyclerViewAdapter.ArticleListItemListener{
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private RecyclerView mRecyclerView;
-
     private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
     MyArticleRecyclerViewAdapter adapter=
             new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
-
     private ArticlesActivityInteractor listener;
-    private ArticleRemoteLoader mLoader;
-    private android.webkit.WebView webView;
     private ArticleListContract.Presenter interactor;
-    private int count;
     private ProgressDialog dialog;
-    private int position=-1;
     private View mRootView;
     private AppCompatSpinner mSpinner;
     private ArrayAdapter<Category> mSpinAdapter;
@@ -73,17 +67,11 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @ArticleType int type=ArticleType.CATEGORY;
     private Site mSite;
     private Category mCategory;
+    private SearchModel model;
 
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public TimelineFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type) {
         TimelineFragment fragment = new TimelineFragment();
         fragment.setListener(lis);
@@ -98,9 +86,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         fragment.setSite(site);
         return fragment;
     }
-    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type,Category category) {
+    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type, SearchModel model) {
         TimelineFragment fragment=newInstance(columnCount,lis,type);
-        fragment.setCategory(category);
+        fragment.setModel(model);
         return fragment;
     }
 
@@ -109,9 +97,6 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         temp.setTitle("All");
-        mLoader=new ArticleRemoteLoader(getActivity());
-        //mLoader.setSites(MainScreenActivity.getSites());
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -129,6 +114,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     protected void onPresenterPrepared(@NonNull ArticlesListPresenter presenter) {
         super.onPresenterPrepared(presenter);
+        interactor=presenter;
 
 
     }
@@ -139,7 +125,6 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         super.onPause();
 
     }
-
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -151,8 +136,11 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position == 0)
                         interactor.onCategorySelected(null);
-                    else
+                    else{
                         interactor.onCategorySelected(mSpinAdapter.getItem(position));
+                        listener.onCategoryChanged(position);
+                    }
+
                 }
 
                 @Override
@@ -194,12 +182,10 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
                     int pos=viewHolder.getAdapterPosition();
                     interactor.onPerformDelete(adapter.getListItems().get(pos));
                     //mRecyclerView.removeViewAt(pos);
-                    Log.d(TimelineFragment.class.getSimpleName(),"fuck Deleted :: "+pos);
                    // adapter.notifyItemRemoved(pos);
                    // adapter.notifyItemRangeChanged(pos, adapter.getItemCount());
                    // adapter.notifyDataSetChanged();
                 }
-                //TODO REMOVE FeedMeArticle
             }
         }).attachToRecyclerView(mRecyclerView);
     }
@@ -208,18 +194,18 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-       /* if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof ArticlesActivityInteractor) {
+             listener = (ArticlesActivityInteractor) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
-        }*/
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-      //  mListener = null;
+        listener = null;
     }
 
     @NonNull
@@ -331,8 +317,15 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     @Override
     public void onArticleOpened(FeedMeArticle article,int pos) {
-        position=pos;
         interactor.onOpenArticle(article);
+    }
+
+    @Override
+    public void onSiteTitleClicked(Site site) {
+        Intent intent=new Intent(getContext(), CustomListActivity.class);
+        intent.putExtra(CustomListActivity.SITE_KEY,new Gson().toJson(site,site.getClass()));
+        intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.SITE);
+        startActivity(intent);
     }
 
     @Override
@@ -388,6 +381,12 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         }
     }
 
+    @Override
+    public void deleteWebArchive(FeedMeArticle feedMeArticle) {
+        File file=new File(feedMeArticle.getWebArchivePath());
+        file.delete();
+    }
+
     public void setListener(ArticlesActivityInteractor listener) {
         this.listener = listener;
     }
@@ -402,6 +401,12 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     public void setCategory(Category category) {
         this.mCategory = category;
+        mSpinner.setSelection(mSpinAdapter.getPosition(category));
+    }
+
+
+    public void setModel(SearchModel model) {
+        this.model = model;
     }
 
 
@@ -416,21 +421,31 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
         @Override
         public ArticlesListPresenter create() {
-            //TODO :: ADD BOOKMARK AND SAVE STATUS
             ArticlesListPresenter presenter=null;
              if(type==ArticleType.CATEGORY){
                   presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
+                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver())
                         ,new ContentFetcher(getActivity()),type,mCategory);
 
              }
              else if(type==ArticleType.SITE){
                  presenter= new ArticlesListPresenter(
-                         ArticlesRepository.getInstance(getActivity()),
-                         new CategoriesRepository(getContext().getContentResolver(), SitesRepository.getInstance(getActivity()))
+                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver())
                          ,new ContentFetcher(getActivity()),type,new Site[]{mSite});
              }
+             else if(type==ArticleType.SEARCH)
+                 presenter= new ArticlesListPresenter(
+                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver())
+                         ,new ContentFetcher(getActivity()),type,model);
+             else
+                 presenter= new ArticlesListPresenter(
+                         ArticlesRepository.getInstance(getActivity()),SitesRepository.getInstance(getActivity()),
+                         new CategoriesRepository(getContext().getContentResolver())
+                         ,new ContentFetcher(getActivity()),type);
+
             setInteractor(presenter);
             return presenter;
         }
@@ -438,6 +453,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     public interface ArticlesActivityInteractor {
         void openWebViewFragment(String link);
+        void onCategoryChanged(int id);
     }
 
 

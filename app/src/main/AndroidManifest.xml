@@ -13,6 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".CustomScreen.SearchActivity" />
         <activity
             android:name=".MainScreen.Views.MainScreenActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -25,13 +28,10 @@
           TODO : Replace value with search activity if you want seperate search activity
           TODO : REMOVE THE SECOND META-DATA
             -->
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
         </activity>
         <!-- TODO: If decided that search results should be in a different activity -->
 
-        <activity android:name=".SearchActivity">
+        <activity android:name=".CustomScreen.SearchActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -53,12 +53,9 @@
         <activity
             android:name=".DetailsScreen.DetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CustomScreen.CustomeListActivity">
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".SearchActivity" />
+        <activity android:name=".CustomScreen.CustomListActivity"/>
 
-        </activity>
+
     </application>
 
 </manifest>

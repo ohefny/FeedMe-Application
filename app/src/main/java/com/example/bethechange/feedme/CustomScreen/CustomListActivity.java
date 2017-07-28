@@ -18,32 +18,47 @@ import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
 import com.example.bethechange.feedme.R;
 import com.google.gson.Gson;
 
-public class CustomeListActivity extends AppCompatActivity implements TimelineFragment.ArticlesActivityInteractor{
+public class CustomListActivity extends AppCompatActivity implements TimelineFragment.ArticlesActivityInteractor{
 
 
     public static final String SITE_KEY = "SITE_KEY";
-    Site mSite;
     private boolean mSearchActivity;
+    int type=ArticleType.SITE;
+    public static final String TYPE_KEY="TYPE_KEY";
+    public static final String CATEGORY_KEY="CATEGORY_KEY";
+    private int siteId=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_site);
+        setContentView(R.layout.activity_custom);
         Intent intent=getIntent();
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-            Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
-            mSearchActivity=true;
-        }
-        else {
-            String siteStr = getIntent().getStringExtra(SITE_KEY);
-            mSite = new Gson().fromJson(siteStr, Site.class);
-        }
-
+        type=intent.getIntExtra(TYPE_KEY,ArticleType.SITE);
+        switch (type) {
+                case ArticleType.SITE:
+                    String siteStr = getIntent().getStringExtra(SITE_KEY);
+                    Site mSite = new Gson().fromJson(siteStr, Site.class);
+                    siteId=mSite.getID();
+                    setTitle(mSite.getTitle());
+                    getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
+                            TimelineFragment.newInstance(1, this, ArticleType.SITE, mSite), null).commit();
+                    break;
+                case ArticleType.SAVED:
+                    getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
+                            TimelineFragment.newInstance(1, this, ArticleType.SAVED), null).commit();
+                    setTitle(getString(R.string.saved_activity_title));
+                    break;
+                case ArticleType.BOOKMARKED:
+                    getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
+                            TimelineFragment.newInstance(1, this, ArticleType.BOOKMARKED), null).commit();
+                    setTitle(getString(R.string.bookmark_activity_title));
+                    break;
+            }
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(mSite.getTitle());
 
-        getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,TimelineFragment.newInstance(1,this, ArticleType.SITE,mSite),null).commit();
+
+
     }
 
     @Override
@@ -53,6 +68,11 @@ public class CustomeListActivity extends AppCompatActivity implements TimelineFr
         }
         Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         startActivity(intent);
+    }
+
+    @Override
+    public void onCategoryChanged(int id) {
+
     }
 
     @Override
@@ -70,12 +90,28 @@ public class CustomeListActivity extends AppCompatActivity implements TimelineFr
         }
         else {
             getMenuInflater().inflate(R.menu.main, menu);
-            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+            final SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
             // Get the SearchView and set the searchable configuration
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 
             // Assumes current activity is the searchable activity
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Bundle appData = new Bundle();
+                    appData.putInt(SearchActivity.FROM_TYPE, type);
+                    appData.putInt(SearchActivity.FROM_ID,siteId);
+                    searchView.setAppSearchData(appData);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    return false;
+                }
+            });
             //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
         }
 
@@ -97,4 +133,5 @@ public class CustomeListActivity extends AppCompatActivity implements TimelineFr
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

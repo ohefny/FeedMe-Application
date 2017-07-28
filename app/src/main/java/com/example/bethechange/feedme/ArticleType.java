@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public @IntDef({ArticleType.CATEGORY,ArticleType.SITE,ArticleType.BOOKMARKED,ArticleType.SAVED,ArticleType.SEARCH})
  @Retention(RetentionPolicy.SOURCE)
-@interface ArticleType{
+@interface ArticleType {
     int SITE=1;
     int CATEGORY=2;
     int BOOKMARKED=3;

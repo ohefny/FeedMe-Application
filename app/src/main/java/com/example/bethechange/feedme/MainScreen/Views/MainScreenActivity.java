@@ -1,48 +1,52 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.CustomScreen.CustomListActivity;
+import com.example.bethechange.feedme.CustomScreen.SearchActivity;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.Data.FeedMeDBHelper;
+import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.SitesRepository;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.Utils.DBUtils;
 
-import java.net.URL;
+import java.util.ArrayList;
 
 public class MainScreenActivity extends AppCompatActivity implements
-        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor{
+        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor, CategoriesRepository.CategoriesListener {
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
@@ -55,6 +59,12 @@ public class MainScreenActivity extends AppCompatActivity implements
     private WebView webView;
     private MainPagesAdapter mAdapter;
     private int currentPage;
+    private ViewPager mViewPager;
+    private CategoriesRepository catRepo;
+    private ListView navCats;
+    private ArrayList<Category> cats;
+    private ArrayAdapter<Category> catAdapter;
+    private int mId=-1;
 
     //TODO if seprate search activity remove this boolean and it's usage
     @Override
@@ -130,8 +140,10 @@ public class MainScreenActivity extends AppCompatActivity implements
     }
 
     private void setupViews() {
+        navCats=(ListView)findViewById(R.id.categories_nav_list);
+
         TabLayout mSlidingTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        final ViewPager mViewPager = (ViewPager)findViewById(R.id.viewpager);
+        mViewPager = (ViewPager)findViewById(R.id.viewpager);
         mViewPager.setAdapter(mAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -146,7 +158,7 @@ public class MainScreenActivity extends AppCompatActivity implements
                     mFab.setImageResource(R.drawable.ic_fab_add);
                 else if(position==0) {
                     mFab.setImageResource(R.drawable.ic_arrow_up);
-                    ((TimelineFragment)mAdapter.getItem(0)).fragmentVisible();
+                    //((TimelineFragment)mAdapter.getItem(0)).fragmentVisible();
                 }
             }
 
@@ -248,27 +260,34 @@ public class MainScreenActivity extends AppCompatActivity implements
         return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
 
         // show menu only when home fragment is selected
-        if(mSearchActivity){
-            getMenuInflater().inflate(R.menu.nosearch,menu);
-        }
-        else {
             getMenuInflater().inflate(R.menu.main, menu);
-            SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+            final SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
             // Get the SearchView and set the searchable configuration
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
             // Assumes current activity is the searchable activity
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-        }
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Bundle appData = new Bundle();
+                appData.putInt(SearchActivity.FROM_TYPE, ArticleType.CATEGORY);
+                appData.putInt(SearchActivity.FROM_ID,mId);
+                searchView.setAppSearchData(appData);
+                return false;
+            }
 
-        return true;
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+            //searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+            return super.onCreateOptionsMenu(menu);
     }
 
 
@@ -282,17 +301,25 @@ public class MainScreenActivity extends AppCompatActivity implements
 
         super.onBackPressed();
     }
-    public FloatingActionButton getFab() {
-        return mFab;
-    }
+    public FloatingActionButton getFab() {return mFab;}
 
-    public void onSavedPostsClicked(View view) {
-    }
+
 
     @Override
     protected void onStart() {
         ArticlesRepository.getInstance(this);
-        SitesRepository.getInstance(this);
+        catRepo = new CategoriesRepository(getContentResolver());
+        cats=catRepo.getCategories(this);
+        catAdapter=new ArrayAdapter<Category>(this,R.layout.simple_nav_category_item,cats);
+        navCats.setAdapter(catAdapter);
+        navCats.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mViewPager.setCurrentItem(0);
+                ((TimelineFragment)mAdapter.getCurrentFragment()).setCategory(catAdapter.getItem(position));
+                mDrawer.closeDrawers();
+            }
+        });
         super.onStart();
     }
 
@@ -310,5 +337,81 @@ public class MainScreenActivity extends AppCompatActivity implements
         }
         Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse(link));
         startActivity(intent);
+    }
+
+    @Override
+    public void onCategoryChanged(int id) {
+        mId=id;
+    }
+
+    public void onSitesClicked(View view) {
+        mDrawer.closeDrawers();
+        mViewPager.setCurrentItem(1);
+        mDrawer.closeDrawers();
+        Toast.makeText(this,"Sites Clicked",Toast.LENGTH_SHORT).show();
+    }
+
+    public void onFavClicked(View view) {
+        mDrawer.closeDrawers();
+        Intent intent=new Intent(this, CustomListActivity.class);
+        intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.BOOKMARKED);
+        startActivity(intent);
+        Toast.makeText(this,"Fav Clicked",Toast.LENGTH_SHORT).show();
+    }
+    public void onSavedPostsClicked(View view) {
+        mDrawer.closeDrawers();
+        Intent intent=new Intent(this, CustomListActivity.class);
+        intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.SAVED);
+        startActivity(intent);
+        Toast.makeText(this,"Saved Clicked",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void categoriesFetched(ArrayList<Category> cats) {
+            this.cats=cats;
+            if(catAdapter!=null){
+                catAdapter.clear();
+                catAdapter.addAll(cats);
+                catAdapter.notifyDataSetChanged();
+            }
+
+    }
+    @Override
+    public boolean onSearchRequested() {
+        Bundle appData = new Bundle();
+        appData.putInt(SearchActivity.FROM_TYPE, ArticleType.CATEGORY);
+        appData.putInt(SearchActivity.FROM_ID,mId);
+        startSearch(null, false, appData, false);
+        super.onSearchRequested();
+        return true;
+    }
+
+
+    public void onAddCategory(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Catalog");
+
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //TODO::NOTIFY TIMELINE AND SITE WITH CHANGES
+                Category cat=new Category();
+                cat.setTitle(input.getText().toString());
+                catRepo.addCategory(cat);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

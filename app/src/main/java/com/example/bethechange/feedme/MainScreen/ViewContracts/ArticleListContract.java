@@ -33,7 +33,8 @@ public interface ArticleListContract {
         void imageUpdated(FeedMeArticle article);
 
         void updateCategoriesSpinner(ArrayList<Category> cats);
-    }
+         void deleteWebArchive(FeedMeArticle feedMeArticle);
+     }
      interface Presenter{
         void onPerformDelete(FeedMeArticle feedMeArticle);
         void onPerformSave(FeedMeArticle feedMeArticle);

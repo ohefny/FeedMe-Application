@@ -2,6 +2,7 @@ package com.example.bethechange.feedme.DetailsScreen;
 
 import android.support.annotation.NonNull;
 
+import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
@@ -25,6 +26,14 @@ public class DetailsPresenter extends BasePresenter<ArticlesList,DetailsContract
         ArticlesList ls=mRepo.getArticles(sites);
         setModel(ls);
     }
+    public DetailsPresenter(ArticlesRepository repository, @ArticleType int type){
+        mRepo=repository;
+        mRepo.setListener(this,null);
+        if(type==ArticleType.SAVED){
+            ArticlesList ls=mRepo.getSavedArticles();
+        }
+
+    }
     @Override
     protected void updateView() {
 
@@ -32,8 +41,10 @@ public class DetailsPresenter extends BasePresenter<ArticlesList,DetailsContract
 
     @Override
     public void onDataChanged(ArticlesList data) {
-        if(data.getArticles().size()!=model.getArticles().size())
-            view().sizeChanged(data.getArticles().size());
+        if(data.getArticles().size()!=model.getArticles().size()){
+            if(view()!=null)
+                view().sizeChanged(data.getArticles().size());
+        }
         setModel(data);
     }
 

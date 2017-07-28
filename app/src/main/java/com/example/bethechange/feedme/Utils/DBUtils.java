@@ -55,6 +55,7 @@ public class DBUtils {
         } catch (Exception ex) {
 
         } finally {
+            if(cursor!=null&&!cursor.isClosed())
             cursor.close();
         }
         return articles;

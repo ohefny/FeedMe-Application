@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.R;
 import com.squareup.picasso.Picasso;
 
@@ -89,15 +90,28 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
             @Override
             public boolean onLongClick(View v) {
                 //TODO:CREATE CONTEXT MENU
-                return false;
+                showMenu(v, position, holder);
+                return true;
             }
         });
-        if(holder.mItem.getSite()!=null&&!TextUtils.isEmpty(holder.mItem.getSite().getTitle()))
+        if(holder.mItem.getSite()!=null&&!TextUtils.isEmpty(holder.mItem.getSite().getTitle())){
             holder.mSiteView.setText(holder.mItem.getSite().getTitle());
+            holder.mSiteView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    mListener.onSiteTitleClicked(holder.mItem.getSite());
+                }
+            });
+        }
     }
     private void showMenu(View view, final int position,final ViewHolder holder)
     {
         PopupMenu menu = new PopupMenu (mContext, view);
+        menu.getMenu().add(0,R.id.item_snippet,0,"Snippet");
+        menu.getMenu().add(0,R.id.item_fav,1,holder.mItem.isFav()?"UnBookmark":"Bookmark");
+        menu.getMenu().add(0,R.id.item_save,2,holder.mItem.isSaved()?"UnArchive":"Archive");
+        menu.getMenu().add(0,R.id.item_delete,3,"Delete");
         menu.setOnMenuItemClickListener (new PopupMenu.OnMenuItemClickListener ()
         {
 
@@ -123,7 +137,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
                 return true;
             }
         });
-        menu.inflate (R.menu.list_item_options);
+        //menu.inflate (R.menu.list_item_options);
         menu.show();
     }
     private void makeViewType(ViewHolder holder,boolean change) {
@@ -218,6 +232,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
         void onDeleteClicked(FeedMeArticle article);
         void onBookmarkClicked(FeedMeArticle article);
         void onArticleOpened(FeedMeArticle article,int pos);
+        void onSiteTitleClicked(Site site);
         void onSnippetClicked(FeedMeArticle article);
     }
 }

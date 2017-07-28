@@ -14,12 +14,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
 
+import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.ArticlesObserver;
+import com.example.bethechange.feedme.CustomScreen.SearchModel;
 import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.Services.ArticlesDownloaderService;
+import com.example.bethechange.feedme.Utils.CollectionUtils;
 import com.example.bethechange.feedme.Utils.DBUtils;
 import com.example.bethechange.feedme.Utils.PrefUtils;
 import com.pkmmte.pkrss.Article;
@@ -35,8 +38,10 @@ import java.util.List;
 public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepositoryActions {
     private static Context mContext;
     private int queryToken=1;
+    private final int SEARCH_TOKEN=101;
     private Site[]mSites=null;
     private SparseArray<Pair<ArticlesRepositoryObserver,Site[]>> mListeners=new SparseArray<>();
+    private SparseArray<ArticlesRepositoryObserver> searchListeners=new SparseArray<>();
     private SparseArray<FeedMeArticle> allArticles;
     private String sortCriteria=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
     private final int INTIALIZE_TOKEN=0;
@@ -112,7 +117,13 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
     @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-        if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
+        if(token==SEARCH_TOKEN){
+            ArticlesList ls=new ArticlesList();
+            ls.setArticles(CollectionUtils.sparseToArray(DBUtils.cursorToArticles(cursor)));
+            searchListeners.get(cookie.hashCode()).onDataChanged(ls);
+
+        }
+        else if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
             allArticles= DBUtils.cursorToArticles(cursor);
 
         }
@@ -121,7 +132,8 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
         }
         //Query Listener with it's registered sites
         deliverToListeners(false);
-        cursor.close();
+        if(cursor!=null&&!cursor.isClosed())
+            cursor.close();
         super.onQueryComplete(token, cookie, cursor);
     }
 
@@ -179,14 +191,17 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
     @Override
     public ArticlesList getArticles(@Nullable Site[]sites) {
-        if(allArticles==null)
+        if(allArticles==null){
             queryArticles(queryToken);
-        if(sites==null)
+            return new ArticlesList();
+        }
+        else if(sites==null)
             return new ArticlesList(allArticles);
         else{
             return articlesFromSites(sites);
         }
     }
+
 
     @Override
     public FeedMeArticle getArticle(int id) {
@@ -235,6 +250,71 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
                 }
             });
 
+    }
+
+    @Override
+    public ArticlesList getSavedArticles() {
+        ArrayList<FeedMeArticle>sav=new ArrayList<>();
+        if(allArticles.size()==0)
+            queryArticles(queryToken);
+        else{
+            for(int i=0;i<allArticles.size();i++){
+                if(allArticles.valueAt(i).isSaved())
+                    sav.add(allArticles.valueAt(i));
+            }
+        }
+        ArticlesList ar=new ArticlesList();
+        ar.setArticles(sav);
+        return ar;
+    }
+
+    @Override
+    public ArticlesList getBookmarkedArticles() {
+        ArrayList<FeedMeArticle>fav=new ArrayList<>();
+        if(allArticles.size()==0)
+            queryArticles(queryToken);
+        else{
+            for(int i=0;i<allArticles.size();i++){
+                if(allArticles.valueAt(i).isFav())
+                    fav.add(allArticles.valueAt(i));
+            }
+        }
+        ArticlesList ar=new ArticlesList();
+        ar.setArticles(fav);
+        return ar;
+    }
+
+    @Override
+    public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepositoryObserver mListener) {
+        String query="%"+model.getQuery()+"%";
+        searchListeners.put(query.hashCode(),mListener);
+        switch (model.getSearchIn()){
+            case ArticleType.CATEGORY:
+                if(model.getSearchInId()==-1)
+                    super.startQuery(SEARCH_TOKEN,query, Contracts.ArticleEntry.CONTENT_URI,null,Contracts.ArticleEntry.COLUMN_DESCRIPTION+" Like ? or "+
+                        Contracts.ArticleEntry.COLUMN_TITLE+" Like ?",new String[]{query,query},null);
+                else
+                    super.startQuery(SEARCH_TOKEN,query, Contracts.ArticleEntry.CONTENT_URI,null,
+                            " ( "+Contracts.ArticleEntry.COLUMN_DESCRIPTION+" Like ? or "+ Contracts.ArticleEntry.COLUMN_TITLE+" Like ? ) and "+
+                            Contracts.ArticleEntry.COLUMN_SITE+" in ( select "+ Contracts.SiteEntry._ID +" from "+ Contracts.SiteEntry.TABLE_NAME+" where "+ Contracts.SiteEntry.COLUMN_CATEGORY + "= "+model.getSearchInId()+")"
+                           ,new String[]{query,query},null);
+                break;
+            case ArticleType.BOOKMARKED:
+                super.startQuery(SEARCH_TOKEN,query, Contracts.ArticleEntry.CONTENT_URI,null,
+                        " ( "+Contracts.ArticleEntry.COLUMN_DESCRIPTION+" Like ? or "+
+                        Contracts.ArticleEntry.COLUMN_TITLE+" Like ? ) and "+Contracts.ArticleEntry.COLUMN_FAVORITE+" = 1",new String[]{query,query},null);
+                break;
+            case ArticleType.SAVED:
+                super.startQuery(SEARCH_TOKEN,query, Contracts.ArticleEntry.CONTENT_URI,null,
+                        " ( "+Contracts.ArticleEntry.COLUMN_DESCRIPTION+" Like ? or "+
+                        Contracts.ArticleEntry.COLUMN_TITLE+" Like ? ) and "+Contracts.ArticleEntry.COLUMN_SAVED+" = 1",new String[]{query,query},null);
+                break;
+            case ArticleType.SITE:
+                super.startQuery(SEARCH_TOKEN,query, Contracts.ArticleEntry.CONTENT_URI,null,
+                        " ( "+Contracts.ArticleEntry.COLUMN_DESCRIPTION+" Like ? or "+
+                        Contracts.ArticleEntry.COLUMN_TITLE+" Like ? ) and "+Contracts.ArticleEntry.COLUMN_SITE+" = "+model.getSearchInId(),new String[]{query,query},null);
+                break;
+        }
     }
 
 

@@ -1,3 +1,4 @@
+-Details Activity don't care which articles it opens from it just loop on all articles
 - monitor article content to see if the problem appears again (maybe solved with
 setPageChangedListener)
 - remember to rebuild data base and uncomment contentFetched,webarchive,published_date

@@ -7,7 +7,7 @@
     <string name="closeDrawer">close_drawer</string>
     <string name="search_hint">search feedMeArticles/sites</string>
     <string name="search">Search</string>
-    <string name="top_sites_head_title">Top Sites</string>
+    <string name="top_sites_head_title">My Sites</string>
     <string name="fav_sites_head_title">Favorites</string>
     <string name="categories_head_title">Categories</string>
     <string name="saved_posts_head_title">Saved</string>
@@ -48,6 +48,9 @@
     <string name="cat_empty_title">Category Title Can\'t be empty</string>
     <string name="add_btn_title">Add</string>
     <string name="edit_btn_title">Edit</string>
+    <string name="saved_activity_title">Saved Articles</string>
+    <string name="bookmark_activity_title">Bookmarks</string>
+    <string name="snippet_btn_title">Snippet</string>
 
 
 </resources>

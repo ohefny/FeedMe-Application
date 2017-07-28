@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+
+import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
@@ -25,7 +27,7 @@ import com.example.bethechange.feedme.MainScreen.Presenters.MySitesPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.MySitesContract;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MySiteRecyclerViewAdapter;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.CustomScreen.CustomeListActivity;
+import com.example.bethechange.feedme.CustomScreen.CustomListActivity;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
 import com.google.gson.Gson;
@@ -187,8 +189,9 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
 
     @Override
     public void openSite(Site site) {
-        Intent intent=new Intent(getContext(), CustomeListActivity.class);
-        intent.putExtra(CustomeListActivity.SITE_KEY,new Gson().toJson(site,site.getClass()));
+        Intent intent=new Intent(getContext(), CustomListActivity.class);
+        intent.putExtra(CustomListActivity.SITE_KEY,new Gson().toJson(site,site.getClass()));
+        intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.SITE);
         startActivity(intent);
     }
 

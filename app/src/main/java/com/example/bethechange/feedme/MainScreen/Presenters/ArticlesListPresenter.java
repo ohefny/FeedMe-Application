@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.CustomScreen.SearchModel;
 import com.example.bethechange.feedme.Data.ArticleRepositoryActions;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.CategoriesRepository;
@@ -28,6 +29,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     implements ArticleListContract.Presenter, ArticlesRepository.ArticlesRepositoryObserver,
         NetworkUtils.InternetWatcher, CategoriesRepository.CategoriesListener {
     private final @ArticleType int type;
+    private final SitesRepository siteRepo;
     private CategoriesRepository catRepo;
     private ContentFetcher mFetcher;
     private ArticleRepositoryActions articlesRepo;
@@ -38,25 +40,47 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     private int pageSizes=1;
     private boolean openArticle;
 
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type){
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo,SitesRepository siteRepo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type){
         this.articlesRepo=repo;
         this.catRepo=catRepo;
         this.mFetcher=fetcher;
         this.type=type;
+        this.siteRepo=siteRepo;
+
         if(type==ArticleType.CATEGORY) {
             articlesRepo.setListener(this,null);
             catRepo.getCategories(this);
             setModel(articlesRepo.getArticles(null));
         }
+        else if(type==ArticleType.BOOKMARKED){
+            setModel(articlesRepo.getBookmarkedArticles());
+        }
+        else if(type==ArticleType.SAVED){
+            setModel(articlesRepo.getSavedArticles());
+        }
+        else
+            setModel(new ArticlesList());
+    }
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, SitesRepository siteRepo, CategoriesRepository catRepo, ContentFetcher fetcher, @ArticleType int type, SearchModel model) {
+        this(repo,siteRepo,catRepo,fetcher,type);
+        if(type==ArticleType.SEARCH)
+            articlesRepo.getArticlesFromSearchQuery(model,this);
 
     }
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type,Category category){
-        this(repo,catRepo,fetcher,type);
+    @Override
+    public void setModel(ArticlesList model) {
+        for(FeedMeArticle ar:model.getArticles())
+            ar.setSite(siteRepo.getSite(ar.getSiteID()));
+        super.setModel(model);
+    }
+
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, SitesRepository siteRepo, CategoriesRepository catRepo, ContentFetcher fetcher, @ArticleType int type, Category category){
+        this(repo,siteRepo,catRepo,fetcher,type);
         mCategory=category;
 
     }
-    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type,Site[]sites){
-        this(repo,catRepo,fetcher,type);
+    public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo, SitesRepository siteRepo,CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type,Site[]sites){
+        this(repo,siteRepo,catRepo,fetcher,type);
         mSites=sites;
         if(type==ArticleType.SITE) {
             articlesRepo.setListener(this,mSites);
@@ -80,17 +104,33 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
     @Override
     public void onPerformSave(FeedMeArticle feedMeArticle) {
-        feedMeArticle.setSaved(true);
-        articlesRepo.getFullArticle(feedMeArticle,this);
-        view().showMessage("Article has been saved", null);
+
+        if(!feedMeArticle.isSaved()){
+            feedMeArticle.setSaved(true);
+            articlesRepo.getFullArticle(feedMeArticle,this);
+            view().saveArticleAsWebArchive(feedMeArticle);
+            view().showMessage("Article has been saved", null);
+        }
+        else{
+            feedMeArticle.setSaved(false);
+            view().deleteWebArchive(feedMeArticle);
+        }
+        if(!feedMeArticle.isSaved()&&type==ArticleType.SAVED){
+            model.getArticles().remove(feedMeArticle);
+            updateView();
+        }
     }
 
     @Override
     public void onPerformFav(FeedMeArticle feedMeArticle) {
-        view().saveArticleAsWebArchive(feedMeArticle);
+
         feedMeArticle.setFav(!feedMeArticle.isFav());
         articlesRepo.editArticle(feedMeArticle);
-        view().showMessage("Article has been bookmarked", null);
+        if(!feedMeArticle.isFav()&&type==ArticleType.BOOKMARKED){
+            model.getArticles().remove(feedMeArticle);
+            updateView();
+        }
+        //view().showMessage("Article has been bookmarked", null);
     }
 
     @Override
@@ -120,8 +160,8 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         if(item==null)
             articlesRepo.setListener(this,null);
         else
-            articlesRepo.setListener(this,catRepo.getSites(item).toArray(new Site[]{}));
-        setModel(articlesRepo.getArticles(catRepo.getSites(item).toArray(new Site[]{})));
+            articlesRepo.setListener(this,siteRepo.getSites(item).toArray(new Site[]{}));
+        setModel(articlesRepo.getArticles(siteRepo.getSites(item).toArray(new Site[]{})));
     }
 
     @Override
@@ -145,15 +185,14 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
     @Override
     public void onDataChanged(ArticlesList data) {
+
+
         if(view()!=null){
             view().endProgress();
             if(data.getArticles().size()!=model.getArticles().size())
                 view().showMessage("Updates has been made..", null);
         }
         setModel(data);
-        Log.d("Presneter","Fuck Data change: "+startPage+ " size= "+data.getArticles().size());
-
-        startPage+=1;
     }
 
     @Override

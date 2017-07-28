@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/article_title_id"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         tools:text="Article Title sado dsao dasods adsosda odsosado asodas 2"
@@ -27,32 +27,18 @@
     <TextView
         android:id="@+id/snippet_text_tv"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:textSize="14sp"
-        android:maxLength="150"
+        android:maxLength="120"
         android:ellipsize="end"
         android:visibility="gone"
-        tools:text="Article Title sado dsaArticle Title sado dsao dasods adsosda odsosado asodas 2Article Title sado dsao dasods adsosda odsosado asodas 2Article Title sado dsao dasods adsosda odsosado asodas 2Article Title sado dsao dasods adsosda odsosado asodas 2Article Title sado dsao dasods adsosda odsosado asodas 2o dasods adsosda odsosado asodas 2 "
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/article_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/site_title_id"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="site title"
-        android:gravity="center_vertical"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/article_img"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/article_img"
-        android:layout_marginStart="8dp" />
 
     <ImageView
         android:id="@+id/article_img"
@@ -67,36 +53,53 @@
         app:srcCompat="@drawable/thumbnail"
         app:layout_constraintLeft_toLeftOf="parent" />
 
+    <TextView
+        android:layout_gravity="center"
+        android:id="@+id/site_title_id"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:maxLength="15"
+        android:textColor="@color/colorAccent"
+        android:ellipsize="end"
+        style="?android:attr/borderlessButtonStyle"
+        app:layout_constraintStart_toEndOf="@+id/article_img"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/article_img"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp" />
+
 
     <Button
         android:id="@+id/snippet_btn"
         android:layout_width="80dp"
         android:layout_height="33dp"
-        android:text="Snippet"
+        android:text="@string/snippet_btn_title"
         android:textColor="@color/colorAccent"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         style="?android:attr/borderlessButtonStyle"
         app:layout_constraintEnd_toStartOf="@+id/article_options_btn"
-
         />
     <TextView
         android:id="@+id/article_options_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="33dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
+        android:gravity="center"
         android:text="@string/dots_item"
         android:textColor="@color/colorAccent"
         android:textAppearance="?android:textAppearanceLarge"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="4dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_marginBottom="8dp"
+        tools:layout_editor_absoluteX="347dp" />
+
 </android.support.constraint.ConstraintLayout>
