@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.Utils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.Data.Contracts;
@@ -47,13 +48,13 @@ public class DBUtils {
     public static  SparseArray<FeedMeArticle> cursorToArticles(Cursor cursor) {
         SparseArray<FeedMeArticle> articles=new SparseArray<>();
         try {
-            while (!cursor.isAfterLast()) {
+            while (!cursor.isLast()) {
                 FeedMeArticle feedMeArticle=cursorToArticle(cursor);
                 articles.put(feedMeArticle.getArticleID(),feedMeArticle);
             }
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         } finally {
             if(cursor!=null&&!cursor.isClosed())
             cursor.close();
@@ -80,11 +81,58 @@ public class DBUtils {
             }
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         } finally {
             cursor.close();
         }
         return sites;
+    }
+
+    public static ArrayList<Site> cursorToSuggestSites(Cursor cursor,boolean[]checks) {
+        ArrayList<Site> sites = new ArrayList<>();
+        try {
+            for(int i=0;i<checks.length;i++){
+                if(!checks[i])
+                    continue;
+                while (cursor.moveToPosition(i)) {
+                    Site site = getSuggestSite(cursor);
+                    sites.add(site);
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return sites;
+    }
+    public static ArrayList<Site> cursorToSuggestSites(Cursor cursor) {
+        ArrayList<Site> sites = new ArrayList<>();
+        try {
+
+            while (cursor.moveToNext()) {
+                Site site = getSuggestSite(cursor);
+                sites.add(site);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+        return sites;
+    }
+
+    @NonNull
+    private static Site getSuggestSite(Cursor cursor) throws Exception{
+        Site site = new Site();
+        site.setTitle(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_TITLE)));
+        site.setUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_URL)));
+        site.setRssUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_RSS_URL)));
+        site.setmImgSrc(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_IMG_URL)));
+        site.setCategoryID(1);
+        return site;
     }
 
     //public Category cursortToCategory(Cursor cursor){}
@@ -101,7 +149,7 @@ public class DBUtils {
             }
 
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         } finally {
             cursor.close();
         }
@@ -162,6 +210,18 @@ public class DBUtils {
             contentValues.put(Contracts.SiteEntry.COLUMN_BLOCKED,site.isBlocked());
             contentValues.put(Contracts.SiteEntry._ID,site.getID());
             contentValues.put(Contracts.SiteEntry.COLUMN_IMG_URL,site.getmImgSrc());
+            contentValuesList.add(contentValues);
+        }
+        return contentValuesList.toArray(new ContentValues[]{});
+    }
+    public static ContentValues[]  suggestSitesToCV(List<Site> sites) {
+        ArrayList<ContentValues> contentValuesList = new ArrayList<ContentValues>();
+        for(Site site:sites){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Contracts.SiteSuggestEntry.COLUMN_TITLE,site.getTitle());
+            contentValues.put(Contracts.SiteSuggestEntry.COLUMN_URL,site.getUrl());
+            contentValues.put(Contracts.SiteSuggestEntry.COLUMN_RSS_URL,site.getRssUrl());
+            contentValues.put(Contracts.SiteSuggestEntry.COLUMN_IMG_URL,site.getmImgSrc());
             contentValuesList.add(contentValues);
         }
         return contentValuesList.toArray(new ContentValues[]{});

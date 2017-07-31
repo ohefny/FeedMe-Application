@@ -19,6 +19,8 @@ import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.Services.ArticlesDownloaderService;
 import com.example.bethechange.feedme.Utils.DBUtils;
+import com.example.bethechange.feedme.Utils.FirebaseUtils;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -98,7 +100,7 @@ public class SitesRepository extends AsyncQueryHandler implements SitesRepositor
     @Override
     public void addSite(Site site) {
         allSites.put(site.getID(),site);
-        super.startInsert(sitesToken,null, Contracts.SiteEntry.CONTENT_URI, DBUtils.sitesToCV(new Site[]{site})[0]);
+        super.startInsert(sitesToken,site, Contracts.SiteEntry.CONTENT_URI, DBUtils.sitesToCV(new Site[]{site})[0]);
     }
 
     @Override
@@ -150,6 +152,7 @@ public class SitesRepository extends AsyncQueryHandler implements SitesRepositor
         }
         for(int i=0;i<listeners.size();i++)
             listeners.valueAt(i).queryCompleted();
+        FirebaseUtils.insertSuggestionsSites(ls);
 
     }
     public interface SitesObserver{
@@ -162,14 +165,12 @@ public class SitesRepository extends AsyncQueryHandler implements SitesRepositor
         if(token==categoryToken)
             super.startQuery(categoryToken,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
         querySites();
-        fetchNewSiteArticles();
+        if(cookie!=null&&cookie instanceof Site)
+            fetchNewSiteArticles((Site)cookie);
     }
 
-    private void fetchNewSiteArticles() {
-        //TODO :: improvement make intent only download the new site
-        Intent intent=new Intent(FeedMeApp.getContext(),ArticlesDownloaderService.class);
-        intent.setAction(ArticlesDownloaderService.ACTION_FETCH_LATEST);
-        FeedMeApp.getContext().startService(intent);
+    private void fetchNewSiteArticles(Site site) {
+       ArticlesDownloaderService.startActionUpdateSites(FeedMeApp.getContext(),true,new Gson().toJson(site,Site.class));
     }
 
     @Override
@@ -182,6 +183,7 @@ public class SitesRepository extends AsyncQueryHandler implements SitesRepositor
     protected void onDeleteComplete(int token, Object cookie, int result) {
         super.onDeleteComplete(token, cookie, result);
         querySites();
+        //super.startQuery(2020,null, Contracts.ArticleEntry.CONTENT_URI,null,null,null,null);
         if(cookie!=null&&cookie instanceof Site) {
             Site st = (Site) cookie;
             super.startDelete(articlesToken, null, Contracts.ArticleEntry.CONTENT_URI, Contracts.ArticleEntry.COLUMN_SITE + " =?", new String[]{st.getID() + ""});

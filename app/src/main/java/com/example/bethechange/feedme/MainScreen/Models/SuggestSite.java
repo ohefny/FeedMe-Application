@@ -3,25 +3,21 @@ package com.example.bethechange.feedme.MainScreen.Models;
 import com.google.firebase.database.Exclude;
 
 /**
- * Created by BeTheChange on 7/10/2017.
+ * Created by BeTheChange on 7/31/2017.
  */
 
-public class Site{
+public class SuggestSite {
     private String mTitle="";
     private String mUrl="";
     private String mRssUrl="";
     private String mImgSrc="";
-    private Category mCategory;
-    private int categoryID;
     private int mID;
-    private boolean mBlocked;
-
-    public int getCategoryID() {
-        return categoryID;
-    }
-
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
+    public SuggestSite(Site site){
+        setTitle(site.getTitle());
+        setUrl(site.getUrl());
+        setRssUrl(site.getRssUrl());
+        setID(site.getID());
+        setmImgSrc(site.getmImgSrc());
     }
     public int getID() {
         return mID;
@@ -56,22 +52,6 @@ public class Site{
         this.mRssUrl = mRssUrl;
 
     }
-    @Exclude
-    public Category getCategory() {
-        return mCategory;
-    }
-    @Exclude
-    public void setCategory(Category mCategory) {
-        this.mCategory = mCategory;
-    }
-
-    public void setBlocked(boolean blocked) {
-        this.mBlocked = blocked;
-    }
-
-    public boolean isBlocked() {
-        return mBlocked;
-    }
     public String getmImgSrc() {
         return mImgSrc;
     }
@@ -84,4 +64,5 @@ public class Site{
     public String toString() {
         return getTitle();
     }
+
 }

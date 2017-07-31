@@ -35,7 +35,7 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
                 Contracts.SiteEntry.COLUMN_CATEGORY +" INTEGER, " +
                 Contracts.SiteEntry.COLUMN_BLOCKED +" BOOLEAN, " +
                 "FOREIGN KEY("+Contracts.SiteEntry.COLUMN_CATEGORY+") REFERENCES "+
-                Contracts.CategoryEntry.TABLE_NAME+"("+Contracts.CategoryEntry._ID+ "));";
+                Contracts.CategoryEntry.TABLE_NAME+"("+Contracts.CategoryEntry._ID+ ") ON DELETE CASCADE );";
         final String SQL_CREATE_ARTICLE_TABLE="CREATE TABLE " + Contracts.ArticleEntry.TABLE_NAME + " ("+
                 Contracts.ArticleEntry._ID + " BIGINT PRIMARY KEY," +
                 Contracts.ArticleEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
@@ -54,18 +54,35 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
                 Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH + " TEXT, " +
                 Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE +" TEXT,"+
                 "FOREIGN KEY("+Contracts.ArticleEntry.COLUMN_SITE+") REFERENCES "+
-                Contracts.SiteEntry.TABLE_NAME+"("+Contracts.SiteEntry._ID+ "));";
+                Contracts.SiteEntry.TABLE_NAME+"("+Contracts.SiteEntry._ID+ ") ON DELETE CASCADE );";
+
+        final String SQL_CREATE_SUGGESTED_SITE_TABLE="CREATE TABLE " + Contracts.SiteSuggestEntry.TABLE_NAME + " ("+
+                Contracts.SiteSuggestEntry._ID + " INTEGER PRIMARY KEY," +
+                Contracts.SiteSuggestEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+                Contracts.SiteSuggestEntry.COLUMN_RSS_URL + " TEXT NOT NULL, " +
+                Contracts.SiteSuggestEntry.COLUMN_URL + " TEXT NOT NULL, " +
+                Contracts.SiteSuggestEntry.COLUMN_IMG_URL + " TEXT ); " ;
 
         try {
+            db.execSQL(SQL_CREATE_SUGGESTED_SITE_TABLE);
+            db.execSQL(SQL_CREATE_CATEGORY_TABLE);
+            db.execSQL(SQL_CREATE_SITE_TABLE);
+            db.execSQL(SQL_CREATE_ARTICLE_TABLE);
+            Category category=new Category();
+            category.setTitle("Uncategorized");
+            category.setId(1);
+            db.insert(Contracts.CategoryEntry.TABLE_NAME,null,DBUtils.categoriesToCV(new Category[]{category})[0]);
 
-
-        db.execSQL(SQL_CREATE_CATEGORY_TABLE);
-        db.execSQL(SQL_CREATE_SITE_TABLE);
-        db.execSQL(SQL_CREATE_ARTICLE_TABLE);
         }
         catch (Exception ex){
             Log.d("Database ","Failed to create");
         }
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys=ON");
     }
 
     @Override

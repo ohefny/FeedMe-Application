@@ -17,6 +17,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -30,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.ArticleType;
@@ -42,18 +45,26 @@ import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
+import com.example.bethechange.feedme.Services.CleanupService;
+import com.example.bethechange.feedme.Services.RefreshDataService;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 
 import java.util.ArrayList;
 
 public class MainScreenActivity extends AppCompatActivity implements
-        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor, CategoriesRepository.CategoriesListener {
+        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor, CategoriesRepository.CategoriesListener, NavigationCategoryAdapter.CategoriesListListener {
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
     private FloatingActionButton mFab;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
-    private boolean mSearchActivity=false;
     private ProgressBar progressBar;
     private ObjectAnimator animation;
     private WebView webView;
@@ -61,35 +72,51 @@ public class MainScreenActivity extends AppCompatActivity implements
     private int currentPage;
     private ViewPager mViewPager;
     private CategoriesRepository catRepo;
-    private ListView navCats;
+    private RecyclerView navCats;
     private ArrayList<Category> cats;
-    private ArrayAdapter<Category> catAdapter;
+    private NavigationCategoryAdapter catAdapter;
     private int mId=-1;
+    private final String JOBTAG="REFRESH_DATA";
 
-    //TODO if seprate search activity remove this boolean and it's usage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         mAdapter=new MainPagesAdapter(getSupportFragmentManager(),this);
         setupViews();
-
-        Intent intent = getIntent();
-
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-            Toast.makeText(this,"Search Search",Toast.LENGTH_SHORT).show();
-            mSearchActivity=true;
-        }
-
         prepareProgress();
-        //FeedMeDBHelper dbHelper=new FeedMeDBHelper(this);
-        //SQLiteDatabase wdb = dbHelper.getWritableDatabase();
-        // wdb.execSQL("ALTER TABLE Article_Table ADD PUBLISHED_DATE TEXT;");
-        // wdb.execSQL("ALTER TABLE Article_Table ADD webarchive_path TEXT;");
-        // getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI, DBUtils.sitesToCV(getSites()));
-        // getContentResolver().delete(Contracts.SiteEntry.CONTENT_URI,null,null);
-      //  getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(getSites()));
-        //insertSites();
+        scheduleJob();
+
+    }
+
+    private void scheduleJob() {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job myJob = dispatcher.newJobBuilder()
+                // the JobService that will be called
+                .setService(RefreshDataService.class)
+                // uniquely identifies the job
+                .setTag(JOBTAG)
+                // one-off job
+                .setRecurring(false)
+                // don't persist past a device reboot
+                .setLifetime(Lifetime.FOREVER)
+                // start between 0 and 60 seconds from now
+                .setTrigger(Trigger.executionWindow(0, 60))
+                // don't overwrite an existing job with the same tag
+                .setReplaceCurrent(false)
+                // retry with exponential backoff
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                // constraints that need to be satisfied for the job to run
+                .setConstraints(
+                        // only run on an unmetered network
+                        Constraint.ON_ANY_NETWORK,
+                        // only run when the device is charging
+                        Constraint.DEVICE_CHARGING
+                )
+                .build();
+
+        dispatcher.mustSchedule(myJob);
+
     }
 
     private void prepareProgress() {
@@ -102,7 +129,7 @@ public class MainScreenActivity extends AppCompatActivity implements
 
     public static  Site[] getSites() {
         //http://feeds.feedburner.com/TheAtlantic
-        //https://www.polygon.com/rss/index.xml
+        //https:no//www.polygon.com/rss/index.xml
         //http://www.coolhunting.com/atom.xml
         //http://www.betterlivingthroughdesign.com/feed
         //http://rss.cnn.com/rss/cnn_topstories.rss
@@ -140,8 +167,7 @@ public class MainScreenActivity extends AppCompatActivity implements
     }
 
     private void setupViews() {
-        navCats=(ListView)findViewById(R.id.categories_nav_list);
-
+        navCats=(RecyclerView)findViewById(R.id.categories_nav_list);
         TabLayout mSlidingTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         mViewPager = (ViewPager)findViewById(R.id.viewpager);
         mViewPager.setAdapter(mAdapter);
@@ -158,7 +184,6 @@ public class MainScreenActivity extends AppCompatActivity implements
                     mFab.setImageResource(R.drawable.ic_fab_add);
                 else if(position==0) {
                     mFab.setImageResource(R.drawable.ic_arrow_up);
-                    //((TimelineFragment)mAdapter.getItem(0)).fragmentVisible();
                 }
             }
 
@@ -192,28 +217,15 @@ public class MainScreenActivity extends AppCompatActivity implements
 
             }
         });
-//        mNavHeader = mNavigationView.getHeaderView(0);
-  //      mNavHeader.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        //ToDo:: implement my own header and inflate it using mNavigationView.inflateHeaderView()
         setUpNavigationView();
     }
     private void setUpNavigationView() {
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        //TODO :: MAYBE ADD ADAPTER TO NAVIGATION VIEW
-        //Todo :: replace action in this listener for navigationview
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 
             // This method will trigger on item Click of navigation menu
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-                //Check to see which item was being clicked and perform appropriate action
-                switch (menuItem.getItemId()) {
-                    //Replacing the main content with ContentFragment Which is our Inbox View;
-
-                }
-
-                //Checking if the item is in checked state or not, if not make it in checked state
                 if (menuItem.isChecked()) {
                     menuItem.setChecked(false);
                 } else {
@@ -310,16 +322,9 @@ public class MainScreenActivity extends AppCompatActivity implements
         ArticlesRepository.getInstance(this);
         catRepo = new CategoriesRepository(getContentResolver());
         cats=catRepo.getCategories(this);
-        catAdapter=new ArrayAdapter<Category>(this,R.layout.simple_nav_category_item,cats);
+        catAdapter=new NavigationCategoryAdapter(cats,this);
         navCats.setAdapter(catAdapter);
-        navCats.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mViewPager.setCurrentItem(0);
-                ((TimelineFragment)mAdapter.getCurrentFragment()).setCategory(catAdapter.getItem(position));
-                mDrawer.closeDrawers();
-            }
-        });
+        navCats.setLayoutManager(new LinearLayoutManager(this));
         super.onStart();
     }
 
@@ -370,8 +375,7 @@ public class MainScreenActivity extends AppCompatActivity implements
     public void categoriesFetched(ArrayList<Category> cats) {
             this.cats=cats;
             if(catAdapter!=null){
-                catAdapter.clear();
-                catAdapter.addAll(cats);
+                catAdapter.setCategories(cats);
                 catAdapter.notifyDataSetChanged();
             }
 
@@ -389,13 +393,13 @@ public class MainScreenActivity extends AppCompatActivity implements
 
     public void onAddCategory(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Catalog");
+        builder.setTitle(getString(R.string.add_category_title));
 
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.add_btn_text), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //TODO::NOTIFY TIMELINE AND SITE WITH CHANGES
@@ -405,7 +409,7 @@ public class MainScreenActivity extends AppCompatActivity implements
                 dialog.dismiss();
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.cancel_btn_text), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -414,4 +418,68 @@ public class MainScreenActivity extends AppCompatActivity implements
 
         builder.show();
     }
+
+    @Override
+    public void onCategoryClicked(int position) {
+        mViewPager.setCurrentItem(0);
+        ((TimelineFragment)mAdapter.getCurrentFragment()).setCategory(cats.get(position));
+        mDrawer.closeDrawers();
+    }
+
+    @Override
+    public void onDeleteCategory(final int position) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.delete_category_title));
+        builder.setMessage(getString(R.string.delete_category_msg));
+        builder.setPositiveButton(getString(R.string.delete_category_pos_btn), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                catRepo.deleteCategory(cats.get(position));
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.cancel_btn_text), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+
+            }
+        });
+        builder.show();
+
+
+    }
+
+    @Override
+    public void onEditCategory(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.edit_category_title));
+
+
+        final EditText input = new EditText(this);
+        input.setText(cats.get(position).getTitle());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+        builder.setPositiveButton(getString(R.string.edit_category_pos_btn), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Category cat=new Category();
+                cat.setTitle(input.getText().toString());
+                catRepo.editCategory(cat);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.cancel_btn_text), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
+
+
 }

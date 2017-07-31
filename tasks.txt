@@ -1,6 +1,11 @@
--Implement CustomeScreen to fetch favs and saved posts
+-Make Splash Screen Opens New Screen That Show Network Error
+-Implement IntentService to clean up the database
 -Implement Settings activity to make use choose prefs
 -FlipAdapter for show snippet in more cool way
+-Implement SplashScreen for loading data from internet(done)
+-Implement firebase,Gogole Sign in(done)
+-FirebaseSyncManger needs to be Presenter (done)
+-Implement CustomeScreen to fetch favs and saved posts (done)
 -Article with no img show site img instead (done)
 -Handle offline situations (done)
 -Implement Category and sites fragment(done)

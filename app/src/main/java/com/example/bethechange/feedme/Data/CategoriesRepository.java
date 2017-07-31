@@ -2,8 +2,11 @@ package com.example.bethechange.feedme.Data;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
@@ -11,7 +14,9 @@ import android.util.SparseArray;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Presenters.ArticlesListPresenter;
+import com.example.bethechange.feedme.UserManger;
 import com.example.bethechange.feedme.Utils.DBUtils;
+import com.example.bethechange.feedme.Utils.FirebaseUtils;
 
 import java.util.ArrayList;
 
@@ -39,7 +44,7 @@ public class CategoriesRepository extends AsyncQueryHandler{
 
     }
     public void addCategory(Category cat){
-        startInsert(CATEGORIES_TOKEN,null, Contracts.CategoryEntry.CONTENT_URI,DBUtils.categoriesToCV(new Category[]{cat})[0]);
+        startInsert(CATEGORIES_TOKEN,cat, Contracts.CategoryEntry.CONTENT_URI,DBUtils.categoriesToCV(new Category[]{cat})[0]);
         startQuery(CATEGORIES_TOKEN,null, Contracts.CategoryEntry.CONTENT_URI,
                 null,null,null,null);
     }
@@ -53,11 +58,42 @@ public class CategoriesRepository extends AsyncQueryHandler{
             }
         }
         else {
-            listeners.get(token).categoriesFetched(cats);
+            if(listeners.get(token)!=null)
+                listeners.get(token).categoriesFetched(cats);
         }
+     //   FirebaseUtils.insertCategoryList(cats);
     }
     private void queryCategories(){
         startQuery(CATEGORIES_TOKEN,null,Contracts.CategoryEntry.CONTENT_URI,null,null,null,null);
+    }
+
+    public void editCategory(Category cat) {
+        super.startUpdate(0,cat, ContentUris.withAppendedId(Contracts.CategoryEntry.CONTENT_URI,
+                cat.getId()),
+                DBUtils.categoriesToCV(new Category[]{cat})[0],null,null);
+    }
+
+    public void deleteCategory(Category category) {
+        super.startDelete(0,category,Contracts.CategoryEntry.CONTENT_URI,Contracts.CategoryEntry._ID+" = ? ",new String[]{category.getId()+""});
+    }
+
+    @Override
+    protected void onDeleteComplete(int token, Object cookie, int result) {
+        super.onDeleteComplete(token, cookie, result);
+        Category deleted = (Category) cookie;
+        //super.startQuery(2020,null, Contracts.SiteEntry.CONTENT_URI,null,null,null,null);
+    }
+
+    @Override
+    protected void onInsertComplete(int token, Object cookie, Uri uri) {
+        super.onInsertComplete(token, cookie, uri);
+        Category inserted = (Category) cookie;
+    }
+
+    @Override
+    protected void onUpdateComplete(int token, Object cookie, int result) {
+        super.onUpdateComplete(token, cookie, result);
+        Category updated = (Category) cookie;
     }
 
     public interface CategoriesListener{

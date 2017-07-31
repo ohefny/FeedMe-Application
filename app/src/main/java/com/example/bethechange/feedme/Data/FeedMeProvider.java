@@ -31,6 +31,9 @@ public class FeedMeProvider extends ContentProvider {
     public static final int CATEGORY_WITH_ID=201;
     public static final int SITES=300;
     public static final int SITE_WITH_ID=301;
+    private static final int SUGGEST_SITES = 401;
+
+
     private UriMatcher buildUriMatcher(){
         UriMatcher uriMatcher=new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.ARTICLES_PATH,ARTICLES);
@@ -41,6 +44,7 @@ public class FeedMeProvider extends ContentProvider {
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.CATEGORY_PATH+"/*",CATEGORY_WITH_ID);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SITES_PATH,SITES);
         uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SITES_PATH+"/*",SITE_WITH_ID);
+        uriMatcher.addURI(Contracts.AUTHORITY,Contracts.SUGGEST_SITES_PATH,SUGGEST_SITES);
 
         return uriMatcher;
     }
@@ -66,6 +70,9 @@ public class FeedMeProvider extends ContentProvider {
                 break;
             case SITES:
                 retCursor=db.query(Contracts.SiteEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
+                break;
+            case SUGGEST_SITES:
+                retCursor=db.query(Contracts.SiteSuggestEntry.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
                 break;
             case ARTICLE_WITH_ID:
                 String st=String.valueOf(uri.getPathSegments().get(1));
@@ -106,6 +113,9 @@ public class FeedMeProvider extends ContentProvider {
                 return "vnd.android.cursor.dir" + "/" +Contracts.AUTHORITY+"/"+Contracts.SITES_PATH;
             case SITE_WITH_ID:
                 return "vnd.android.cursor.item" + "/" +Contracts.AUTHORITY+"/"+Contracts.SITES_PATH;
+            case SUGGEST_SITES:
+                return "vnd.android.cursor.dir" + "/" +Contracts.AUTHORITY+"/"+Contracts.SUGGEST_SITES_PATH;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri : "+uri);
 
@@ -118,31 +128,41 @@ public class FeedMeProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         final SQLiteDatabase db = mFeedMeDBHelper.getWritableDatabase();
         Uri retUri = null;
+        long rowID;
         switch (sUriMatcher.match(uri)) {
             case ARTICLES:
-                long mId = db.insertWithOnConflict(Contracts.ArticleEntry.TABLE_NAME, null, values,
+                rowID = db.insertWithOnConflict(Contracts.ArticleEntry.TABLE_NAME, null, values,
                         CONFLICT_IGNORE);
-                if (mId > 0)
-                    retUri = ContentUris.withAppendedId(uri, mId);
+                if (rowID > 0)
+                    retUri = ContentUris.withAppendedId(uri, rowID);
                 else
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case CATEGORIES:
-                long RId = db.insertWithOnConflict(Contracts.CategoryEntry.TABLE_NAME, null,
+                rowID = db.insertWithOnConflict(Contracts.CategoryEntry.TABLE_NAME, null,
                         values,CONFLICT_IGNORE);
-                if (RId > 0)
-                    retUri = ContentUris.withAppendedId(uri, RId);
+                if (rowID > 0)
+                    retUri = ContentUris.withAppendedId(uri, rowID);
                 else
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case SITES:
-                long TId = db.insertWithOnConflict(Contracts.SiteEntry.TABLE_NAME, null, values,
+                rowID = db.insertWithOnConflict(Contracts.SiteEntry.TABLE_NAME, null, values,
                         CONFLICT_IGNORE);
-                if (TId > 0)
-                    retUri = ContentUris.withAppendedId(uri, TId);
+                if (rowID > 0)
+                    retUri = ContentUris.withAppendedId(uri, rowID);
                 else
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
+            case SUGGEST_SITES:
+                rowID = db.insertWithOnConflict(Contracts.SiteSuggestEntry.TABLE_NAME, null, values,
+                        CONFLICT_IGNORE);
+                if (rowID > 0)
+                    retUri = ContentUris.withAppendedId(uri, rowID);
+                else
+                    throw new SQLException("Failed To Insert row into " + uri);
+                break;
+
         }
         Context context = getContext();
         if (context != null){
@@ -175,6 +195,9 @@ public class FeedMeProvider extends ContentProvider {
                 break;
             case SITES:
                 deletedRows=db.delete(Contracts.SiteEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case SUGGEST_SITES:
+                deletedRows=db.delete(Contracts.SiteSuggestEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("the operation of this uri is unsupported :: " +uri);

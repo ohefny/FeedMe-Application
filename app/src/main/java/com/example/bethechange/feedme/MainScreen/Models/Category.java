@@ -6,9 +6,9 @@ package com.example.bethechange.feedme.MainScreen.Models;
 
 public class Category {
 
-    String mTitle="";
-    Boolean mShared;
-    int id;
+    private String mTitle="";
+    private Boolean mShared;
+    private int id;
 
     public int getId() {
         return id;

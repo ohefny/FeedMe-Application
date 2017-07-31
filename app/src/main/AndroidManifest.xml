@@ -16,26 +16,15 @@
         <meta-data
             android:name="android.app.default_searchable"
             android:value=".CustomScreen.SearchActivity" />
+
         <activity
             android:name=".MainScreen.Views.MainScreenActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <!--
-          TODO : Replace value with search activity if you want seperate search activity
-          TODO : REMOVE THE SECOND META-DATA
-            -->
-        </activity>
-        <!-- TODO: If decided that search results should be in a different activity -->
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CustomScreen.SearchActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -49,13 +38,38 @@
         <service
             android:name=".Services.ArticlesDownloaderService"
             android:exported="false" />
-
+        <service
+            android:name=".Services.CleanupService"
+            android:exported="false" />
+        <service
+            android:exported="false"
+            android:name=".Services.RefreshDataService">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
         <activity
             android:name=".DetailsScreen.DetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CustomScreen.CustomListActivity"/>
+        <activity android:name=".CustomScreen.CustomListActivity" />
+        <activity
+            android:name=".LaunchScreen.SplashScreen"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LaunchScreen.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LaunchScreen.ErrorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_error"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

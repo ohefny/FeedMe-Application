@@ -5,13 +5,14 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.ArticleType;
@@ -44,36 +45,39 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     private SparseArray<ArticlesRepositoryObserver> queryListeners=new SparseArray<>();
     private SparseArray<FeedMeArticle> allArticles;
     private final String SORT_CRITERIA=Contracts.ArticleEntry.COLUMN_DATE+" DESC";
-    private final int INTIALIZE_TOKEN=0;
+    private final int INITIALIZE_TOKEN =0;
     private static ArticlesRepository repoInstance;
     private static ArticlesObserver observer;
     private boolean freshData;
 
     private ArticlesRepository(ContentResolver cr) {
         super(cr);
-        refreshData();
-        queryArticles(INTIALIZE_TOKEN);
+        if(PrefUtils.isInitialized(mContext))
+            queryArticles(INITIALIZE_TOKEN);
+
+        if(PrefUtils.updateNow(FeedMeApp.getContext()))
+            refreshData();
+
         observer=new ArticlesObserver(new android.os.Handler(Looper.getMainLooper()),this);
-        cr.registerContentObserver(Contracts.ArticleEntry.CONTENT_URI,false,observer);
+
     }
     public static void destroyInstance(Context context) {
-        if(!context.equals(mContext))
-            return;
-        mContext.getContentResolver()
+        if(context.equals(mContext)){
+            mContext=null;
+            context.getContentResolver()
                 .unregisterContentObserver(observer);
+        }
        // repoInstance = null;
-        mContext=null;
+
     }
 
     public static ArticlesRepository getInstance(Context context){
-        if(mContext==null)
-            mContext=context;
-        if(repoInstance==null){
+        mContext=context;
+        if(repoInstance==null)
             repoInstance=new ArticlesRepository(context.getContentResolver());
-            context.getContentResolver()
-                    .registerContentObserver(Contracts.ArticleEntry.CONTENT_URI,false,observer);
-        }
 
+        context.getContentResolver()
+                .registerContentObserver(Contracts.ArticleEntry.CONTENT_URI,false,observer);
         return repoInstance;
     }
     public void setListener(ArticlesRepositoryObserver mListener,Site[]sites) {
@@ -87,7 +91,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     @Override
     public void onLocalDataChanged() {
         if(freshData){
-            queryArticles(queryToken);
+            queryArticles(INITIALIZE_TOKEN);
             freshData=false;
         }
     }
@@ -116,14 +120,22 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
 
     @Override
+    public void handleMessage(Message msg) {
+        super.handleMessage(msg);
+        Log.d(ArticlesRepository.class.getSimpleName(),msg.toString());
+    }
+
+    @Override
     protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
         if(token==SEARCH_TOKEN){
+
             ArticlesList ls=new ArticlesList();
             ls.setArticles(CollectionUtils.sparseToArray(DBUtils.cursorToArticles(cursor)));
+            Log.d(ArticlesRepository.class.getSimpleName(),"Search Done and Results "+ls.getArticles().size());
             queryListeners.get(cookie.hashCode()).onDataChanged(ls);
 
         }
-        else if(token==INTIALIZE_TOKEN||mSites==null||mSites.length==0){
+        else if(token== INITIALIZE_TOKEN ||mSites==null||mSites.length==0){
             allArticles= DBUtils.cursorToArticles(cursor);
 
         }
@@ -148,18 +160,11 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
 
     private void refreshData() {
-        if(!PrefUtils.updateNow(FeedMeApp.getContext()))
-            return;
-        Intent intent=new Intent(FeedMeApp.getContext(),ArticlesDownloaderService.class);
-        intent.setAction(ArticlesDownloaderService.ACTION_FETCH_LATEST);
-        FeedMeApp.getContext().startService(intent);
+        ArticlesDownloaderService.startActionUpdateAll(FeedMeApp.getContext(),false);
         freshData=true;
     }
     public void getLatestArticles() {
-        Intent intent=new Intent(FeedMeApp.getContext(),ArticlesDownloaderService.class);
-        intent.setAction(ArticlesDownloaderService.ACTION_FETCH_LATEST);
-        intent.putExtra(ArticlesDownloaderService.REFRESH_NOW,true);
-        FeedMeApp.getContext().startService(intent);
+        ArticlesDownloaderService.startActionUpdateAll(FeedMeApp.getContext(),true);
         freshData=true;
     }
 
@@ -191,7 +196,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     }
     @Override
     public ArticlesList getArticles(@Nullable Site[]sites) {
-        if(allArticles==null){
+        if(allArticles==null||allArticles.size()==0){
             queryArticles(queryToken);
             return new ArticlesList();
         }
@@ -311,6 +316,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
     public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepositoryObserver mListener) {
         String query="%"+model.getQuery()+"%";
         queryListeners.put(query.hashCode(),mListener);
+        Log.d(ArticlesRepository.class.getSimpleName(),"Search Start "+model.getSearchIn());
         switch (model.getSearchIn()){
             case ArticleType.CATEGORY:
                 if(model.getSearchInId()==-1)

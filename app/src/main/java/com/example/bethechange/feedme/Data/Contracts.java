@@ -13,6 +13,7 @@ public class Contracts {
         public static final Uri BASE_CONTENT_URI= Uri.parse("content://"+AUTHORITY);
         public static final String ARTICLES_PATH="articles";
         public static final String SITES_PATH="sites";
+    public static final String SUGGEST_SITES_PATH="suggest_sites";
         public static final String CATEGORY_PATH="categories";
         public static final class ArticleEntry implements BaseColumns {
             public  static final Uri CONTENT_URI=BASE_CONTENT_URI.buildUpon().appendPath(ARTICLES_PATH).build();
@@ -48,6 +49,15 @@ public class Contracts {
 
 
         }
+    public static final class SiteSuggestEntry implements BaseColumns {
+        public  static final Uri CONTENT_URI=BASE_CONTENT_URI.buildUpon().appendPath(SUGGEST_SITES_PATH).build();
+        public static final String TABLE_NAME = "Site_Suggest_Table";
+        public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_URL = "domain";
+        public static final String COLUMN_RSS_URL = "rss_link";
+        public static final String COLUMN_IMG_URL = "img_link";
+
+    }
         public static final class CategoryEntry implements BaseColumns {
             public  static final Uri CONTENT_URI=BASE_CONTENT_URI.buildUpon().appendPath(CATEGORY_PATH).build();
             public static final String TABLE_NAME = "Category_Table";

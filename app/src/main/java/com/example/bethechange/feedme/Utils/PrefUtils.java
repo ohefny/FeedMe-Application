@@ -33,7 +33,7 @@ public final class PrefUtils {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             boolean update=false;
-            boolean initialized=prefs.getBoolean(INITIALIZED_KEY,false);
+            boolean initialized= isInitialized(context);
             if(!initialized){
                 initializePrefs(prefs,context);
                 return true;
@@ -58,12 +58,18 @@ public final class PrefUtils {
             return update;
         }
 
+    public static boolean isInitialized(Context context) {
+        final String INITIALIZED_KEY=context.getString(R.string.pref_initialized_key);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(INITIALIZED_KEY,false);
+    }
+
     private static void initializePrefs(SharedPreferences prefs,Context context) {
         final String INITIALIZED_KEY=context.getString(R.string.pref_initialized_key);
         final String LAST_UPDATE_KEY = context.getString(R.string.pref_last_update_key);
         final String INTERVAL_VAL_KEY = context.getString(R.string.pref_interval_val_key);
         final String INTERVAL_TYPE_KEY = context.getString(R.string.pref_interval_type_key);
-        boolean initialized=prefs.getBoolean(INITIALIZED_KEY,false);
+        boolean initialized= isInitialized(context);
         if(initialized){
            return;
         }
@@ -74,14 +80,8 @@ public final class PrefUtils {
         editor.putLong(LAST_UPDATE_KEY,0);
         editor.apply();
         //TODO::remember to replace with real sites
-        Category category=new Category();
-        category.setTitle("UnCategorized");
-        category.setId(1);
-        //db.insert(Contracts.CategoryEntry.TABLE_NAME,null, DBUtils.categoriesToCV(new Category[]{category})[0]);
-        Log.d("Database ","Successfully created");
-        context.getContentResolver().insert(Contracts.CategoryEntry.CONTENT_URI,DBUtils.categoriesToCV(new Category[]{category})[0]);
-        context.getContentResolver().
-                bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(MainScreenActivity.getSites()));
+        /*context.getContentResolver().
+                bulkInsert(Contracts.SiteEntry.CONTENT_URI,DBUtils.sitesToCV(MainScreenActivity.getSites()));*/
     }
 
     public static void updateLastUpdate(Context context) {
@@ -124,7 +124,28 @@ public final class PrefUtils {
     }
 
 
+    public static void updateLastSynchronized() {
 
+    }
+
+
+    public static void setSynced(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.is_synced_pref_key);
+        prefs.edit().putBoolean(key,true).apply();
+
+    }
+    public static boolean isSynced(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.is_synced_pref_key);
+        boolean isSynced=prefs.getBoolean(key,false);
+        return isSynced;
+    }
+
+    public static long deleteBefore(Context context) {
+        //TODO IMPLEMENT THIS TO SEE CURRENT TIME AND SUBTRACT FROM CLEAUNUPAFTEER ATTRIBUTE
+        return 0;
+    }
 }
 
 

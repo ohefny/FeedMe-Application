@@ -19,4 +19,11 @@ public class CollectionUtils {
 
         return arrayList;
     }
+    public static <T> String[] objectsToStrings(ArrayList<T>objects){
+        String[]arrayList=new String[objects.size()];
+        for(int i=0;i<objects.size();i++)
+           arrayList[i]=(objects.get(i).toString());
+
+        return arrayList;
+    }
 }

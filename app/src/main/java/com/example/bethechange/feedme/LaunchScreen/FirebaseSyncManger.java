@@ -1,0 +1,159 @@
+package com.example.bethechange.feedme.LaunchScreen;
+
+import android.content.Context;
+import android.os.CountDownTimer;
+import android.os.Handler;
+
+import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.FeedMeApp;
+import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
+import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.R;
+import com.example.bethechange.feedme.Utils.DBUtils;
+import com.example.bethechange.feedme.Utils.FirebaseUtils;
+import com.example.bethechange.feedme.Utils.PrefUtils;
+
+import java.util.ArrayList;
+
+/**
+ * Created by BeTheChange on 7/29/2017.
+ */
+
+class FirebaseSyncManger implements FirebaseUtils.FirebaseUserListener, FirebaseUtils.FirebaseCategoriesListener, FirebaseUtils.FirebaseSitesListener, ArticlesRepository.ArticlesRepositoryObserver {
+    private final ArticlesRepository mRepo;
+    private Context mContext;
+    private CountDownTimer ct;
+    private SyncInteractor mInteractor;
+    FirebaseSyncManger(SyncInteractor interactor,ArticlesRepository repo) {
+        mContext=FeedMeApp.getContext();
+        mInteractor=interactor;
+        mRepo=repo;
+
+    }
+
+    void startSyncing() {
+        if(PrefUtils.isSynced(mContext))
+            finishSyncing();
+        else{
+            FirebaseUtils.checkUserExist(this);
+            mInteractor.onNewOperation("Syncing...");
+        }
+
+    }
+
+    @Override
+    public void onUserChecked(boolean exist) {
+        if(!exist){
+            mInteractor.noSitesFound();
+            return;
+        }
+        if(!PrefUtils.isSynced(mContext)){
+            FirebaseUtils.getUserCategories(this);
+        }
+        else{
+            //this means that data is synced and no need to sync again just load from content provider
+            prepareArticles();
+
+
+        }
+    }
+
+    @Override
+    public void onCategoriesFetched(ArrayList<Category> categories, boolean error) {
+        if(error){
+            mInteractor.errorOccurred(mContext.getString(R.string.unable_to_sync));
+            return;
+        }
+        if(categories.size()>0){
+            FeedMeApp.getContext().getContentResolver().bulkInsert(Contracts.CategoryEntry.CONTENT_URI, DBUtils.categoriesToCV(categories));
+            FirebaseUtils.getUserSites(this);
+        }
+        else{
+            mInteractor.noSitesFound();
+        }
+    }
+
+
+    @Override
+    public void onSitesFetched(ArrayList<Site> sites, boolean error) {
+        if(error){
+            mInteractor.errorOccurred(mContext.getString(R.string.unable_to_sync));
+            return;
+        }
+        if(sites.size()>0){
+            mContext.getContentResolver().bulkInsert(Contracts.SiteEntry.CONTENT_URI, DBUtils.sitesToCV(sites));
+            PrefUtils.setSynced(mContext);
+            prepareArticles();
+
+        }
+        else{
+            mInteractor.noSitesFound();
+        }
+    }
+
+    private void prepareArticles() {
+        mInteractor.onNewOperation("Fetching Feeds...");
+        mRepo.setListener(this,null);
+        mRepo.getLatestArticles();
+        if(ct==null){
+            ct=getCountDownTimer();
+            ct.start();
+        }
+        else {
+            ct.cancel();
+            ct=getCountDownTimer();
+            ct.start();
+        }
+    }
+
+    private CountDownTimer getCountDownTimer() {
+        return new CountDownTimer(30000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                System.out.println("ToFinish "+millisUntilFinished);
+
+            }
+
+            @Override
+            public void onFinish() {
+                new Handler(mContext.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                       mInteractor.errorOccurred(mContext.getString(R.string.slow_fetching));
+                       finishSyncing();
+                    }
+                });
+            }
+        };
+    }
+
+    private void finishSyncing() {
+        if(ct!=null)
+             ct.cancel();
+        mInteractor.syncFinished();
+    }
+
+    @Override
+    public void onDataChanged(ArticlesList data) {
+
+        finishSyncing();
+    }
+
+    @Override
+    public void onFullArticleFetched(FeedMeArticle article) {
+
+    }
+
+    interface SyncInteractor{
+        void onNewOperation(String str);
+        void syncFinished();
+        void errorOccurred(String str);
+        void noSitesFound();
+
+    }
+
+}

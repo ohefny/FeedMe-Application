@@ -101,13 +101,18 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        prepareProgress();
+
+
+    }
+
+    private void prepareProgress() {
         dialog = new ProgressDialog(getActivity());//,R.style.MyProgressBar);
         dialog.setCancelable(false);
         dialog.setMessage("Fetching The Article");
         dialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
-
-
     }
+
     public void fragmentVisible(){
         if(interactor!=null)
             interactor.onViewVisible();

@@ -51,6 +51,23 @@
     <string name="saved_activity_title">Saved Articles</string>
     <string name="bookmark_activity_title">Bookmarks</string>
     <string name="snippet_btn_title">Snippet</string>
+    <string name="delete_category_msg">Deleting this category will delete all sites in it and all articles in these sites</string>
+    <string name="delete_category_title">Delete Category</string>
+    <string name="delete_category_pos_btn">Delete Any Way</string>
+    <string name="cancel_btn_text">Cancel</string>
+    <string name="edit_category_title">Edit Category</string>
+    <string name="edit_category_pos_btn">Edit</string>
+    <string name="add_category_title">Add Category</string>
+    <string name="add_btn_text">Add</string>
+    <string name="sign_in_text">To continue using the application please sign in</string>
+    <string name="auth_fail">Authentication failed check your internet</string>
+    <string name="is_synced_pref_key">IS_SYNCED</string>
+    <string name="unable_to_sync">Syncronization failed Please Try Again Later</string>
+    <string name="slow_fetching">Fetching Articles Takes Too Long ... Check Your Internet</string>
+
+    <string name="title_activity_error">ErrorActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">There is A Connection Problem</string>
 
 
 </resources>

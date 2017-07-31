@@ -1,8 +1,8 @@
-
--Add Category in nav don't affect category spinner (needs update) (fixed)
--Details Activity don't care which articles it opens from it just loop on all articles (fixed)
-- monitor article content to see if the problem appears again (maybe solved with
-setPageChangedListener) (fixed)
-- remember to rebuild data base and uncomment contentFetched,webarchive,published_date
-- dialog don't appear again after one fails in details fragment (fixed)
+-Search query some times don't get excuted
 - fetching articles when Details Mode some time fetching fails
+*Add Category in nav don't affect category spinner (needs update) (fixed)
+*Details Activity don't care which articles it opens from it just loop on all articles (fixed)
+* monitor article content to see if the problem appears again (maybe solved with
+setPageChangedListener) (fixed)
+* remember to rebuild data base and uncomment contentFetched,webarchive,published_date (fixed)
+* dialog don't appear again after one fails in details fragment (fixed)
