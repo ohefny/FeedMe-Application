@@ -152,7 +152,7 @@ public class SitesRepository extends AsyncQueryHandler implements SitesRepositor
         }
         for(int i=0;i<listeners.size();i++)
             listeners.valueAt(i).queryCompleted();
-        FirebaseUtils.insertSuggestionsSites(ls);
+        //FirebaseUtils.insertSuggestionsSites(ls);
 
     }
     public interface SitesObserver{

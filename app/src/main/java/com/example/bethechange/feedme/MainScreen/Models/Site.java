@@ -1,12 +1,13 @@
 package com.example.bethechange.feedme.MainScreen.Models;
 
+import com.example.bethechange.feedme.Identifiable;
 import com.google.firebase.database.Exclude;
 
 /**
  * Created by BeTheChange on 7/10/2017.
  */
 
-public class Site{
+public class Site implements Identifiable{
     private String mTitle="";
     private String mUrl="";
     private String mRssUrl="";
@@ -83,5 +84,15 @@ public class Site{
     @Override
     public String toString() {
         return getTitle();
+    }
+
+    @Override
+    public String getObjectKey() {
+        return getID()+"";
+    }
+
+    @Override
+    public int getIntObjectKey() {
+        return getID();
     }
 }

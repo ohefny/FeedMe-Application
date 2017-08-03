@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.MainScreen.Models;
 
 import android.support.annotation.IntDef;
 
+import com.example.bethechange.feedme.Identifiable;
 import com.pkmmte.pkrss.Article;
 
 import java.lang.annotation.Retention;
@@ -13,7 +14,7 @@ import java.util.Date;
  * Created by BeTheChange on 7/10/2017.
  */
 
-public class FeedMeArticle {
+public class FeedMeArticle implements Identifiable{
 
     private Article mArticle=new Article();
     private Site mSite;
@@ -23,7 +24,7 @@ public class FeedMeArticle {
     private boolean saved;
     private String webArchivePath="";
     private boolean contentFetched;
-    private String publishedDate="";
+    private long fetchedDate=System.currentTimeMillis();
     public Article getArticle() {
         return mArticle;
     }
@@ -90,13 +91,22 @@ public class FeedMeArticle {
         this.contentFetched = contentFetched;
     }
 
-    public String getPublishedDate() {
-        return publishedDate;
+    public long getFetchedDate() {
+        return fetchedDate;
     }
 
-    public void setPublishedDate(String publishedDate) {
-        this.publishedDate = publishedDate;
+    public void setFetchedDate(long fetchedDate) {
+        this.fetchedDate = fetchedDate;
     }
 
+    @Override
+    public String getObjectKey() {
+        return getArticleID()+"";
+    }
+
+    @Override
+    public int getIntObjectKey() {
+        return getArticleID();
+    }
 }
 

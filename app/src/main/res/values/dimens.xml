@@ -24,4 +24,10 @@
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="init_scroll_up_distance">100dp</dimen>
     <dimen name="dialog_elevation">24dp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
 </resources>

@@ -1,8 +1,8 @@
 package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.animation.ObjectAnimator;
-import android.app.Dialog;
 import android.app.SearchManager;
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,12 +27,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.ArticleType;
@@ -41,12 +37,15 @@ import com.example.bethechange.feedme.CustomScreen.SearchActivity;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.SitesRepository;
+import com.example.bethechange.feedme.JobManger;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.Services.CleanupService;
-import com.example.bethechange.feedme.Services.RefreshDataService;
+import com.example.bethechange.feedme.Services.BackupDataService;
+import com.example.bethechange.feedme.Services.RefreshDataDispatcher;
+import com.example.bethechange.feedme.SettingsActivity;
+import com.example.bethechange.feedme.Utils.PrefUtils;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -76,7 +75,7 @@ public class MainScreenActivity extends AppCompatActivity implements
     private ArrayList<Category> cats;
     private NavigationCategoryAdapter catAdapter;
     private int mId=-1;
-    private final String JOBTAG="REFRESH_DATA";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,37 +84,8 @@ public class MainScreenActivity extends AppCompatActivity implements
         mAdapter=new MainPagesAdapter(getSupportFragmentManager(),this);
         setupViews();
         prepareProgress();
-        scheduleJob();
-
-    }
-
-    private void scheduleJob() {
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Job myJob = dispatcher.newJobBuilder()
-                // the JobService that will be called
-                .setService(RefreshDataService.class)
-                // uniquely identifies the job
-                .setTag(JOBTAG)
-                // one-off job
-                .setRecurring(false)
-                // don't persist past a device reboot
-                .setLifetime(Lifetime.FOREVER)
-                // start between 0 and 60 seconds from now
-                .setTrigger(Trigger.executionWindow(0, 60))
-                // don't overwrite an existing job with the same tag
-                .setReplaceCurrent(false)
-                // retry with exponential backoff
-                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
-                // constraints that need to be satisfied for the job to run
-                .setConstraints(
-                        // only run on an unmetered network
-                        Constraint.ON_ANY_NETWORK,
-                        // only run when the device is charging
-                        Constraint.DEVICE_CHARGING
-                )
-                .build();
-
-        dispatcher.mustSchedule(myJob);
+        JobManger.scheduleBackupJob(this);
+        JobManger.scheduleRefreshJob(this);
 
     }
 
@@ -267,6 +237,11 @@ public class MainScreenActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.fetch_news){
             ArticlesRepository.getInstance(this).getLatestArticles();
+            return true;
+        }
+        if(item.getItemId()==R.id.settings){
+            Intent intent=new Intent(this,SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
         return mActionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
@@ -482,4 +457,7 @@ public class MainScreenActivity extends AppCompatActivity implements
     }
 
 
+    public void onBackupClicked(View view) {
+        BackupDataService.startActionBackup(this);
+    }
 }

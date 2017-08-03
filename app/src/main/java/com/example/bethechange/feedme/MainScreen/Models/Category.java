@@ -1,16 +1,22 @@
 package com.example.bethechange.feedme.MainScreen.Models;
 
+import com.example.bethechange.feedme.Identifiable;
+
 /**
  * Created by BeTheChange on 7/10/2017.
  */
 
-public class Category {
+public class Category implements Identifiable {
 
-    private String mTitle="";
+    private String mTitle = "";
     private Boolean mShared;
     private int id;
-
+    public Category(){
+        id=hashCode();
+    }
     public int getId() {
+        if(id==0)
+            id=hashCode();
         return id;
     }
 
@@ -41,6 +47,16 @@ public class Category {
 
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof Category) && this.getId()==((Category)obj).getId();
+        return (obj instanceof Category) && this.getId() == ((Category) obj).getId();
+    }
+
+    @Override
+    public String getObjectKey() {
+        return getId()+"";
+    }
+
+    @Override
+    public int getIntObjectKey() {
+        return getId();
     }
 }

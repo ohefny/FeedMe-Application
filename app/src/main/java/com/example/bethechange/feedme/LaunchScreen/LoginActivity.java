@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.Contracts;
@@ -54,7 +55,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
             }
         });
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("677711228584-ln28fjr02q6o176top29ck7nknr0v6cg.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.firebase_api_key))
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -92,8 +93,9 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
 
     @Override
     protected void onStop() {
-        super.onStop();
         ArticlesRepository.destroyInstance(this);
+        Log.d("OnStop Login","OnStop");
+        super.onStop();
     }
 
     private void prepareProgress() {
@@ -136,7 +138,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
 
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), "677711228584-ln28fjr02q6o176top29ck7nknr0v6cg.apps.googleusercontent.com");
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), getString(R.string.firebase_api_key));
         FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -208,7 +210,11 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
                     openMainScreen();
             }
         });
-        builder.create().show();
+        if(sites.size()==0){
+            openMainScreen();
+        }
+        else
+         builder.create().show();
 
 
     }

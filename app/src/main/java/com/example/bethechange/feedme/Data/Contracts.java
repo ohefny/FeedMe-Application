@@ -32,7 +32,7 @@ public class Contracts {
             public static final String COLUMN_SAVED="saved";
             public static final String COLUMN_CONTENT_FETCHED = "content_fetched" ;
             public static final String COLUMN_WEBARCHIVE_PATH = "webarchive_path";
-            public static final String COLUMN_PUBLISHED_DATE ="published_date" ;
+            public static final String COLUMN_FETCHED_DATE ="fetched_date" ;
         }
 
         public static final class SiteEntry implements BaseColumns {

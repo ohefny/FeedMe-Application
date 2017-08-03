@@ -26,7 +26,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.bethechange.feedme.CustomAspectImage;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
@@ -131,10 +130,11 @@ implements DetailsContract.ItemView{
 
     @Override
     public void showProgress() {
-        if(!dialog.isShowing())
+        if(!dialog.isShowing()) {
             dialog.show();
-        cd=getCountDownTimer();
-        cd.start();
+            cd=getCountDownTimer();
+            cd.start();
+        }
 
     }
 
@@ -188,7 +188,10 @@ implements DetailsContract.ItemView{
         super.setUserVisibleHint(isVisibleToUser);
         mVisible=isVisibleToUser;
         if(mInteractor!=null&&isVisibleToUser){
-            mInteractor.isVisible();
+            mInteractor.isVisible(true);
+        }
+        else if(mInteractor!=null&&!isVisibleToUser){
+            mInteractor.isVisible(false);
         }
         if(feedMeArticle!=null)
             Log.d("VISIBLE",feedMeArticle.getArticle().getTitle());
@@ -278,10 +281,7 @@ implements DetailsContract.ItemView{
                     mPhotoView);
             if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
                 byLineTv=((TextView)mRootView.findViewById(R.id.byLine));
-                String date=feedMeArticle.getPublishedDate();
-                if(date.isEmpty()){
-                    date= getDateFormatted();
-                }
+                String date= getDateFormatted();
                 byLineTv.setText(feedMeArticle.getArticle().getAuthor()+" "+ getDateFormatted());
                 //mCollapssingToolbar=((CollapsingToolbarLayout) this.mRootView.findViewById(R.id.collapsing_toolbar_layout));
                 mCollapssingToolbar.setTitle(feedMeArticle.getArticle().getTitle());
@@ -317,7 +317,7 @@ implements DetailsContract.ItemView{
         super.onPresenterPrepared(presenter);
         mInteractor=presenter;
         if(mVisible)
-            mInteractor.isVisible();
+            mInteractor.isVisible(true);
     }
 
     @Override

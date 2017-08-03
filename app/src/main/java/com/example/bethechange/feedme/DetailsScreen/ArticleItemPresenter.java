@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
-import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
 
@@ -18,12 +17,15 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
     private final FeedMeArticle article;
     ArticlesRepository mRepo;
     private boolean isFetching;
+    private boolean isVisible;
     ArticleItemPresenter(ArticlesRepository repo, int arID) {
         super();
         mRepo=repo;
         //mRepo.setListener(this,sites);
         article=mRepo.getArticle(arID);
         if(!article.isContentFetched()){
+            if(view()!=null)
+                view().showProgress();
             isFetching=true;
             NetworkUtils.isInternetAccessible(this);
             mRepo.getFullArticle(article,this);
@@ -34,6 +36,7 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
 
     @Override
     protected void updateView() {
+
         view().setFeedMeArticle(model);
     }
 
@@ -62,8 +65,9 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
     }
 
     @Override
-    public void isVisible() {
-        if(isFetching&&view()!=null)
+    public void isVisible(boolean b) {
+        isVisible=b;
+        if(isVisible&&isFetching&&view()!=null)
             view().showProgress();
     }
 
@@ -75,8 +79,8 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
     @Override
     public void bindView(@NonNull DetailsContract.ItemView view) {
         super.bindView(view);
-        //if(isFetching)
-          //  view().showProgress();
+        if(isFetching&&isVisible)
+            view().showProgress();
     }
 
     @Override

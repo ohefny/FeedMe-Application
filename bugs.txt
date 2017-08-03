@@ -1,3 +1,6 @@
+- on login articles may not be loaded
+- Fetching Article may hang set period of time for request
+- 1970 date when no date
 -Search query some times don't get excuted
 - fetching articles when Details Mode some time fetching fails
 *Add Category in nav don't affect category spinner (needs update) (fixed)

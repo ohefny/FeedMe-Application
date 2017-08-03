@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 
 public class DBUtils {
-
+    public static int UNCAT_KEY="Uncateogrized".hashCode();
     public static FeedMeArticle cursorToArticle(Cursor cursor){
         //// TODO: Uncomment contentfetched and webarchive when updating db schema
         cursor.moveToNext();
@@ -42,7 +43,7 @@ public class DBUtils {
         feedMeArticle.setSaved(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_SAVED)) != 0);
         feedMeArticle.setContentFetched(cursor.getInt(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED)) != 0);
         feedMeArticle.setWebArchivePath(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH)));
-        feedMeArticle.setWebArchivePath(cursor.getString(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE)));
+        feedMeArticle.setFetchedDate(cursor.getLong(cursor.getColumnIndex(Contracts.ArticleEntry.COLUMN_FETCHED_DATE)));
         return feedMeArticle;
     }
     public static  SparseArray<FeedMeArticle> cursorToArticles(Cursor cursor) {
@@ -131,7 +132,8 @@ public class DBUtils {
         site.setUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_URL)));
         site.setRssUrl(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_RSS_URL)));
         site.setmImgSrc(cursor.getString(cursor.getColumnIndex(Contracts.SiteSuggestEntry.COLUMN_IMG_URL)));
-        site.setCategoryID(1);
+        site.setID(cursor.getInt(cursor.getColumnIndex(Contracts.SiteSuggestEntry._ID)));
+        site.setCategoryID(UNCAT_KEY);
         return site;
     }
 
@@ -174,7 +176,7 @@ public class DBUtils {
             contentValues.put(Contracts.ArticleEntry.COLUMN_FAVORITE, feedMeArticle.isFav());
             contentValues.put(Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED, feedMeArticle.isContentFetched());
             contentValues.put(Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH, feedMeArticle.getWebArchivePath());
-            contentValues.put(Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE,feedMeArticle.getPublishedDate());
+            contentValues.put(Contracts.ArticleEntry.COLUMN_FETCHED_DATE,feedMeArticle.getFetchedDate());
             contentValues.put(Contracts.ArticleEntry._ID,feedMeArticle.getArticleID());
 
             contentValuesList.add(contentValues);
@@ -188,6 +190,7 @@ public class DBUtils {
             ContentValues contentValues = new ContentValues();
             contentValues.put(Contracts.CategoryEntry.COLUMN_TITLE,cat.getTitle());
             contentValues.put(Contracts.CategoryEntry.COLUMN_SHARED,cat.getShared());
+            contentValues.put(Contracts.CategoryEntry._ID,cat.getId());
             contentValuesList.add(contentValues);
         }
         return contentValuesList.toArray(new ContentValues[]{});
@@ -222,6 +225,7 @@ public class DBUtils {
             contentValues.put(Contracts.SiteSuggestEntry.COLUMN_URL,site.getUrl());
             contentValues.put(Contracts.SiteSuggestEntry.COLUMN_RSS_URL,site.getRssUrl());
             contentValues.put(Contracts.SiteSuggestEntry.COLUMN_IMG_URL,site.getmImgSrc());
+            contentValues.put(Contracts.SiteSuggestEntry._ID,site.getID());
             contentValuesList.add(contentValues);
         }
         return contentValuesList.toArray(new ContentValues[]{});

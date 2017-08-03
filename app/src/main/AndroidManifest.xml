@@ -42,12 +42,24 @@
             android:name=".Services.CleanupService"
             android:exported="false" />
         <service
-            android:exported="false"
-            android:name=".Services.RefreshDataService">
+            android:name=".Services.BackupDataService"
+            android:exported="false" />
+        <service
+            android:name=".Services.RefreshDataDispatcher"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Services.BackupDispatcher"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".SettingsActivity" />
         <activity
             android:name=".DetailsScreen.DetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -69,7 +81,24 @@
             android:name=".LaunchScreen.ErrorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_error"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
+
+        <receiver android:name=".widget.FeedMeWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.bethechange.feedme.Services.action.DATA_UPDATED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/feed_me_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.FeedMeWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS">
+
+        </service>
     </application>
 
 </manifest>

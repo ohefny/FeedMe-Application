@@ -48,6 +48,7 @@ public class LaunchPresenter extends BasePresenter<Void,LaunchContracts.View>
 
     @Override
     public void loginSuccessful() {
+
         syncManger.startSyncing();
     }
 

@@ -139,8 +139,7 @@ public class FeedMeProvider extends ContentProvider {
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case CATEGORIES:
-                rowID = db.insertWithOnConflict(Contracts.CategoryEntry.TABLE_NAME, null,
-                        values,CONFLICT_IGNORE);
+                rowID = db.replace(Contracts.CategoryEntry.TABLE_NAME, null,values);
                 if (rowID > 0)
                     retUri = ContentUris.withAppendedId(uri, rowID);
                 else
@@ -155,8 +154,7 @@ public class FeedMeProvider extends ContentProvider {
                     throw new SQLException("Failed To Insert row into " + uri);
                 break;
             case SUGGEST_SITES:
-                rowID = db.insertWithOnConflict(Contracts.SiteSuggestEntry.TABLE_NAME, null, values,
-                        CONFLICT_IGNORE);
+                rowID = db.replace(Contracts.SiteSuggestEntry.TABLE_NAME, null, values);
                 if (rowID > 0)
                     retUri = ContentUris.withAppendedId(uri, rowID);
                 else

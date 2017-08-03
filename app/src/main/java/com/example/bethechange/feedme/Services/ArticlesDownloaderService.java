@@ -3,6 +3,7 @@ package com.example.bethechange.feedme.Services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 
 import com.example.bethechange.feedme.Data.ArticleFetcher;
 import com.example.bethechange.feedme.Data.Contracts;
@@ -27,6 +28,7 @@ public class ArticlesDownloaderService extends IntentService {
     private static final String REFRESH_NOW="com.example.bethechange.feedme.Services.extra.REFRESHNOW";
     private static final String ACTION_FETCH_SITES="com.example.bethechange.feedme.Services.action.LatestSitesArticles";
     private static final String SITES_STR="com.example.bethechange.feedme.Services.extra.SITESJSON";
+    public static final String ACTION_DATA_UPDATED="com.example.bethechange.feedme.Services.action.DATA_UPDATED";
 
     public ArticlesDownloaderService() {
         super("ArticlesDownloaderService");
@@ -48,6 +50,7 @@ public class ArticlesDownloaderService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d("Fuck OnHandle Intent",intent.toString());
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_FETCH_ALL.equals(action)) {
@@ -80,7 +83,11 @@ public class ArticlesDownloaderService extends IntentService {
         int inserted=getContentResolver().bulkInsert(Contracts.ArticleEntry.CONTENT_URI,fetcher.getContentValues());
         if(inserted>0){
             PrefUtils.updateLastUpdate(this);
+            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+            this.sendBroadcast(dataUpdatedIntent);
+
         }
+        Log.d("Fuck Inserted Items ",inserted+"");
     }
 
     /**
@@ -94,7 +101,11 @@ public class ArticlesDownloaderService extends IntentService {
         int startPage=0;
         int pageSize=1;
         ArticleFetcher fetcher=new ArticleFetcher(this,sitesArr,startPage,pageSize);
-        getContentResolver().bulkInsert(Contracts.ArticleEntry.CONTENT_URI,fetcher.getContentValues());
-
+        int newItems=getContentResolver().bulkInsert(Contracts.ArticleEntry.CONTENT_URI,fetcher.getContentValues());
+        if(newItems>0) {
+            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+            this.sendBroadcast(dataUpdatedIntent);
+        }
+        Log.d("Fuck Inserted Items",newItems+"");
     }
 }

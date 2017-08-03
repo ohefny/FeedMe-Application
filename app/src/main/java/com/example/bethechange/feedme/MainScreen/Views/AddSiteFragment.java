@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,11 +21,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.bethechange.feedme.Data.ContentFetcher;
+import com.example.bethechange.feedme.Data.SuggestRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
+import com.example.bethechange.feedme.MainScreen.Models.SuggestSite;
 import com.example.bethechange.feedme.MainScreen.Presenters.MySitesPresenter;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.MySitesContract;
 import com.example.bethechange.feedme.R;
+import com.example.bethechange.feedme.Utils.CollectionUtils;
 import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.squareup.okhttp.HttpUrl;
@@ -103,6 +107,14 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
         });
         if(site==null){
             addBtn.setText(R.string.add_btn_title);
+            final ArrayList<Site> suggestSites= CollectionUtils.sparseToArray(SuggestRepository.getSuggestions());
+            titleView.setAdapter(new ArrayAdapter<Site>(getContext(),R.layout.simple_category_item,suggestSites));
+            titleView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    rssLinkView.setText(suggestSites.get(position).getRssUrl());
+                }
+            });
             addBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -1,16 +1,18 @@
 package com.example.bethechange.feedme.MainScreen.Models;
 
+import com.example.bethechange.feedme.Identifiable;
 import com.google.firebase.database.Exclude;
 
 /**
  * Created by BeTheChange on 7/31/2017.
  */
 
-public class SuggestSite {
+public class SuggestSite implements Identifiable{
     private String mTitle="";
     private String mUrl="";
     private String mRssUrl="";
     private String mImgSrc="";
+
     private int mID;
     public SuggestSite(Site site){
         setTitle(site.getTitle());
@@ -19,6 +21,7 @@ public class SuggestSite {
         setID(site.getID());
         setmImgSrc(site.getmImgSrc());
     }
+    @Exclude
     public int getID() {
         return mID;
     }
@@ -64,5 +67,14 @@ public class SuggestSite {
     public String toString() {
         return getTitle();
     }
+    @Exclude
+    @Override
+    public String getObjectKey() {
+        return getID()+"";
+    }
 
+    @Override
+    public int getIntObjectKey() {
+        return getID();
+    }
 }

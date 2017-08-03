@@ -250,6 +250,9 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
                         }
                         article.setContent(android.text.Html.fromHtml(ls.get(0).getDescription()).toString());
                         article.setDate(ls.get(0).getDate());
+                        if(ls.get(0).getDate()==0)
+                            article.setDate(System.currentTimeMillis());
+
                     }
                     listener.articleFetched(article,true);
 

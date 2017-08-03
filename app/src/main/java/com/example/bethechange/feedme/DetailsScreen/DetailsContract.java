@@ -35,6 +35,6 @@ interface DetailsContract {
         void onPerformFav(FeedMeArticle feedMeArticle);
         void onWebArchiveSaved(FeedMeArticle feedMeArticle,String path);
 
-        void isVisible();
+        void isVisible(boolean b);
     }
 }

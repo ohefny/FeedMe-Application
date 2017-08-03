@@ -1,3 +1,4 @@
+-This AsyncQueryHandler Approach needs to be replaced maybe with loaders
 -Make Splash Screen Opens New Screen That Show Network Error
 -Implement IntentService to clean up the database
 -Implement Settings activity to make use choose prefs

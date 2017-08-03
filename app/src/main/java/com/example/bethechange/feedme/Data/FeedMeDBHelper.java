@@ -8,6 +8,8 @@ import android.util.Log;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.Utils.DBUtils;
 
+import static com.example.bethechange.feedme.Utils.DBUtils.UNCAT_KEY;
+
 /**
  * Created by BeTheChange on 7/10/2017.
  */
@@ -23,7 +25,7 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         final String SQL_CREATE_CATEGORY_TABLE="CREATE TABLE " + Contracts.CategoryEntry.TABLE_NAME + " ("+
-                Contracts.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                Contracts.CategoryEntry._ID + " BIGINT PRIMARY KEY," +
                 Contracts.CategoryEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 Contracts.CategoryEntry.COLUMN_SHARED +" BOOLEAN " +");";
         final String SQL_CREATE_SITE_TABLE="CREATE TABLE " + Contracts.SiteEntry.TABLE_NAME + " ("+
@@ -52,12 +54,12 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
                 Contracts.ArticleEntry.COLUMN_SAVED +" BOOLEAN, " +
                 Contracts.ArticleEntry.COLUMN_CONTENT_FETCHED +" BOOLEAN, " +
                 Contracts.ArticleEntry.COLUMN_WEBARCHIVE_PATH + " TEXT, " +
-                Contracts.ArticleEntry.COLUMN_PUBLISHED_DATE +" TEXT,"+
+                Contracts.ArticleEntry.COLUMN_FETCHED_DATE +" BIGINT,"+
                 "FOREIGN KEY("+Contracts.ArticleEntry.COLUMN_SITE+") REFERENCES "+
                 Contracts.SiteEntry.TABLE_NAME+"("+Contracts.SiteEntry._ID+ ") ON DELETE CASCADE );";
 
         final String SQL_CREATE_SUGGESTED_SITE_TABLE="CREATE TABLE " + Contracts.SiteSuggestEntry.TABLE_NAME + " ("+
-                Contracts.SiteSuggestEntry._ID + " INTEGER PRIMARY KEY," +
+                Contracts.SiteSuggestEntry._ID + " BIGINT PRIMARY KEY," +
                 Contracts.SiteSuggestEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 Contracts.SiteSuggestEntry.COLUMN_RSS_URL + " TEXT NOT NULL, " +
                 Contracts.SiteSuggestEntry.COLUMN_URL + " TEXT NOT NULL, " +
@@ -70,7 +72,7 @@ public class FeedMeDBHelper extends SQLiteOpenHelper {
             db.execSQL(SQL_CREATE_ARTICLE_TABLE);
             Category category=new Category();
             category.setTitle("Uncategorized");
-            category.setId(1);
+            category.setId(UNCAT_KEY);
             db.insert(Contracts.CategoryEntry.TABLE_NAME,null,DBUtils.categoriesToCV(new Category[]{category})[0]);
 
         }

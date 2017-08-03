@@ -1,53 +1,30 @@
 package com.example.bethechange.feedme.LaunchScreen;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.Data.SuggestRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.R;
-import com.example.bethechange.feedme.Services.RefreshDataService;
-import com.example.bethechange.feedme.UserManger;
 import com.example.bethechange.feedme.Utils.CollectionUtils;
 import com.example.bethechange.feedme.Utils.DBUtils;
 import com.example.bethechange.feedme.Utils.FirebaseUtils;
-import com.example.bethechange.feedme.Utils.PrefUtils;
-import com.example.mvpframeworkedited.BasePresenter;
 import com.example.mvpframeworkedited.BasePresenterActivity;
 import com.example.mvpframeworkedited.PresenterFactory;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.Trigger;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by BeTheChange on 7/29/2017.
@@ -62,17 +39,23 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(!FirebaseUtils.isGooglePlayServicesAvailable(this)){
+           showError(getString(R.string.common_google_play_services_install_text_phone));
+        }
+        else{
 
         //TODO :: CHECK IF SIGNED IN OR NOT ... If Sites to be loaded Choosed or not
-        if (getContentResolver().query(Contracts.SiteSuggestEntry.CONTENT_URI, null, null, null, null).getCount()==0) {
-            FirebaseUtils.getSuggestionsSites(this);
-        } else {
-            load();
+            if (getContentResolver().query(Contracts.SiteSuggestEntry.CONTENT_URI, null, null, null, null).getCount()==0) {
+                FirebaseUtils.getSuggestionsSites(this);
+            } else {
+                load();
+            }
         }
     }
 
 
     private void load() {
+        SuggestRepository.getInstance(getContentResolver());
         if (FirebaseAuth.getInstance().getCurrentUser() != null){
             logedIn=true;
             if(presenter!=null)
@@ -80,6 +63,7 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
         }
         else
             openLoginActivity();
+
     }
 
 
@@ -106,7 +90,16 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
 
     @Override
     public void showError(String str) {
-        openMainScreen();
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        AlertDialog err = builder.setMessage(str).setNegativeButton(getString(R.string.close_btn_text), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                finish();
+            }
+        }).create();
+        err.show();
+
     }
 
     @Override
@@ -150,7 +143,9 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
     @Override
     protected void onStop() {
         ArticlesRepository.destroyInstance(this);
-        presenter.unbindView();
+        Log.d("OnStop Splash","OnStop");
+        if(presenter!=null)
+            presenter.unbindView();
         super.onStop();
     }
 
@@ -181,16 +176,18 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
             load();
         }
         else
-           openErrorActivity();
+           openLoginActivity();
 
     }
 
     private void openErrorActivity() {
         Intent intent = new Intent(this, ErrorActivity.class);
         startActivity(intent);
-        presenter.unbindView();
+        if(presenter!=null)
+            presenter.unbindView();
         finish();
     }
+
 
 }
 

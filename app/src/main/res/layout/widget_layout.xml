@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/widget_toolbar"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:gravity="center_vertical"
+            android:text="@string/all_articles_string"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/widget_listView"
+        android:layout_width="match_parent"
+        tools:listitem="@layout/widget_item"
+        android:background="@color/black_overlay"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

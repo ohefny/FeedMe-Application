@@ -2,10 +2,13 @@ package com.example.bethechange.feedme.Utils;
 
 import android.util.SparseArray;
 
+import com.example.bethechange.feedme.Identifiable;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
+import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by BeTheChange on 7/27/2017.
@@ -25,5 +28,20 @@ public class CollectionUtils {
            arrayList[i]=(objects.get(i).toString());
 
         return arrayList;
+    }
+
+    public static  <T extends Identifiable> HashMap<String,T> getHashMap(ArrayList<T> list) {
+        HashMap<String,T>map=new HashMap<>();
+        for(T item:list)
+            map.put(item.getObjectKey(),item);
+        return map;
+
+    }
+    public static  <T extends Identifiable> SparseArray<T> arrayListToSparse(ArrayList<T> list) {
+        SparseArray<T> s=new SparseArray<>();
+        for(T item:list)
+            s.put(item.getIntObjectKey(),item);
+        return s;
+
     }
 }

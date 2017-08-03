@@ -40,7 +40,7 @@ public class CleanupService extends IntentService {
     private void handleActionCleanOld() {
         Log.d("CleanUpService","Cleaning Up...");
         long deleteBefore=PrefUtils.deleteBefore(FeedMeApp.getContext());
-        int n=getContentResolver().delete(Contracts.ArticleEntry.CONTENT_URI,Contracts.ArticleEntry.COLUMN_DATE+" < "+ deleteBefore+" And "+
+        int n=getContentResolver().delete(Contracts.ArticleEntry.CONTENT_URI,Contracts.ArticleEntry.COLUMN_FETCHED_DATE+" < "+ deleteBefore+" And "+
         Contracts.ArticleEntry.COLUMN_SAVED+" = 0 And "+ Contracts.ArticleEntry.COLUMN_FAVORITE+" = 0 ",null);
         Log.d("CleanUpService",n+" Items Cleaned");
     }

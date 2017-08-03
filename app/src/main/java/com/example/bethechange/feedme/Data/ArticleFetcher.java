@@ -132,7 +132,7 @@ public class ArticleFetcher {
                         feedAr.setSite(mSite);
                         feedAr.setSiteID(mSite.getID());
                         feedAr.setContentFetched(contentFetched);
-
+                        feedAr.setFetchedDate(System.currentTimeMillis());
 
                         list.add(feedAr);
 

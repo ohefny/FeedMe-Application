@@ -3,58 +3,31 @@ package com.example.bethechange.feedme.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
-import com.example.bethechange.feedme.Data.Contracts;
-import com.example.bethechange.feedme.IntervalTypes;
-import com.example.bethechange.feedme.MainScreen.Models.Category;
-import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.R;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by BeTheChange on 7/12/2017.
  */
 public final class PrefUtils {
 
-
-        private PrefUtils() {
-        }
-
+    private PrefUtils() {
+    }
         public static boolean updateNow(Context context) {
             final String INITIALIZED_KEY=context.getString(R.string.pref_initialized_key);
             final String LAST_UPDATE_KEY = context.getString(R.string.pref_last_update_key);
             final String INTERVAL_VAL_KEY = context.getString(R.string.pref_interval_val_key);
-            final String INTERVAL_TYPE_KEY = context.getString(R.string.pref_interval_type_key);
-
             //final String LAST_UPDATE_KEY = context.getString(R.string.pref_last_update_key);
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean update=false;
+            boolean update;
             boolean initialized= isInitialized(context);
             if(!initialized){
                 initializePrefs(prefs,context);
                 return true;
             }
             long lastUpdate = prefs.getLong(LAST_UPDATE_KEY, 0);
-            long interval=prefs.getLong(INTERVAL_VAL_KEY, 24);
-            String intervalType=prefs.getString(INTERVAL_TYPE_KEY,IntervalTypes.HOURS);
-            
-            if (intervalType.equals(IntervalTypes.HOURS)) {
-                long now=Long.parseLong(new SimpleDateFormat("yyyMMddhh").format(new Date()));
-               if(now-lastUpdate>=interval){
-                   update=true;
-               }
-            }
-            else{
-                long now=Long.parseLong((new SimpleDateFormat("yyyMMdd")).format(new Date()));
-                if(now-lastUpdate>=interval){
-                    update=true;
-                }
-                
-            }
+            int interval=prefs.getInt(INTERVAL_VAL_KEY, 24);
+            long lastHours =  (lastUpdate / (1000*60*60));
+            long nowHours=(System.currentTimeMillis() / (1000*60*60));
+            update=(nowHours-lastHours>=interval);
             return update;
         }
 
@@ -68,16 +41,22 @@ public final class PrefUtils {
         final String INITIALIZED_KEY=context.getString(R.string.pref_initialized_key);
         final String LAST_UPDATE_KEY = context.getString(R.string.pref_last_update_key);
         final String INTERVAL_VAL_KEY = context.getString(R.string.pref_interval_val_key);
-        final String INTERVAL_TYPE_KEY = context.getString(R.string.pref_interval_type_key);
+        final String CLEANUP_EVERY_KEY=context.getString(R.string.pref_cleanup_val_key);
+        final String BACKUP_EVERY_KEY=context.getString(R.string.pref_backup_val_key);
         boolean initialized= isInitialized(context);
         if(initialized){
            return;
         }
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(INITIALIZED_KEY, true);
-        editor.putLong(INTERVAL_VAL_KEY,24);
-        editor.putString(INTERVAL_TYPE_KEY, IntervalTypes.HOURS);
+
+        //hours
+        editor.putInt(INTERVAL_VAL_KEY,24);
         editor.putLong(LAST_UPDATE_KEY,0);
+        //days
+        editor.putLong(CLEANUP_EVERY_KEY,7);
+        //days
+        editor.putInt(BACKUP_EVERY_KEY,1);
+        editor.putBoolean(INITIALIZED_KEY, true);
         editor.apply();
         //TODO::remember to replace with real sites
         /*context.getContentResolver().
@@ -89,38 +68,49 @@ public final class PrefUtils {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putLong(context.getString(R.string.pref_last_update_key),System.currentTimeMillis());
             editor.apply();
-        }
-    public static void updateIntervalType(Context context, @IntervalTypes String type) {
-            String key = context.getString(R.string.pref_interval_type_key);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(key, type);
-            editor.apply();
-        }
-    public static void updateIntervalVal(Context context, int val) {
+    }
+    public static void setUpdateInterval(Context context, int val) {
         String key = context.getString(R.string.pref_interval_val_key);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(key, val);
         editor.apply();
     }
-    public static String getUpdateIntervalType(Context context){
+    public static void setOutdateVal(Context context, int val) {
+        String key = context.getString(R.string.pref_cleanup_val_key);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, val);
+        editor.apply();
+    }
+    public static void setBackupInterval(Context context, int val) {
+        String key = context.getString(R.string.pref_backup_val_key);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, val);
+        editor.apply();
+    }
+
+    public static int getUpdateInterval(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         initializePrefs(prefs,context);
-        String key = context.getString(R.string.pref_interval_type_key);
-        return prefs.getString(key,IntervalTypes.HOURS);
-
+        String key = context.getString(R.string.pref_interval_val_key);
+        return prefs.getInt(key,24);
 
     }
-    public static int getUpdateIntervalVal(Context context){
+    public static int getBackupInterval(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         initializePrefs(prefs,context);
-        String type=getUpdateIntervalType(context);
-        String key = context.getString(R.string.pref_interval_val_key);
-        if(type.equals(IntervalTypes.HOURS))
-            return prefs.getInt(key,24);
-        else
-            return prefs.getInt(key,1);
+        String key = context.getString(R.string.pref_backup_val_key);
+        return prefs.getInt(key,24);
+
+    }
+    public static int getOutdate(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        initializePrefs(prefs,context);
+        String key = context.getString(R.string.pref_cleanup_val_key);
+        return prefs.getInt(key,24);
+
     }
 
 
@@ -144,7 +134,32 @@ public final class PrefUtils {
 
     public static long deleteBefore(Context context) {
         //TODO IMPLEMENT THIS TO SEE CURRENT TIME AND SUBTRACT FROM CLEAUNUPAFTEER ATTRIBUTE
-        return 0;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.pref_cleanup_val_key);
+        long every=prefs.getLong(key,1)*(1000*60*60);
+        return System.currentTimeMillis()-every;
+    }
+
+    public static int updateEveryMillie(Context context) {
+        final String INTERVAL_VAL_KEY = context.getString(R.string.pref_interval_val_key);
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+       // String key = context.getString(R.string.pref_up);
+
+        int interval=prefs.getInt(INTERVAL_VAL_KEY, 24);
+
+        return interval*(1000*60*60);
+
+    }
+    public static int backupEveryMillie(Context context) {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+         String key = context.getString(R.string.pref_backup_val_key);
+
+        int interval=prefs.getInt(key, 24);
+        return interval*(1000*60*60*24);
+
     }
 }
 

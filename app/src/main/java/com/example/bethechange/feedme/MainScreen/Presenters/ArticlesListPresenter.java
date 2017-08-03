@@ -1,6 +1,8 @@
 package com.example.bethechange.feedme.MainScreen.Presenters;
 
 import android.content.Intent;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -12,11 +14,13 @@ import com.example.bethechange.feedme.Data.CategoriesRepository;
 import com.example.bethechange.feedme.Data.ContentFetcher;
 import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.Data.SitesRepositoryActions;
+import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.Category;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.ViewContracts.ArticleListContract;
+import com.example.bethechange.feedme.R;
 import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
 
@@ -40,7 +44,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     private Site[]mSites=null;
     private int pageSizes=1;
     private boolean openArticle;
-
+    CountDownTimer countDownTimer;
     public ArticlesListPresenter(@NonNull ArticleRepositoryActions repo,SitesRepository siteRepo, CategoriesRepository catRepo, ContentFetcher fetcher,@ArticleType int type){
         this.articlesRepo=repo;
         this.catRepo=catRepo;
@@ -140,6 +144,29 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         articlesRepo.editArticle(feedMeArticle);
     }
 
+    private CountDownTimer getCountDownTimer() {
+        return new CountDownTimer(20000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                System.out.println("ToFinish "+millisUntilFinished);
+
+            }
+
+            @Override
+            public void onFinish() {
+                new Handler(FeedMeApp.getContext().getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        internetAvailable(false);
+                    }
+                });
+            }
+        };
+    }
+    public void onFetchFail(){
+
+    }
     @Override
     public void onOpenArticle(final FeedMeArticle article) {
 
@@ -147,6 +174,8 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
                 && view() != null) {
             view().showArticle(article, article.getArticle().getContent().isEmpty());
         } else {
+            countDownTimer=getCountDownTimer();
+            countDownTimer.start();
             view().showProgress();
             openArticle = true;
             requestedArticle = article;
@@ -189,7 +218,8 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
                 view().showMessage("No Internet Available Check Internet ",
                         requestedArticle.getArticle().getSource());
 
-            }openArticle=false;
+            }
+         openArticle=false;
             //onFullArticleFetched(requestedArticle);
         }
     }
@@ -215,6 +245,8 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     @Override
     public void onFullArticleFetched(final FeedMeArticle fetchedArticle) {
         if(openArticle&&view()!=null){
+            if(countDownTimer!=null)
+                countDownTimer.cancel();
            // view().imageUpdated(fetchedArticle);
             view().endProgress();
             //if getcontent is empty then show the article on web
