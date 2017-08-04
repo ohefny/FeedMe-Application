@@ -4,6 +4,7 @@ package com.example.bethechange.feedme.MainScreen.Views;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -50,6 +51,8 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
     private ImageButton catBtn;
     private EditText catTitle;
     private boolean catTitleEnabled;
+    private Site newSite=new Site();
+
     public AddSiteFragment() {
 
         // Required empty public constructor
@@ -63,11 +66,17 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
     }
 
 
-
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog);
+        return super.onCreateDialog(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View mRootView = inflater.inflate(R.layout.fragment_add_site, container, false);
         dialog=new ProgressDialog(getContext());
@@ -94,25 +103,29 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
                         cat.setTitle(catTitle.getText().toString());
                         presenter.onCategoryAdded(cat);
                         catTitle.setVisibility(View.INVISIBLE);
-                        catBtn.setImageResource(R.drawable.ic_fab_add);
+                        catBtn.setImageResource(R.drawable.nav_add_category_32dp);
                         //spinner.setSelection(categories.size()-1);
                         catTitleEnabled=false;
                     }
                     else {
                         catTitleEnabled=true;
                         catTitle.setVisibility(View.VISIBLE);
-                        catBtn.setImageResource(R.drawable.ic_verify);
+                        catBtn.setImageResource(R.drawable.ic_cat_add_done_24dp);
                     }
             }
         });
         if(site==null){
             addBtn.setText(R.string.add_btn_title);
             final ArrayList<Site> suggestSites= CollectionUtils.sparseToArray(SuggestRepository.getSuggestions());
-            titleView.setAdapter(new ArrayAdapter<Site>(getContext(),R.layout.simple_category_item,suggestSites));
+            final ArrayAdapter<Site> suggestionAdapter = new ArrayAdapter<Site>(getContext(), R.layout.simple_category_item, suggestSites);
+            titleView.setAdapter(suggestionAdapter);
+
             titleView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    rssLinkView.setText(suggestSites.get(position).getRssUrl());
+                    newSite=getSite(titleView.getText().toString(),suggestSites);
+                    rssLinkView.setText(newSite.getRssUrl());
+
                 }
             });
             addBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +133,6 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
                 public void onClick(View v) {
                     addBtn.setText(R.string.verify_rss_link);
                     addBtn.setEnabled(false);
-                    Site site=new Site();
                     boolean add=true;
                     if(!rssLinkView.getText().toString().contains("http")){
                         rssLinkView.setText(String.format("http://%s", rssLinkView.getText().toString()));
@@ -138,13 +150,13 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
                         addBtn.setEnabled(true);
                         return;
                     }
-                    site.setRssUrl(rssLinkView.getText().toString().trim());
-                    site.setUrl(HttpUrl.parse(site.getRssUrl()).host());
-                    site.setTitle(titleView.getText().toString().trim());
-                    site.setCategoryID(((Category)spinner.getSelectedItem()).getId());
-                    site.setCategory((Category)spinner.getSelectedItem());
+                    newSite.setRssUrl(rssLinkView.getText().toString().trim());
+                    newSite.setUrl(HttpUrl.parse(newSite.getRssUrl()).host());
+                    newSite.setTitle(titleView.getText().toString().trim());
+                    newSite.setCategoryID(((Category)spinner.getSelectedItem()).getId());
+                    newSite.setCategory((Category)spinner.getSelectedItem());
                     dialog.show();
-                    NetworkUtils.TestRssLink(site,AddSiteFragment.this);
+                    NetworkUtils.TestRssLink(newSite,AddSiteFragment.this);
 
 
                 }
@@ -174,6 +186,16 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
         }
 
         return mRootView;
+    }
+
+    private Site getSite(String title,ArrayList<Site>sites) {
+        for(Site st:sites){
+            if(st.getTitle().equals(title)){
+                return st;
+            }
+        }
+        return new Site();
+
     }
 
     @Override

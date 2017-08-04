@@ -20,7 +20,6 @@
 
     </android.support.v7.widget.AppCompatSpinner>
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/articles_recycler"
         android:layout_width="0dp"
@@ -35,5 +34,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categories_spinner_id"
         tools:listitem="@layout/article_item" />
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/empty_articles_view"
+        android:src="@drawable/no_articles_bg"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:layout_marginLeft="8dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent">
 
+    </ImageView>
 </android.support.constraint.ConstraintLayout>

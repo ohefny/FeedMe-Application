@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.CategoriesRepository;
@@ -52,6 +53,7 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
     private ArrayList<Category> cats=new ArrayList<>();
     private Category temp=new Category();
     private View mRootView;
+    private ImageView mEmptyView;
     // private OnListFragmentInteractionListener mListener;
 
     /**
@@ -97,6 +99,7 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
         });
         mSpinner.setAdapter(mSpinAdapter);
         setupRecyclerView(mRootView);
+        mEmptyView= (ImageView) mRootView.findViewById(R.id.empty_sites_view);
         return mRootView;
     }
 
@@ -144,6 +147,15 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
 
     @Override
     public void updateList(ArrayList<Site> list) {
+        if(list.size()==0){
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.INVISIBLE);
+        }
+
         mAdapter.setSites(list);
         mAdapter.notifyDataSetChanged();
 

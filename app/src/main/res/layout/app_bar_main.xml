@@ -38,7 +38,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        app:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorAccent"
         app:srcCompat="@drawable/ic_arrow_up" />
 
 </android.support.design.widget.CoordinatorLayout>

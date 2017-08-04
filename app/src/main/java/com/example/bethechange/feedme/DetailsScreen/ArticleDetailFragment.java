@@ -219,7 +219,7 @@ implements DetailsContract.ItemView{
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(feedMeArticle.getArticle().getDescription()+"\n\n"+feedMeArticle.getArticle().getSource().toString())
                         .getIntent(), getString(R.string.action_share)));
             }
         });

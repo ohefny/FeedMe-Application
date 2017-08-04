@@ -183,6 +183,8 @@
     <string name="add_widget">Add widget</string>
     <string name="all_articles_string">All articles</string>
     <string name="close_btn_text">Close</string>
+    <string name="add_sites_title">Add Sites</string>
+    <string name="edit_nav_cat_item">Edit</string>
 
 
 </resources>

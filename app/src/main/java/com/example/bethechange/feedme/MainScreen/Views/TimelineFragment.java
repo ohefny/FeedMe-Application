@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.CustomScreen.CustomListActivity;
@@ -69,6 +70,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private Site mSite;
     private Category mCategory;
     private SearchModel model;
+    private ImageView mEmptyView;
 
     public TimelineFragment() {
     }
@@ -136,6 +138,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
                              Bundle savedInstanceState) {
         if(type==ArticleType.CATEGORY) {
             mRootView = inflater.inflate(R.layout.fragment_article_list, container, false);
+            mEmptyView= (ImageView) mRootView.findViewById(R.id.empty_articles_view);
             mSpinner = (AppCompatSpinner) mRootView.findViewById(R.id.categories_spinner_id);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -158,6 +161,9 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         }
         else{
             mRootView = inflater.inflate(R.layout.fragment_site, container, false);
+            mEmptyView= (ImageView) mRootView.findViewById(R.id.empty_articles_view);
+            mEmptyView.setImageResource(R.drawable.no_articles_other_bg);
+
         }
 
         setupRecyclerView(mRootView);
@@ -230,6 +236,14 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
     @Override
     public void updateList(ArticlesList articlesList) {
+        if(articlesList.getArticles().size()==0){
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        else{
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.INVISIBLE);
+        }
         if(adapter==null){
             adapter=new MyArticleRecyclerViewAdapter(articlesList.getArticles(),getContext(),this);
             mRecyclerView.setAdapter(adapter);

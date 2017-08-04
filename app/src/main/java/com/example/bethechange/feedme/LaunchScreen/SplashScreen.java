@@ -110,7 +110,7 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
 
         final boolean[] checks = new boolean[cur != null ? cur.getCount() : 0];
         final int[] count = {0};
-        builder.setTitle("Pick Sites")
+        builder.setTitle(getString(R.string.add_sites_title))
                 .setMultiChoiceItems(CollectionUtils.objectsToStrings(sites),null,new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {

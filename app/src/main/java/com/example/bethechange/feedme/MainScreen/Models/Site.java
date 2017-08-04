@@ -3,6 +3,8 @@ package com.example.bethechange.feedme.MainScreen.Models;
 import com.example.bethechange.feedme.Identifiable;
 import com.google.firebase.database.Exclude;
 
+
+
 /**
  * Created by BeTheChange on 7/10/2017.
  */
@@ -46,7 +48,8 @@ public class Site implements Identifiable{
 
     public void setUrl(String mUrl) {
         this.mUrl = mUrl;
-        mID=mUrl.hashCode();
+
+
     }
 
     public String getRssUrl() {
@@ -55,6 +58,7 @@ public class Site implements Identifiable{
 
     public void setRssUrl(String mRssUrl) {
         this.mRssUrl = mRssUrl;
+        mID=mRssUrl.hashCode();
 
     }
     @Exclude

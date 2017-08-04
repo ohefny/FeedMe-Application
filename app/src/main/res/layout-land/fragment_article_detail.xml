@@ -95,7 +95,6 @@
         android:layout_width="wrap_content"
         android:id="@+id/share_fab"
         android:layout_height="wrap_content"
-        android:background="@drawable/add_fab_background"
         android:layout_marginRight="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
         android:src="@drawable/ic_share"

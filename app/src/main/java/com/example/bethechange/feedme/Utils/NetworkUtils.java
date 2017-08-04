@@ -125,7 +125,12 @@ public class NetworkUtils {
                         JSONObject item=new JSONObject(response.body().string());
                         valid=item.optString("status").equals("ok");
                         if(valid){
-                            site.setmImgSrc(item.getJSONObject("feed").optString("image"));
+                            boolean getImg=false;
+                            if(site.getmImgSrc().isEmpty()) {
+                                getImg = true;
+                                site.setmImgSrc(item.getJSONObject("feed").optString("image"));
+                            }
+
                             site.setUrl(getDomainName(item.getJSONObject("feed").optString("link")));
                             Cursor cursor=FeedMeApp.getContext().getContentResolver().query(
                                     ContentUris.withAppendedId(Contracts.SiteEntry.CONTENT_URI,site.getID()),null,null,null,null);
@@ -133,9 +138,10 @@ public class NetworkUtils {
                                 exist=true;
                                 break label;
                             }
-
-                            String img = new ContentFetcher(FeedMeApp.getContext()).getImage(site.getUrl() + " logo", null);
-                            site.setmImgSrc(img);
+                            if(getImg){
+                                String img = new ContentFetcher(FeedMeApp.getContext()).getImage(site.getUrl() + " logo", null);
+                                site.setmImgSrc(img);
+                            }
 
                         }
 

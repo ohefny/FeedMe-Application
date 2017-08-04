@@ -1,8 +1,10 @@
--This AsyncQueryHandler Approach needs to be replaced maybe with loaders
--Make Splash Screen Opens New Screen That Show Network Error
--Implement IntentService to clean up the database
--Implement Settings activity to make use choose prefs
+-Fix Navigation Drawer for better
+-Empty Screen for Articles List,Sites
 -FlipAdapter for show snippet in more cool way
+-This AsyncQueryHandler Approach needs to be replaced maybe with loaders (temp solution)
+-Implement Settings activity to make use choose prefs(done)
+-Implement IntentService to clean up the database (done)
+-Make Splash Screen Opens New Screen That Show Network Error (done)
 -Implement SplashScreen for loading data from internet(done)
 -Implement firebase,Gogole Sign in(done)
 -FirebaseSyncManger needs to be Presenter (done)

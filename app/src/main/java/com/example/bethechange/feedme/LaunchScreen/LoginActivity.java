@@ -157,7 +157,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
     private void showAuthenticationError() {
         progressDialog.cancel();
         Snackbar.make(findViewById(R.id.login_activity_parent),
-                getString(R.string.auth_fail), Snackbar.LENGTH_LONG);
+                getString(R.string.auth_fail), Snackbar.LENGTH_LONG).show();
     }
     @Override
     public void updateProgressMsg(String str) {
@@ -173,7 +173,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
 
     @Override
     public void showError(String str) {
-        Snackbar.make(findViewById(R.id.login_activity_parent),str, Snackbar.LENGTH_LONG);
+        Snackbar.make(findViewById(R.id.login_activity_parent),str, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

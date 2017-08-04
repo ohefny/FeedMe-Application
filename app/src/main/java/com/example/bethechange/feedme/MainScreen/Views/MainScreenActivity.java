@@ -28,7 +28,9 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.ArticleType;
@@ -53,6 +55,8 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
+import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -75,6 +79,8 @@ public class MainScreenActivity extends AppCompatActivity implements
     private ArrayList<Category> cats;
     private NavigationCategoryAdapter catAdapter;
     private int mId=-1;
+    private ImageView profileImg;
+    private TextView profileName;
 
 
     @Override
@@ -138,6 +144,10 @@ public class MainScreenActivity extends AppCompatActivity implements
 
     private void setupViews() {
         navCats=(RecyclerView)findViewById(R.id.categories_nav_list);
+        profileImg=(ImageView)findViewById(R.id.img_profile);
+        profileName=(TextView)findViewById(R.id.profile_name);
+        profileName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        Picasso.with(this).load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).into(profileImg);
         TabLayout mSlidingTabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         mViewPager = (ViewPager)findViewById(R.id.viewpager);
         mViewPager.setAdapter(mAdapter);
@@ -459,5 +469,11 @@ public class MainScreenActivity extends AppCompatActivity implements
 
     public void onBackupClicked(View view) {
         BackupDataService.startActionBackup(this);
+    }
+
+    public void onSettingsClicked(View view) {
+        mDrawer.closeDrawers();
+        Intent intent=new Intent(this,SettingsActivity.class);
+        startActivity(intent);
     }
 }
