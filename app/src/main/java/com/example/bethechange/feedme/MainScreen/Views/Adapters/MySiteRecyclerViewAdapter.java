@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -112,7 +113,7 @@ public class MySiteRecyclerViewAdapter extends RecyclerView.Adapter<MySiteRecycl
          final TextView titleView;
         //public final TextView subtitileView;
          final ImageView logoView;
-         final TextView siteOptionsView;
+         final ImageButton siteOptionsView;
          Site mItem;
 
          ViewHolder(View view) {
@@ -121,7 +122,7 @@ public class MySiteRecyclerViewAdapter extends RecyclerView.Adapter<MySiteRecycl
             titleView = (TextView) view.findViewById(R.id.site_title);
             //subtitileView = (TextView) view.findViewById(R.id.site_subtitle);
             logoView = (ImageView) view.findViewById(R.id.thumbnail);
-            siteOptionsView=(TextView)view.findViewById(R.id.site_options);
+            siteOptionsView=(ImageButton)view.findViewById(R.id.site_options);
         }
 
         @Override

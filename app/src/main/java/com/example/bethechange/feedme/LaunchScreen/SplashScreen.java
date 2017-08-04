@@ -180,14 +180,6 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
 
     }
 
-    private void openErrorActivity() {
-        Intent intent = new Intent(this, ErrorActivity.class);
-        startActivity(intent);
-        if(presenter!=null)
-            presenter.unbindView();
-        finish();
-    }
-
 
 }
 

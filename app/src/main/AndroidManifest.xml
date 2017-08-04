@@ -78,11 +78,6 @@
             android:name=".LaunchScreen.LoginActivity"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".LaunchScreen.ErrorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_error"
-            android:theme="@style/FullscreenTheme" />
 
         <receiver android:name=".widget.FeedMeWidget">
             <intent-filter>

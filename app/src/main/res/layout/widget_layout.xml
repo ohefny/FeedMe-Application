@@ -25,7 +25,7 @@
         android:id="@+id/widget_listView"
         android:layout_width="match_parent"
         tools:listitem="@layout/widget_item"
-        android:background="@color/black_overlay"
+        android:background="@color/colorPrimaryExtraDark"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>

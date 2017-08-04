@@ -32,7 +32,7 @@
             android:gravity="center"
             android:background="@android:color/transparent"
             android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_clear_black_24dp"
+            app:srcCompat="@drawable/ic_clear_accent_24dp"
             android:id="@+id/cat_item_nav_delete"
             android:layout_width="32dp"
             android:layout_height="32dp"
@@ -51,6 +51,7 @@
         android:id="@+id/cat_item_nav_edit"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:text="@string/edit_nav_cat_item" />
+        android:text="@string/edit_nav_cat_item"
+        android:contentDescription="@string/edit_category_title" />
     </FrameLayout>
 </LinearLayout>

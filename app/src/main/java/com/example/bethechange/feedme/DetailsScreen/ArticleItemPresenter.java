@@ -3,8 +3,11 @@ package com.example.bethechange.feedme.DetailsScreen;
 import android.support.annotation.NonNull;
 
 import com.example.bethechange.feedme.Data.ArticlesRepository;
+import com.example.bethechange.feedme.Data.Contracts;
+import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
 import com.example.bethechange.feedme.MainScreen.Models.FeedMeArticle;
+import com.example.bethechange.feedme.Utils.DBUtils;
 import com.example.bethechange.feedme.Utils.NetworkUtils;
 import com.example.mvpframeworkedited.BasePresenter;
 
@@ -14,7 +17,7 @@ import com.example.mvpframeworkedited.BasePresenter;
 
 public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsContract.ItemView>
         implements DetailsContract.ItemPresenter,ArticlesRepository.ArticlesRepositoryObserver,NetworkUtils.InternetWatcher{
-    private final FeedMeArticle article;
+    private FeedMeArticle article;
     ArticlesRepository mRepo;
     private boolean isFetching;
     private boolean isVisible;
@@ -23,6 +26,11 @@ public class ArticleItemPresenter extends BasePresenter<FeedMeArticle,DetailsCon
         mRepo=repo;
         //mRepo.setListener(this,sites);
         article=mRepo.getArticle(arID);
+        if(article==null){
+            if(view()!=null)
+                view().showProgress();
+            article=DBUtils.cursorToArticle(FeedMeApp.getContext().getContentResolver().query(Contracts.ArticleEntry.CONTENT_URI,null,Contracts.ArticleEntry._ID+" = ?",new String[]{arID+""},null));
+        }
         if(!article.isContentFetched()){
             if(view()!=null)
                 view().showProgress();

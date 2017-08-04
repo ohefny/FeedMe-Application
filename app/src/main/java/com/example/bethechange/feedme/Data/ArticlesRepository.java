@@ -224,7 +224,10 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
     @Override
     public FeedMeArticle getArticle(int id) {
-       return allArticles.get(id);
+        if(allArticles!=null&&allArticles.size()>0){
+            return allArticles.get(id);
+        }
+        return null;
     }
 
     @Override

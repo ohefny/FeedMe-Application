@@ -185,6 +185,8 @@
     <string name="close_btn_text">Close</string>
     <string name="add_sites_title">Add Sites</string>
     <string name="edit_nav_cat_item">Edit</string>
+    <string name="site_options">Item Options</string>
+    <string name="action_close_dialog">close dialog</string>
 
 
 </resources>

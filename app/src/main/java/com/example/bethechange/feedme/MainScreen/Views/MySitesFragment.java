@@ -2,15 +2,20 @@ package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -105,18 +110,31 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
 
     private void setupRecyclerView(View view) {
         mRecyclerView=(RecyclerView)view.findViewById(R.id.mysites_list) ;
+
         mAdapter=new MySiteRecyclerViewAdapter(mSites,getContext(),presenter);
         DisplayMetrics displayMetrics=new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        mColumnCount=displayMetrics.widthPixels/300;
+        mColumnCount=calculateNoOfColumns(getContext(),175);
+      //  mColumnCount=mColumnCount>getResources().getInteger(R.integer.sites_coulmns_count)?
+        //        mColumnCount:getResources().getInteger(R.integer.sites_coulmns_count);
         // Set the adapter
         Context context = view.getContext();
-
+        RecyclerView.LayoutManager layoutManager;
         if (mColumnCount <= 1) {
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            layoutManager=new LinearLayoutManager(context);
+
         } else {
-            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            layoutManager=new GridLayoutManager(getContext(),mColumnCount,LinearLayoutManager.VERTICAL,false);
+            //layoutManager =
+             //       new StaggeredGridLayoutManager(mColumnCount, StaggeredGridLayoutManager.VERTICAL);
+           // SpacesItemDecoration itemDecoration = new SpacesItemDecoration( getResources().getDimensionPixelSize(R.dimen.item_offset));
+           // mRecyclerView.addItemDecoration(itemDecoration);
+           // mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
+
         }
+
+        mRecyclerView.setLayoutManager(layoutManager);
+
         mRecyclerView.setAdapter(mAdapter);//, mListener));
 
     }
@@ -251,5 +269,33 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
     }
 
     interface FragmentActivityInteractor{
+    }
+    public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+        private int space;
+
+        public SpacesItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view,
+                                   RecyclerView parent, RecyclerView.State state) {
+            outRect.left = space;
+            outRect.right = space;
+            outRect.bottom = space;
+
+            // Add top margin only for the first item to avoid double space between items
+            if (parent.getChildLayoutPosition(view) == 0) {
+                outRect.top = space;
+            } else {
+                outRect.top = 0;
+            }
+        }
+    }
+    public static int calculateNoOfColumns(Context context,int colSize) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / colSize);
+        return noOfColumns;
     }
 }

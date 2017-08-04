@@ -3,16 +3,19 @@ package com.example.bethechange.feedme.MainScreen.Views;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +57,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     implements ArticleListContract.View,MyArticleRecyclerViewAdapter.ArticleListItemListener{
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private int mColumnCount = 1;
+    private int mColumnCount = 2;
     private RecyclerView mRecyclerView;
     private List<FeedMeArticle> mFeedMeArticleList=new ArrayList<>();
     MyArticleRecyclerViewAdapter adapter=
@@ -175,10 +178,17 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         adapter=new MyArticleRecyclerViewAdapter(mFeedMeArticleList,getContext(),this);
         Context context = view.getContext();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.articles_recycler);
+
+        mColumnCount=1;
+        if(getResources().getBoolean(R.bool.w600)) {
+            mColumnCount = calculateNoOfColumns(getContext(), 240);
+        }
         if (mColumnCount <= 1) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
         } else {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            mRecyclerView.addItemDecoration(new SpacesItemDecoration(30));
         }
         mRecyclerView.setAdapter(adapter);//, mListener));
 
@@ -364,11 +374,17 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         if(onWebView)
             listener.openWebViewFragment(article.getArticle().getSource().toString());
         else{
-            Intent intent=new Intent(getContext(), DetailsActivity.class);
-            int id=article.getArticleID();
-            intent.putExtra(DetailsActivity.ARTICLE_ID_KEY,id);
-            intent.putExtra(DetailsActivity.ARTICLES_IDS,interactor.getArticlesIds());
-            startActivity(intent);
+
+            if(getResources().getBoolean(R.bool.sw600)){
+                getFragmentManager().beginTransaction().add(ArticleDetailsDialog.newInstance(article),"ArticleDetailFragmentDialog").addToBackStack(null).commit();
+            }
+            else{
+                Intent intent=new Intent(getContext(), DetailsActivity.class);
+                int id=article.getArticleID();
+                intent.putExtra(DetailsActivity.ARTICLE_ID_KEY,id);
+                intent.putExtra(DetailsActivity.ARTICLES_IDS,interactor.getArticlesIds());
+                startActivity(intent);
+            }
         }
 
 
@@ -429,6 +445,30 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     public interface ArticlesActivityInteractor {
         void openWebViewFragment(String link);
         void onCategoryChanged(int id);
+    }
+    public static int calculateNoOfColumns(Context context,int colSize) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / colSize);
+        return noOfColumns;
+    }
+    public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+        private int space;
+
+        public SpacesItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view,
+                                   RecyclerView parent, RecyclerView.State state) {
+
+            outRect.top = space;
+            outRect.right=space;
+
+            // Add top margin only for the first item to avoid double space between items
+
+        }
     }
 
 

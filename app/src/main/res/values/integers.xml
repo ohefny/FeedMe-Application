@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="sites_coulmns_count">2</integer>
+    <integer name="articles_coulmns_count">1</integer>
+</resources>
