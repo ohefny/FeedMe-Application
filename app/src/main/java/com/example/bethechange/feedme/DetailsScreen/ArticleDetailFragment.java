@@ -270,6 +270,13 @@ implements DetailsContract.ItemView{
         
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getActivity().getWindow()
+                .getAttributes().windowAnimations = R.style.DetailsFragmentAnimation;
+    }
+
     private void bindArticleToViews() {
         if (mRootView == null) {
             return;

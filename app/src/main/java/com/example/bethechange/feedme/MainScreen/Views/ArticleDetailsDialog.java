@@ -35,6 +35,14 @@ public class ArticleDetailsDialog extends DialogFragment {
     public  ArticleDetailsDialog(){
 
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getDialog().getWindow()
+                .getAttributes().windowAnimations = R.style.DetailsDialogAnimation;
+    }
+
     public static ArticleDetailsDialog newInstance(FeedMeArticle article) {
         ArticleDetailsDialog fragment = new ArticleDetailsDialog();
         fragment.setArticle(article);

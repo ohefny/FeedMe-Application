@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,10 +29,6 @@ import android.widget.ImageView;
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.CustomScreen.CustomListActivity;
 import com.example.bethechange.feedme.CustomScreen.SearchModel;
-import com.example.bethechange.feedme.Data.ArticlesRepository;
-import com.example.bethechange.feedme.Data.CategoriesRepository;
-import com.example.bethechange.feedme.Data.ContentFetcher;
-import com.example.bethechange.feedme.Data.SitesRepository;
 import com.example.bethechange.feedme.DetailsScreen.DetailsActivity;
 import com.example.bethechange.feedme.MainScreen.ArticlesFactory;
 import com.example.bethechange.feedme.MainScreen.Models.ArticlesList;
@@ -326,18 +321,29 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
 
 
     @Override
-    public void onSaveClicked(FeedMeArticle article) {
-
+    public void onSaveClicked(FeedMeArticle article, int position) {
+        if(type==ArticleType.SAVED){
+            adapter.getListItems().remove(position);
+            adapter.notifyDataSetChanged();
+        }
         interactor.onPerformSave(article);
     }
 
     @Override
-    public void onDeleteClicked(FeedMeArticle article) {
+    public void onDeleteClicked(FeedMeArticle article, int position) {
+        if(type!=ArticleType.SITE&&type!=ArticleType.CATEGORY){
+            adapter.getListItems().remove(position);
+            adapter.notifyDataSetChanged();
+        }
         interactor.onPerformDelete(article);
     }
 
     @Override
-    public void onBookmarkClicked(FeedMeArticle article) {
+    public void onBookmarkClicked(FeedMeArticle article, int position) {
+        if(type==ArticleType.BOOKMARKED){
+            adapter.getListItems().remove(position);
+            adapter.notifyDataSetChanged();
+        }
         interactor.onPerformFav(article);
     }
 

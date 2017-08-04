@@ -9,7 +9,14 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">12sp</item>
     </style>
-
+    <style name="DetailsDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_dialog</item>
+    </style>
+    <style name="DetailsFragmentAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_left_dialog</item>
+        <item name="android:windowExitAnimation">@anim/slide_right_dialog</item>
+    </style>
     <style name="CustomAlertDialogStyle">
         <item name="android:bottomBright">@android:color/transparent</item>
         <item name="android:bottomDark">@android:color/black</item>

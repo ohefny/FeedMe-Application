@@ -124,16 +124,16 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.item_fav:
-                        mListener.onBookmarkClicked(getListItems().get(position));
+                        mListener.onBookmarkClicked(getListItems().get(position),position);
                         break;
                     case R.id.item_save:
-                        mListener.onSaveClicked(getListItems().get(position));
+                        mListener.onSaveClicked(getListItems().get(position),position);
                         break;
                     case R.id.item_snippet:
                         makeViewType(holder, true);
                         break;
                     case R.id.item_delete:
-                        mListener.onDeleteClicked(getListItems().get(position));
+                        mListener.onDeleteClicked(getListItems().get(position),position);
                         break;
                 }
                 return true;
@@ -244,11 +244,11 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
         }
     }
     public interface ArticleListItemListener {
-        void onSaveClicked(FeedMeArticle article);
+        void onSaveClicked(FeedMeArticle article, int position);
 
-        void onDeleteClicked(FeedMeArticle article);
+        void onDeleteClicked(FeedMeArticle article, int position);
 
-        void onBookmarkClicked(FeedMeArticle article);
+        void onBookmarkClicked(FeedMeArticle article, int position);
 
         void onArticleOpened(FeedMeArticle article, int pos);
 
