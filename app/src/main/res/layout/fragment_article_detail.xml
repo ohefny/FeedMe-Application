@@ -18,7 +18,7 @@
             app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
             app:title="@string/untitled_holder"
-            app:expandedTitleMarginStart="72dp"
+            app:expandedTitleMarginStart="16dp"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
             <FrameLayout

@@ -15,6 +15,8 @@ import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.ArticleListFragment;
 import com.example.bethechange.feedme.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 
 public class CustomListActivity extends AppCompatActivity implements ArticleListFragment.ArticlesActivityInteractor{

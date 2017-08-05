@@ -21,6 +21,7 @@ import com.example.bethechange.feedme.Utils.DBUtils;
 import com.example.bethechange.feedme.Utils.FirebaseUtils;
 import com.example.mvpframeworkedited.BasePresenterActivity;
 import com.example.mvpframeworkedited.PresenterFactory;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ErrorDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -39,6 +40,7 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         if(!FirebaseUtils.isGooglePlayServicesAvailable(this)){
            showError(getString(R.string.common_google_play_services_install_text_phone));
         }

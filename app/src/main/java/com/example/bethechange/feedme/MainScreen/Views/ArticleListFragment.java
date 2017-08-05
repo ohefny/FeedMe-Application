@@ -41,6 +41,8 @@ import com.example.bethechange.feedme.MainScreen.Views.Adapters.MyArticleRecycle
 import com.example.bethechange.feedme.R;
 import com.example.mvpframeworkedited.BasePresenterFragment;
 import com.example.mvpframeworkedited.PresenterFactory;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -165,6 +167,9 @@ public class ArticleListFragment extends BasePresenterFragment<ArticlesListPrese
         }
 
         setupRecyclerView(mRootView);
+        AdView mAdView = (AdView) mRootView.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
         return mRootView;
     }
 

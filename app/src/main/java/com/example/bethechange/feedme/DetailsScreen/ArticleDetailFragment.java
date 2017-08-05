@@ -39,6 +39,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.bethechange.feedme.MainScreen.Views.ArticleListFragment.calculateNoOfColumns;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -203,6 +205,8 @@ implements DetailsContract.ItemView{
         Log.d("OnCreateView",this.hashCode()+"");
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         mPhotoView=(CustomAspectImage)mRootView.findViewById(R.id.photo);
+        Log.d("OnCreateView",calculateNoOfColumns(getContext(),mPhotoView.getWidth())+" ff width");
+        Log.d("OnCreateView",calculateNoOfColumns(getContext(),mPhotoView.getHeight())+" ff height");
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             PortraitViewSetup(); 

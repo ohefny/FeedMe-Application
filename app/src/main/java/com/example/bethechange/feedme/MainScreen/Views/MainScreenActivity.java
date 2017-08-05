@@ -45,6 +45,8 @@ import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter
 import com.example.bethechange.feedme.R;
 import com.example.bethechange.feedme.Services.BackupDataService;
 import com.example.bethechange.feedme.SettingsActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -232,6 +234,9 @@ public class MainScreenActivity extends AppCompatActivity implements
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         //calling sync state is necessary or else your hamburger icon wont show up
         mActionBarDrawerToggle.syncState();
+      /*  AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);*/
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
