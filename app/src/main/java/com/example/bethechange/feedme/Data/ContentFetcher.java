@@ -137,7 +137,7 @@ public class ContentFetcher extends AsyncTaskLoader implements Callback {
             e.printStackTrace();
         }
         catch (Exception e){
-            System.out.println("Fuck Used to be uncaught");
+            System.out.println("FFFF Used to be uncaught");
             e.printStackTrace();
         }
 

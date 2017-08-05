@@ -63,7 +63,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
             mContext=null;
             context.getContentResolver()
                 .unregisterContentObserver(observer);
-            Log.d("Fuck Observer Not Exits",context.toString()+"");
+            Log.d("FFFF Observer Not Exits",context.toString()+"");
         }
        // repoInstance = null;
 
@@ -73,7 +73,7 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
         mContext=context;
         if(repoInstance==null)
             repoInstance=new ArticlesRepository(context.getContentResolver());
-        Log.d("Fuck Observer Exist",context.toString()+"");
+        Log.d("FFFF Observer Exist",context.toString()+"");
         context.getContentResolver()
                 .registerContentObserver(Contracts.ArticleEntry.CONTENT_URI,false,observer);
         return repoInstance;
@@ -88,10 +88,10 @@ public class ArticlesRepository extends AsyncQueryHandler implements ArticleRepo
 
     @Override
     public void onLocalDataChanged() {
-        Log.d("onLocalDataChanged","Fuck DataChanged");
+        Log.d("onLocalDataChanged","FFFF DataChanged");
         if(freshData){
-            Log.d("onLocalDataChanged","Fuck FreshData");
-            Log.d("onLocalDataChanged","Fuck listeners "+mListeners.size());
+            Log.d("onLocalDataChanged","FFFF FreshData");
+            Log.d("onLocalDataChanged","FFFF listeners "+mListeners.size());
 
             queryArticles(INITIALIZE_TOKEN);
             freshData=false;

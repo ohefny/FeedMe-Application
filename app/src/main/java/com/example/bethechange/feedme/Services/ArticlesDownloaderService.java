@@ -50,7 +50,7 @@ public class ArticlesDownloaderService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d("Fuck OnHandle Intent",intent.toString());
+        Log.d("FFFF OnHandle Intent",intent.toString());
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_FETCH_ALL.equals(action)) {
@@ -87,7 +87,7 @@ public class ArticlesDownloaderService extends IntentService {
             this.sendBroadcast(dataUpdatedIntent);
 
         }
-        Log.d("Fuck Inserted Items ",inserted+"");
+        Log.d("FFFF Inserted Items ",inserted+"");
     }
 
     /**
@@ -106,6 +106,6 @@ public class ArticlesDownloaderService extends IntentService {
             Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
             this.sendBroadcast(dataUpdatedIntent);
         }
-        Log.d("Fuck Inserted Items",newItems+"");
+        Log.d("FFFF Inserted Items",newItems+"");
     }
 }

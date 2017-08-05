@@ -68,7 +68,7 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
                 .error(R.drawable.thumbnail)
                 .into(holder.mArticleImg);
         makeViewType(holder, false);
-        Log.d(getClass().getSimpleName(), "Fuck Link :: " + holder.mItem.getArticle().getImage().toString());
+        Log.d(getClass().getSimpleName(), "FFFF Link :: " + holder.mItem.getArticle().getImage().toString());
         // holder.mSiteView.setText(mValues.get(position).getArticle().getDescription());
         holder.mSnippet.setOnClickListener(new View.OnClickListener() {
             @Override

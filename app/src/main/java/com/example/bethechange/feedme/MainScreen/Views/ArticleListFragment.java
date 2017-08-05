@@ -381,7 +381,7 @@ public class ArticleListFragment extends BasePresenterFragment<ArticlesListPrese
 
     @Override
     public void showArticle(FeedMeArticle article, boolean onWebView) {
-        Log.d("Fuck Show Article",article.getArticle().getSource().toString());
+        Log.d("FFFF Show Article",article.getArticle().getSource().toString());
         if(onWebView)
             listener.openWebViewFragment(article.getArticle().getSource().toString());
         else{
