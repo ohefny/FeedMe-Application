@@ -2,7 +2,6 @@
     <string name="app_name">FeedMe</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="openDrawer" translatable="false">open_drawer</string>
     <string name="closeDrawer" translatable="false">close_drawer</string>
     <string name="search_hint">search feedMeArticles/sites</string>
@@ -65,10 +64,7 @@
     <string name="unable_to_sync">Synchronization failed Please Try Again Later</string>
     <string name="slow_fetching">Fetching Articles Takes Too Long … Check Your Internet</string>
 
-    <string name="title_activity_error">ErrorActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">There is A Connection Problem</string>
-    <string name="pref_cleanup_val_key">cleanup_val</string>
+    <string name="pref_cleanup_val_key" translatable="false">cleanup_val</string>
     <string name="pref_backup_val_key" translatable="false">back_up</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -78,27 +74,15 @@
     <string name="pref_header_general">General</string>
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
+    <string name="pref_description_social_recommendations" translatable="false">Recommendations for people to contact
         based on your message history
     </string>
 
     <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_default_display_name" translatable="false">John Smith</string>
 
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
+    <string name="pref_title_add_friends_to_messages" translatable="false">Add friends to messages</string>
 
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
 
     <string name="pref_title_update_frequency">Update News frequency</string>
     <string-array name="pref_update_frequency_titles">
@@ -156,17 +140,6 @@
         <item>999999999</item>
     </string-array>
 
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string-array name="multi_select_list_preference_default_value" />
 

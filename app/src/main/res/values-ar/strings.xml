@@ -91,4 +91,59 @@
     <string name="timeline">المقالات</string>
     <string name="mysites">مواقعي</string>
     <string name="performing_backup">جاري النسخ…</string>
+    <string-array name="pref_update_frequency_titles">
+        <item>عند بدء التطبيق</item>
+        <item> ساعة</item>
+        <item>3 ساعات</item>
+        <item>6 ساعات</item>
+        <item>12 ساعات</item>
+        <item>24 ساعات</item>
+        <item>يومين</item>
+        <item>4 ايام</item>
+        <item>7 ايام</item>
+        <item>ابدا</item>
+    </string-array>
+    <string-array name="pref_update_frequency_values">
+        <item>0</item>
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+        <item>48</item>
+        <item>96</item>
+        <item>168</item>
+        <item>999999999</item>
+    </string-array>
+    <string-array name="pref_backup_frequency_titles">
+        <item>عند بدء التطبيق</item>
+        <item> يوم </item>
+        <item>يومان</item>
+        <item>4 ايام</item>
+        <item>7 ايام</item>
+        <item>ابدا</item>
+    </string-array>
+    <string-array name="pref_backup_frequency_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>7</item>
+        <item>999999999</item>
+    </string-array>
+    <string-array name="pref_cleanup_frequency_titles">
+        <item>يوم</item>
+        <item>يومان</item>
+        <item>4 ايام</item>
+        <item>7 ايام</item>
+        <item>ابدا</item>
+    </string-array>
+    <string-array name="pref_cleanup_frequency_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>7</item>
+        <item>999999999</item>
+    </string-array>
+    <string name="appwidget_text">مثال</string>
 </resources>
