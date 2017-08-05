@@ -8,7 +8,7 @@
     <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
         android:id="@+id/empty_articles_view"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:src="@drawable/no_articles_bg"
         tools:layout_editor_absoluteX="160dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,11 +18,10 @@
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="@string/no_subscriptions_view_description" />
 
-    />
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/articles_recycler"
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
