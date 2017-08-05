@@ -161,7 +161,7 @@ implements DetailsContract.ItemView{
     public void showMessage(String str, final Uri source) {
         //TODO Replace with snackbar
         Snackbar mySnackbar = Snackbar.make(mRootView, str, Snackbar.LENGTH_LONG);
-        mySnackbar.setAction("Open Browser", new View.OnClickListener() {
+        mySnackbar.setAction(getString(R.string.open_browser), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onOpenBrowser(source);

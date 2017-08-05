@@ -208,7 +208,7 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
     @Override
     public void onStart() {
         super.onStart();
-        getDialog().setTitle("Add Site");
+        getDialog().setTitle(getString(R.string.add_sites_title));
 
     }
 
@@ -246,7 +246,7 @@ public class AddSiteFragment extends DialogFragment implements NetworkUtils.RssC
             dialog.dismiss();
             rssLinkView.setError("Can't Verify unsupported feeds or no connection ");
         }
-        addBtn.setText("Add");
+        addBtn.setText(getString(R.string.add_btn_text));
         addBtn.setEnabled(true);
     }
 

@@ -25,7 +25,6 @@ public class SearchActivity extends AppCompatActivity implements ArticleListFrag
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             Bundle appData = getIntent().getBundleExtra(SearchManager.APP_DATA);
-            Toast.makeText(this,intent.getStringExtra(SearchManager.QUERY),Toast.LENGTH_SHORT).show();
             query=intent.getStringExtra(SearchManager.QUERY);
             setTitle(intent.getStringExtra(SearchManager.QUERY));
             int id=appData.getInt(FROM_ID,-1);

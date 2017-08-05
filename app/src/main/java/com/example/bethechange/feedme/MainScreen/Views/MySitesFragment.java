@@ -66,7 +66,7 @@ public class MySitesFragment extends BasePresenterFragment<MySitesPresenter,MySi
      * fragment (e.g. upon screen orientation changes).
      */
     public MySitesFragment() {
-        temp.setTitle("All");
+        temp.setTitle(getString(R.string.all_string));
         cats.add(0,temp);
     }
     public static MySitesFragment newInstance() {

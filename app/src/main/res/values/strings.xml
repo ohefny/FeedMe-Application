@@ -185,6 +185,8 @@
     <string name="timeline">Timeline</string>
     <string name="mysites">My Sites</string>
     <string name="performing_backup">Performing Backup…</string>
+    <string name="go_up_fab">Move Up</string>
+    <string name="all_string">All</string>
 
 
 </resources>

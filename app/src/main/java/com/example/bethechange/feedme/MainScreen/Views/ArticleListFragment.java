@@ -99,7 +99,7 @@ public class ArticleListFragment extends BasePresenterFragment<ArticlesListPrese
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        temp.setTitle("All");
+        temp.setTitle(getString(R.string.all_string));
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }

@@ -331,14 +331,7 @@ public class FirebaseUtils {
     public static boolean isGooglePlayServicesAvailable(Activity activity) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
-        if(status != ConnectionResult.SUCCESS) {
-            //if(googleApiAvailability.isUserResolvableError(status)) {
-                //googleApiAvailability.getErrorDialog(activity, status, 2404).show();
-
-           // }
-            return false;
-        }
-        return true;
+        return status == ConnectionResult.SUCCESS;
     }
 }
 

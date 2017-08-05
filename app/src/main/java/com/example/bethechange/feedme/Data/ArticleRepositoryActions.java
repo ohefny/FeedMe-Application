@@ -41,5 +41,5 @@ public interface ArticleRepositoryActions {
     ArticlesList getBookmarkedArticles();
     ArticlesList getArticlesWithIds(ArrayList<Integer>ids,ArticlesRepository.ArticlesRepositoryObserver mListener);
 
-    public void getArticlesFromSearchQuery(SearchModel model, ArticlesRepository.ArticlesRepositoryObserver mListener);
+    void getArticlesFromSearchQuery(SearchModel model, ArticlesRepository.ArticlesRepositoryObserver mListener);
 }

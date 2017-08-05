@@ -171,7 +171,7 @@ public class NetworkUtils {
         void internetAvailable(boolean isAvailable);
     }
 
-    public static interface RssCheckedListener {
+    public interface RssCheckedListener {
         void onRssLinkChecked(Site site,boolean valid,boolean edit);
     }
 }

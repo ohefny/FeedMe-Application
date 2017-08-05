@@ -2,7 +2,6 @@
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryExtraDark"
     android:layout_width="match_parent">
@@ -11,6 +10,7 @@
     android:layout_height="match_parent">
 
     <ImageView
+        android:contentDescription="@string/saved_posts_head_title"
         android:id="@+id/saved_nav_img"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -191,6 +191,7 @@
         app:layout_constraintTop_toBottomOf="@+id/top_sites_title_nav_id" /> -->
 
     <ImageView
+        android:contentDescription="@string/top_sites_head_title"
         android:id="@+id/top_sites_img_nav_id"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -204,6 +205,7 @@
         android:layout_marginStart="16dp" />
 
     <ImageView
+        android:contentDescription="@string/fav_sites_head_title"
         android:id="@+id/fav_img_nav_id"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -217,6 +219,7 @@
         android:layout_marginStart="16dp" />
 
     <ImageView
+        android:contentDescription="@string/categories_head_title"
         android:id="@+id/cat_img_nav_id"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -230,6 +233,7 @@
         />
 
     <ImageButton
+        android:contentDescription="@string/add_category_title"
         android:id="@+id/add_cat_btn_nav_id"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -270,6 +274,7 @@
         android:layout_marginStart="8dp" />
 
     <ImageView
+        android:contentDescription="@string/backup_title"
         android:id="@+id/backupImage"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -300,6 +305,7 @@
         android:layout_marginStart="8dp" />
 
     <ImageView
+        android:contentDescription="@string/settings"
         android:id="@+id/settingsImage"
         android:layout_width="32dp"
         android:layout_height="32dp"

@@ -153,10 +153,13 @@ public class MainScreenActivity extends AppCompatActivity implements
             @Override
             public void onPageSelected(int position) {
                 currentPage=position;
-                if(position==1)
+                if(position==1){
                     mFab.setImageResource(R.drawable.ic_fab_add);
+                    mFab.setContentDescription(getString(R.string.add_sites_title));
+                }
                 else if(position==0) {
                     mFab.setImageResource(R.drawable.ic_arrow_up);
+                    mFab.setContentDescription(getString(R.string.go_up_fab));
                 }
             }
 
@@ -334,7 +337,7 @@ public class MainScreenActivity extends AppCompatActivity implements
         mDrawer.closeDrawers();
         mViewPager.setCurrentItem(1);
         mDrawer.closeDrawers();
-        Toast.makeText(this,"Sites Clicked",Toast.LENGTH_SHORT).show();
+
     }
 
     public void onFavClicked(View view) {
@@ -342,14 +345,14 @@ public class MainScreenActivity extends AppCompatActivity implements
         Intent intent=new Intent(this, CustomListActivity.class);
         intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.BOOKMARKED);
         startActivity(intent);
-        Toast.makeText(this,"Fav Clicked",Toast.LENGTH_SHORT).show();
+
     }
     public void onSavedPostsClicked(View view) {
         mDrawer.closeDrawers();
         Intent intent=new Intent(this, CustomListActivity.class);
         intent.putExtra(CustomListActivity.TYPE_KEY, ArticleType.SAVED);
         startActivity(intent);
-        Toast.makeText(this,"Saved Clicked",Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

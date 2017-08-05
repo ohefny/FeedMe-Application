@@ -146,4 +146,6 @@
         <item>999999999</item>
     </string-array>
     <string name="appwidget_text">مثال</string>
+    <string name="go_up_fab">للاعلي</string>
+    <string name="all_string">الكل</string>
 </resources>

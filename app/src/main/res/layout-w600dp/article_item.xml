@@ -83,6 +83,7 @@
         app:layout_constraintStart_toEndOf="@+id/site_title_id"
         android:layout_marginStart="8dp" />
     <ImageButton
+        android:contentDescription="@string/article_options_description"
         android:id="@+id/article_options_btn"
         android:layout_width="wrap_content"
         android:layout_height="33dp"
