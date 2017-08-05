@@ -3,17 +3,17 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="openDrawer">open_drawer</string>
-    <string name="closeDrawer">close_drawer</string>
+    <string name="openDrawer" translatable="false">open_drawer</string>
+    <string name="closeDrawer" translatable="false">close_drawer</string>
     <string name="search_hint">search feedMeArticles/sites</string>
     <string name="search">Search</string>
     <string name="top_sites_head_title">My Sites</string>
     <string name="fav_sites_head_title">Favorites</string>
     <string name="categories_head_title">Categories</string>
     <string name="saved_posts_head_title">Saved</string>
-    <string name="pref_last_update_key">last_update</string>
-    <string name="pref_interval_val_key">interval_val</string>
-    <string name="pref_initialized_key">initialized</string>
+    <string name="pref_last_update_key" translatable="false">last_update</string>
+    <string name="pref_interval_val_key" translatable="false">interval_val</string>
+    <string name="pref_initialized_key" translatable="false">initialized</string>
     <string name="article_options_description">Article Options</string>
     <string name="article_img_description">Article Image</string>
     <string name="title_val_on_btn">Title</string>
@@ -24,13 +24,13 @@
     <string name="item_snippet">Snippet</string>
     <string name="item_bookmark">Bookmark</string>
     <string name="item_save">Save</string>
-    <string name="dots_item">⋮</string>
+    <string name="dots_item" translatable="false">⋮</string>
     <string name="action_share">Share Article</string>
-    <string name="extract_api_key">bb23317a91408f9c117d0212e9c68109</string>
-    <string name="extract_api_id">e7a2ec9b</string>
+    <string name="extract_api_key" translatable="false">bb23317a91408f9c117d0212e9c68109</string>
+    <string name="extract_api_id" translatable="false">e7a2ec9b</string>
     <!-- <string name="googl_api_key">AIzaSyA5nKr9yDKhGiWvOPP55PbOapgdZDsXiPE</string>-->
-    <string name="googl_api_id">005243230011887027180:95rpocypqje</string>
-    <string name="googl_api_key">AIzaSyCBpYjocDnbupnAxbK6XqN5D-mrohReaIU</string>
+    <string name="googl_api_id" translatable="false">005243230011887027180:95rpocypqje</string>
+    <string name="googl_api_key" translatable="false">AIzaSyCBpYjocDnbupnAxbK6XqN5D-mrohReaIU</string>
     <string name="not_available">Content is not available check your internet or choose Open Browser action to surf in browser</string>
     <string name="open_browser">Open Browser</string>
     <string name="item_browser">Open Browser</string>
@@ -61,7 +61,7 @@
     <string name="add_btn_text">Add</string>
     <string name="sign_in_text">To continue using the application please sign in</string>
     <string name="auth_fail">Authentication failed check your internet</string>
-    <string name="is_synced_pref_key">IS_SYNCED</string>
+    <string name="is_synced_pref_key" translatable="false">IS_SYNCED</string>
     <string name="unable_to_sync">Synchronization failed Please Try Again Later</string>
     <string name="slow_fetching">Fetching Articles Takes Too Long … Check Your Internet</string>
 
@@ -69,7 +69,7 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">There is A Connection Problem</string>
     <string name="pref_cleanup_val_key">cleanup_val</string>
-    <string name="pref_backup_val_key">back_up</string>
+    <string name="pref_backup_val_key" translatable="false">back_up</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -175,10 +175,10 @@
     <string name="pref_title_backup_frequency">Backup &amp; Frequency</string>
     <string name="pref_title_clean_frequency">Outdated</string>
     <string name="pref_summary_clean_frequency">This option let you choose when article is considered outdated and eligible to be deleted from database</string>
-    <string name="sync_list_freq_key">sync_freq_key</string>
-    <string name="backup_list_freq_key">backup_freq_key</string>
-    <string name="cleanup_list_freq_key">cleanup_list_freq_key</string>
-    <string name="firebase_api_key">677711228584-ln28fjr02q6o176top29ck7nknr0v6cg.apps.googleusercontent.com</string>
+    <string name="sync_list_freq_key" translatable="false">sync_freq_key</string>
+    <string name="backup_list_freq_key" translatable="false">backup_freq_key</string>
+    <string name="cleanup_list_freq_key" translatable="false">cleanup_list_freq_key</string>
+    <string name="firebase_api_key" translatable="false">677711228584-ln28fjr02q6o176top29ck7nknr0v6cg.apps.googleusercontent.com</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="all_articles_string">All articles</string>
@@ -187,6 +187,30 @@
     <string name="edit_nav_cat_item">Edit</string>
     <string name="site_options">Item Options</string>
     <string name="action_close_dialog">close dialog</string>
+    <string name="article_deleted_msg">Article has been deleted</string>
+    <string name="article_saved_msg">Article has been saved</string>
+    <string name="no_internet">No Internet Available Check Internet</string>
+    <string name="update_made_msg">Updates has been made..</string>
+    <string name="logo_description">FeedMe Logo</string>
+    <string name="untitled_holder">UnTitled</string>
+    <string name="unknown_holder">By unknown</string>
+    <string name="site_title_field_hint">Site Title</string>
+    <string name="rss_url_field_hint">Feeds Url</string>
+    <string name="empty_articles_view_description">No Articles Availabe</string>
+    <string name="no_subscriptions_view_description">No subscriptions exist</string>
+    <string name="profile_img_description">Profile Image</string>
+    <string name="delete_category_description">Delete category</string>
+    <string name="site_image_description">Site Logo</string>
+    <string name="syncing">Syncing…</string>
+    <string name="fetching_articles">Fetching Feeds…</string>
+    <string name="login">Login…</string>
+    <string name="pick_sites_title">Pick Sites</string>
+    <string name="item_unbookmark">UnBookmark</string>
+    <string name="item_unsave">UnArchive</string>
+    <string name="fetching_article">Fetching Article…</string>
+    <string name="backup_title">Backup</string>
+    <string name="timeline">Timeline</string>
+    <string name="mysites">My Sites</string>
 
 
 </resources>

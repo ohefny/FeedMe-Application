@@ -101,7 +101,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
     private void prepareProgress() {
         progressDialog = new ProgressDialog(this);//,R.style.MyProgressBar);
         progressDialog.setCancelable(true);
-        progressDialog.setMessage("Login...");
+        progressDialog.setMessage(getString(R.string.login));
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
     }
     private void signIn() {
@@ -185,7 +185,7 @@ public class LoginActivity extends BasePresenterActivity<LaunchPresenter,LaunchC
 
         final boolean[] checks = new boolean[cur != null ? cur.getCount() : 0];
         final int[] count = {0};
-        builder.setTitle("Pick Sites")
+        builder.setTitle(getString(R.string.pick_sites_title))
                 .setMultiChoiceItems(CollectionUtils.objectsToStrings(sites),null,new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {

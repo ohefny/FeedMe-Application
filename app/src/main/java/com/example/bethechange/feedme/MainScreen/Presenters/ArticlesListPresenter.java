@@ -104,7 +104,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
     public void onPerformDelete(FeedMeArticle feedMeArticle) {
 
         articlesRepo.removeArticle(feedMeArticle);
-        view().showMessage("Article has been deleted", null);
+        view().showMessage(FeedMeApp.getContext().getString(R.string.article_deleted_msg), null);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
             feedMeArticle.setSaved(true);
             articlesRepo.getFullArticle(feedMeArticle,this);
             view().saveArticleAsWebArchive(feedMeArticle);
-            view().showMessage("Article has been saved", null);
+            view().showMessage(FeedMeApp.getContext().getString(R.string.article_saved_msg), null);
         }
         else{
             feedMeArticle.setSaved(false);
@@ -215,7 +215,7 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
         {
             if(view()!=null) {
                 view().endProgress();
-                view().showMessage("No Internet Available Check Internet ",
+                view().showMessage(FeedMeApp.getContext().getString(R.string.no_internet),
                         requestedArticle.getArticle().getSource());
 
             }
@@ -230,8 +230,8 @@ public class ArticlesListPresenter extends BasePresenter<ArticlesList,ArticleLis
 
         if(view()!=null){
             view().endProgress();
-            if(data.getArticles().size()!=model.getArticles().size())
-                view().showMessage("Updates has been made..", null);
+            if(data.getArticles().size()>model.getArticles().size())
+                view().showMessage(FeedMeApp.getContext().getString(R.string.update_made_msg), null);
         }
         setModel(data);
     }

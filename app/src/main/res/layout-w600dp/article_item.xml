@@ -18,11 +18,11 @@
         android:maxLength="100"
         android:ellipsize="end"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
+       
         app:layout_constraintTop_toBottomOf="@+id/article_img"
         android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+         />
     <TextView
         android:id="@+id/snippet_text_tv"
         android:layout_width="230dp"
@@ -34,11 +34,10 @@
         android:maxLength="100"
         android:ellipsize="end"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/article_img"
         android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"  />
+        app:layout_constraintStart_toStartOf="parent"
+         />
 
     <ImageView
         android:id="@+id/article_img"
@@ -47,11 +46,10 @@
         android:scaleType="centerCrop"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/article_img_description"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/thumbnail"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginEnd="8dp" />
 
     <TextView
@@ -83,7 +81,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="0dp"
         style="?android:attr/borderlessButtonStyle"
-        app:layout_constraintLeft_toRightOf="@+id/site_title_id"
+        app:layout_constraintStart_toEndOf="@+id/site_title_id"
         android:layout_marginStart="8dp" />
     <ImageButton
         android:id="@+id/article_options_btn"
@@ -98,7 +96,7 @@
         android:textAppearance="?android:textAppearanceLarge"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="0dp"
-        app:layout_constraintLeft_toRightOf="@+id/snippet_btn"
-        android:layout_marginLeft="0dp" />
+        app:layout_constraintStart_toEndOf="@+id/snippet_btn"
+        android:layout_marginStart="0dp" />
 
 </android.support.constraint.ConstraintLayout>

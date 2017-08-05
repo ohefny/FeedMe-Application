@@ -113,10 +113,10 @@ public class MyArticleRecyclerViewAdapter extends RecyclerView.Adapter<MyArticle
 
     private void showMenu(View view, final int position, final ViewHolder holder) {
         PopupMenu menu = new PopupMenu(mContext, view);
-        menu.getMenu().add(0, R.id.item_snippet, 0, "Snippet");
-        menu.getMenu().add(0, R.id.item_fav, 1, holder.mItem.isFav() ? "UnBookmark" : "Bookmark");
-        menu.getMenu().add(0, R.id.item_save, 2, holder.mItem.isSaved() ? "UnArchive" : "Archive");
-        menu.getMenu().add(0, R.id.item_delete, 3, "Delete");
+        menu.getMenu().add(0, R.id.item_snippet, 0, FeedMeApp.getContext().getString(R.string.item_snippet));
+        menu.getMenu().add(0, R.id.item_fav, 1, holder.mItem.isFav() ?FeedMeApp.getContext().getString(R.string.item_unbookmark) : FeedMeApp.getContext().getString(R.string.item_bookmark));
+        menu.getMenu().add(0, R.id.item_save, 2, holder.mItem.isSaved() ? FeedMeApp.getContext().getString(R.string.item_unsave) : FeedMeApp.getContext().getString(R.string.item_save));
+        menu.getMenu().add(0, R.id.item_delete, 3, FeedMeApp.getContext().getString(R.string.item_delete));
         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
             @Override

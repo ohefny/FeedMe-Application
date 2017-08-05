@@ -9,10 +9,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.bethechange.feedme.ArticleType;
-import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
+import com.example.bethechange.feedme.MainScreen.Views.ArticleListFragment;
 import com.example.bethechange.feedme.R;
 
-public class SearchActivity extends AppCompatActivity implements TimelineFragment.ArticlesActivityInteractor{
+public class SearchActivity extends AppCompatActivity implements ArticleListFragment.ArticlesActivityInteractor{
     public static final String FROM_TYPE="FROM_TYPE";
     public static final String FROM_ID="FROM_ID";
 
@@ -32,7 +32,7 @@ public class SearchActivity extends AppCompatActivity implements TimelineFragmen
             int from=appData.getInt(FROM_TYPE,ArticleType.CATEGORY);
             SearchModel model=new SearchModel(query,from,id);
             getSupportFragmentManager().beginTransaction().replace(R.id.list_fragment_container,
-                    TimelineFragment.newInstance(1, this, ArticleType.SEARCH,model), null).commit();
+                    ArticleListFragment.newInstance(1, this, ArticleType.SEARCH,model), null).commit();
         }
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

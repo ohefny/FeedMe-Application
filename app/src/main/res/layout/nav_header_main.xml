@@ -15,16 +15,16 @@
         android:layout_height="157dp"
         android:layout_centerVertical="true"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
         android:padding="@dimen/keyline_1"
         android:weightSum="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.461">
 
@@ -36,7 +36,8 @@
             android:layout_gravity="center"
             android:background="@color/colorPrimaryExtraDark"
             android:padding="3dp"
-            android:src="@drawable/no_avatar" />
+            android:src="@drawable/no_avatar"
+            android:contentDescription="@string/profile_img_description" />
 
 
         <TextView

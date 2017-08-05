@@ -9,16 +9,15 @@ import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.bethechange.feedme.ArticleType;
 import com.example.bethechange.feedme.Data.ArticlesRepository;
 import com.example.bethechange.feedme.MainScreen.Models.Site;
-import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
+import com.example.bethechange.feedme.MainScreen.Views.ArticleListFragment;
 import com.example.bethechange.feedme.R;
 import com.google.gson.Gson;
 
-public class CustomListActivity extends AppCompatActivity implements TimelineFragment.ArticlesActivityInteractor{
+public class CustomListActivity extends AppCompatActivity implements ArticleListFragment.ArticlesActivityInteractor{
 
 
     public static final String SITE_KEY = "SITE_KEY";
@@ -41,16 +40,16 @@ public class CustomListActivity extends AppCompatActivity implements TimelineFra
                     siteId=mSite.getID();
                     setTitle(mSite.getTitle());
                     getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
-                            TimelineFragment.newInstance(1, this, ArticleType.SITE, mSite), null).commit();
+                            ArticleListFragment.newInstance(1, this, ArticleType.SITE, mSite), null).commit();
                     break;
                 case ArticleType.SAVED:
                     getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
-                            TimelineFragment.newInstance(1, this, ArticleType.SAVED), null).commit();
+                            ArticleListFragment.newInstance(1, this, ArticleType.SAVED), null).commit();
                     setTitle(getString(R.string.saved_activity_title));
                     break;
                 case ArticleType.BOOKMARKED:
                     getSupportFragmentManager().beginTransaction().add(R.id.list_fragment_container,
-                            TimelineFragment.newInstance(1, this, ArticleType.BOOKMARKED), null).commit();
+                            ArticleListFragment.newInstance(1, this, ArticleType.BOOKMARKED), null).commit();
                     setTitle(getString(R.string.bookmark_activity_title));
                     break;
             }

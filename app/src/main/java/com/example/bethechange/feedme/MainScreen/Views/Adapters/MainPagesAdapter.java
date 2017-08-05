@@ -13,9 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.bethechange.feedme.ArticleType;
+import com.example.bethechange.feedme.FeedMeApp;
 import com.example.bethechange.feedme.MainScreen.Views.MainScreenActivity;
 import com.example.bethechange.feedme.MainScreen.Views.MySitesFragment;
-import com.example.bethechange.feedme.MainScreen.Views.TimelineFragment;
+import com.example.bethechange.feedme.MainScreen.Views.ArticleListFragment;
 import com.example.bethechange.feedme.R;
 
 /**
@@ -46,9 +47,9 @@ public class MainPagesAdapter extends FragmentPagerAdapter {
 
         switch (position){
             case 0:
-                return  addImageToTitle("Timeline",R.drawable.ic_launcher);
+                return  addImageToTitle(FeedMeApp.getContext().getString(R.string.timeline),R.drawable.ic_launcher);
             case 1:
-                return  addImageToTitle("My Sites",R.drawable.ic_launcher);
+                return  addImageToTitle(FeedMeApp.getContext().getString(R.string.mysites),R.drawable.ic_launcher);
 
 
         }
@@ -73,7 +74,7 @@ public class MainPagesAdapter extends FragmentPagerAdapter {
         switch (position)
         {
             case 0:
-                return TimelineFragment.newInstance(1,(MainScreenActivity)mActivity, ArticleType.CATEGORY);
+                return ArticleListFragment.newInstance(1,(MainScreenActivity)mActivity, ArticleType.CATEGORY);
             case 1:
                 return MySitesFragment.newInstance();
         }

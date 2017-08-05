@@ -39,7 +39,7 @@ class FirebaseSyncManger implements FirebaseUtils.FirebaseUserListener, Firebase
             finishSyncing();
         else{
             FirebaseUtils.checkUserExist(this);
-            mInteractor.onNewOperation("Syncing...");
+            mInteractor.onNewOperation(FeedMeApp.getContext().getString(R.string.syncing));
         }
 
     }
@@ -95,7 +95,7 @@ class FirebaseSyncManger implements FirebaseUtils.FirebaseUserListener, Firebase
     }
 
     private void prepareArticles() {
-        mInteractor.onNewOperation("Fetching Feeds...");
+        mInteractor.onNewOperation(FeedMeApp.getContext().getString(R.string.fetching_articles));
         mRepo.setListener(this,null);
         mRepo.getLatestArticles();
         if(ct==null){

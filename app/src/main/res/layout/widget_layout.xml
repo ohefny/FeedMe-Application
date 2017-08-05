@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|start"
             android:text="@string/all_articles_string"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title" />
     </LinearLayout>

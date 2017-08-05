@@ -2,7 +2,6 @@ package com.example.bethechange.feedme.MainScreen.Views;
 
 import android.animation.ObjectAnimator;
 import android.app.SearchManager;
-import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,23 +44,14 @@ import com.example.bethechange.feedme.MainScreen.Models.Site;
 import com.example.bethechange.feedme.MainScreen.Views.Adapters.MainPagesAdapter;
 import com.example.bethechange.feedme.R;
 import com.example.bethechange.feedme.Services.BackupDataService;
-import com.example.bethechange.feedme.Services.RefreshDataDispatcher;
 import com.example.bethechange.feedme.SettingsActivity;
-import com.example.bethechange.feedme.Utils.PrefUtils;
-import com.firebase.jobdispatcher.Constraint;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class MainScreenActivity extends AppCompatActivity implements
-        TimelineFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor, CategoriesRepository.CategoriesListener, NavigationCategoryAdapter.CategoriesListListener {
+        ArticleListFragment.ArticlesActivityInteractor,MySitesFragment.FragmentActivityInteractor, CategoriesRepository.CategoriesListener, NavigationCategoryAdapter.CategoriesListListener {
     private NavigationView mNavigationView;
     private DrawerLayout mDrawer;
     private View mNavHeader;
@@ -185,7 +175,7 @@ public class MainScreenActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 switch (currentPage){
                     case 0:
-                        ((TimelineFragment)mAdapter.getCurrentFragment()).fabClicked();
+                        ((ArticleListFragment)mAdapter.getCurrentFragment()).fabClicked();
                         break;
                     case 1:
                         ((MySitesFragment)mAdapter.getCurrentFragment()).fabClicked();
@@ -407,7 +397,7 @@ public class MainScreenActivity extends AppCompatActivity implements
     @Override
     public void onCategoryClicked(int position) {
         mViewPager.setCurrentItem(0);
-        ((TimelineFragment)mAdapter.getCurrentFragment()).setCategory(cats.get(position));
+        ((ArticleListFragment)mAdapter.getCurrentFragment()).setCategory(cats.get(position));
         mDrawer.closeDrawers();
     }
 

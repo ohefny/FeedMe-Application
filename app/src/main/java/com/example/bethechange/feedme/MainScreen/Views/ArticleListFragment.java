@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TimelineFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract.View>
+public class ArticleListFragment extends BasePresenterFragment<ArticlesListPresenter,ArticleListContract.View>
     implements ArticleListContract.View,MyArticleRecyclerViewAdapter.ArticleListItemListener{
 
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -70,11 +70,11 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private SearchModel model;
     private ImageView mEmptyView;
 
-    public TimelineFragment() {
+    public ArticleListFragment() {
     }
 
-    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type) {
-        TimelineFragment fragment = new TimelineFragment();
+    public static ArticleListFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type) {
+        ArticleListFragment fragment = new ArticleListFragment();
         fragment.setListener(lis);
         fragment.setType(type);
         Bundle args = new Bundle();
@@ -82,13 +82,13 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
         fragment.setArguments(args);
         return fragment;
     }
-    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type,Site site) {
-        TimelineFragment fragment=newInstance(columnCount,lis,type);
+    public static ArticleListFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type, Site site) {
+        ArticleListFragment fragment=newInstance(columnCount,lis,type);
         fragment.setSite(site);
         return fragment;
     }
-    public static TimelineFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type, SearchModel model) {
-        TimelineFragment fragment=newInstance(columnCount,lis,type);
+    public static ArticleListFragment newInstance(int columnCount, ArticlesActivityInteractor lis, @ArticleType int type, SearchModel model) {
+        ArticleListFragment fragment=newInstance(columnCount,lis,type);
         fragment.setModel(model);
         return fragment;
     }
@@ -109,7 +109,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     private void prepareProgress() {
         dialog = new ProgressDialog(getActivity());//,R.style.MyProgressBar);
         dialog.setCancelable(false);
-        dialog.setMessage("Fetching The Article");
+        dialog.setMessage(getString(R.string.fetching_article));
         dialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
     }
 
@@ -158,7 +158,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
             mSpinner.setAdapter(mSpinAdapter);
         }
         else{
-            mRootView = inflater.inflate(R.layout.fragment_site, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_custom, container, false);
             mEmptyView= (ImageView) mRootView.findViewById(R.id.empty_articles_view);
             mEmptyView.setImageResource(R.drawable.no_articles_other_bg);
 
@@ -305,7 +305,7 @@ public class TimelineFragment extends BasePresenterFragment<ArticlesListPresente
     public void showMessage(String str, final Uri source) {
         Snackbar mySnackbar = Snackbar.make(mRootView, str, Snackbar.LENGTH_LONG);
         if(source!=null)
-        mySnackbar.setAction("Open Browser", new View.OnClickListener() {
+        mySnackbar.setAction(getContext().getString(R.string.open_browser), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.openWebViewFragment(source.toString());
