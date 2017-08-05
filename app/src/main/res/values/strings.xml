@@ -211,6 +211,7 @@
     <string name="backup_title">Backup</string>
     <string name="timeline">Timeline</string>
     <string name="mysites">My Sites</string>
+    <string name="performing_backup">Performing Backup…</string>
 
 
 </resources>

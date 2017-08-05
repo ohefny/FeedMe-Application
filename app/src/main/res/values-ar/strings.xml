@@ -90,4 +90,5 @@
     <string name="backup_title">نسخ احتياطي</string>
     <string name="timeline">المقالات</string>
     <string name="mysites">مواقعي</string>
+    <string name="performing_backup">جاري النسخ…</string>
 </resources>

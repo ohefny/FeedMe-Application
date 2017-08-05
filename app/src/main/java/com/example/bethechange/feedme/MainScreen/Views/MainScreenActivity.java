@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -463,6 +464,11 @@ public class MainScreenActivity extends AppCompatActivity implements
 
 
     public void onBackupClicked(View view) {
+        Snackbar.make(view,getString(R.string.performing_backup),Snackbar.LENGTH_SHORT).show();
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawers();
+            return;
+        }
         BackupDataService.startActionBackup(this);
     }
 
