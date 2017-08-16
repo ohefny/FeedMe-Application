@@ -61,6 +61,7 @@ Explain how to run the automated tests for this system
 
 ## Tools
 
+  - MVP Pattern
   - Rss2Json API
   - FullTextExtractor API
   - Google Custom Search API
