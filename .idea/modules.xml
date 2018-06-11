@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/FeedMe.iml" filepath="$PROJECT_DIR$/FeedMe.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/FeedMe-Application.iml" filepath="$PROJECT_DIR$/.idea/FeedMe-Application.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mvpframeworkedited/mvpframeworkedited.iml" filepath="$PROJECT_DIR$/mvpframeworkedited/mvpframeworkedited.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvpframeworkedited/mvpframeworkedited.iml" filepath="$PROJECT_DIR$/mvpframeworkedited/mvpframeworkedited.iml" />
     </modules>
   </component>
