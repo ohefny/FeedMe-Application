@@ -8,6 +8,7 @@ stages:
 lint_check_main_development:
   stage: lint
   script:
+    - echo lint
     - ./gradlew clean lintMainDebug
   except:
     - staging
