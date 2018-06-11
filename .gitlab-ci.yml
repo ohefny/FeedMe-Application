@@ -1,0 +1,41 @@
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+
+lint_check_main_development:
+  stage: lint
+  script:
+    - ./gradlew clean lintMainDebug
+  except:
+    - staging
+    - production
+
+
+lint_check_all:
+  stage: lint
+  script:
+    - ./gradlew clean lint
+  only:
+    - staging
+    - production
+
+
+unit_test_main_development:
+  stage: test
+  script:
+    - ./gradlew clean testMainDebugUnitTest
+  except:
+    - staging
+    - production
+
+
+unit_test_all:
+  stage: test
+  script:
+    - ./gradlew clean test
+  only:
+    - staging
+    - production
