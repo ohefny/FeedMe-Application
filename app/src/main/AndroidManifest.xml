@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.bethechange.feedme">
+    package="com.feedme.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".FeedMeApp"
+        android:name="com.feedme.app.FeedMeApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -18,9 +18,9 @@
             android:value=".CustomScreen.SearchActivity" />
 
         <activity
-            android:name=".MainScreen.Views.MainScreenActivity"
+            android:name="com.feedme.app.MainScreen.Views.MainScreenActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CustomScreen.SearchActivity">
+        <activity android:name="com.feedme.app.CustomScreen.SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -31,41 +31,41 @@
         </activity>
 
         <provider
-            android:name=".Data.FeedMeProvider"
-            android:authorities="com.example.bethechange.feedme"
+            android:name="com.feedme.app.Data.FeedMeProvider"
+            android:authorities="com.feedme.app"
             android:exported="false" />
 
         <service
-            android:name=".Services.ArticlesDownloaderService"
+            android:name="com.feedme.app.Services.ArticlesDownloaderService"
             android:exported="false" />
         <service
-            android:name=".Services.CleanupService"
+            android:name="com.feedme.app.Services.CleanupService"
             android:exported="false" />
         <service
-            android:name=".Services.BackupDataService"
+            android:name="com.feedme.app.Services.BackupDataService"
             android:exported="false" />
         <service
-            android:name=".Services.RefreshDataDispatcher"
+            android:name="com.feedme.app.Services.RefreshDataDispatcher"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
         <service
-            android:name=".Services.BackupDispatcher"
+            android:name="com.feedme.app.Services.BackupDispatcher"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
 
-        <activity android:name=".SettingsActivity" />
+        <activity android:name="com.feedme.app.SettingsActivity" />
         <activity
-            android:name=".DetailsScreen.DetailsActivity"
+            android:name="com.feedme.app.DetailsScreen.DetailsActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CustomScreen.CustomListActivity" />
+        <activity android:name="com.feedme.app.CustomScreen.CustomListActivity" />
         <activity
-            android:name=".LaunchScreen.SplashScreen"
+            android:name="com.feedme.app.LaunchScreen.SplashScreen"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -75,14 +75,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LaunchScreen.LoginActivity"
+            android:name="com.feedme.app.LaunchScreen.LoginActivity"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait" />
 
-        <receiver android:name=".widget.FeedMeWidget">
+        <receiver android:name="com.feedme.app.widget.FeedMeWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.example.bethechange.feedme.Services.action.DATA_UPDATED" />
+                <action android:name="com.feedme.app.Services.action.DATA_UPDATED" />
             </intent-filter>
 
             <meta-data
@@ -91,7 +91,7 @@
         </receiver>
 
         <service
-            android:name=".widget.FeedMeWidgetService"
+            android:name="com.feedme.app.widget.FeedMeWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS">
 
         </service>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.example.bethechange.feedme.LaunchScreen.LoginActivity">
+    tools:context="com.feedme.app.LaunchScreen.LoginActivity">
     <ImageView
         android:layout_width="200dp"
         android:layout_height="wrap_content"

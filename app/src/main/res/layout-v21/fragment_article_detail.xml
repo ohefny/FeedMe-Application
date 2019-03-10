@@ -24,7 +24,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <com.example.bethechange.feedme.CustomAspectImage
+            <com.feedme.app.CustomAspectImage
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_collapseMode="parallax"

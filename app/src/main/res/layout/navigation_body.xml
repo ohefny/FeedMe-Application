@@ -317,23 +317,5 @@
         app:layout_constraintTop_toBottomOf="@+id/backupImage"
         android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent" />
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-        android:layout_marginRight="8dp"
-        ads:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        ads:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="9dp"
-        android:layout_marginTop="8dp"
-        ads:layout_constraintBottom_toBottomOf="parent">
-    </com.google.android.gms.ads.AdView>
-
 </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>
