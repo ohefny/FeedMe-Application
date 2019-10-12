@@ -9,7 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import com.feedme.app.DetailsScreen.DetailsActivity;

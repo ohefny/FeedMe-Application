@@ -1,10 +1,10 @@
 package com.feedme.mvpframeworkedited;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import android.util.Log;
 
 public abstract class BasePresenterFragment<P extends BasePresenter, V> extends Fragment {

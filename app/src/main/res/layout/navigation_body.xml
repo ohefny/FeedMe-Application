@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryExtraDark"
     android:layout_width="match_parent">
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -245,7 +245,7 @@
         app:layout_constraintTop_toBottomOf="@+id/top_sites_title_nav_id"
         android:layout_marginEnd="8dp" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/categories_nav_list"
         android:layout_width="517dp"
         android:layout_height="90dp"
@@ -255,7 +255,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cat_title_nav_id">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
         android:id="@+id/backupView"
@@ -317,5 +317,5 @@
         app:layout_constraintTop_toBottomOf="@+id/backupImage"
         android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent" />
-</android.support.constraint.ConstraintLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -3,7 +3,7 @@ package com.feedme.app.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.feedme.app.Data.Contracts;
 import com.feedme.app.FeedMeApp;

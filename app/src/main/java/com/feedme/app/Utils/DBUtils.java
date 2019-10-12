@@ -3,7 +3,7 @@ package com.feedme.app.Utils;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.feedme.app.Data.Contracts;

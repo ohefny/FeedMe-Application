@@ -1,7 +1,7 @@
 package com.feedme.app.Data;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.feedme.app.CustomScreen.SearchModel;
 import com.feedme.app.MainScreen.Models.ArticlesList;

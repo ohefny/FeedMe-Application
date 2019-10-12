@@ -2,10 +2,10 @@ package com.feedme.app.MainScreen.Views;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.ShareCompat;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.DialogFragment;
+import androidx.core.app.ShareCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

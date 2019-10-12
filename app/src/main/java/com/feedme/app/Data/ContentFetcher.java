@@ -3,7 +3,7 @@ package com.feedme.app.Data;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v4.content.AsyncTaskLoader;
+import androidx.loader.content.AsyncTaskLoader;
 
 import com.feedme.app.R;
 import com.pkmmte.pkrss.Article;

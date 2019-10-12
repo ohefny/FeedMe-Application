@@ -1,6 +1,6 @@
 package com.feedme.app.DetailsScreen;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.feedme.app.Data.ArticlesRepository;
 import com.feedme.app.Data.Contracts;

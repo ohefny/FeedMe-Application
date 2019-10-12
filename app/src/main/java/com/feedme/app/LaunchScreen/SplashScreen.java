@@ -4,8 +4,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 
 import com.feedme.app.Data.ArticlesRepository;
@@ -37,7 +37,7 @@ public class SplashScreen extends BasePresenterActivity<LaunchPresenter,LaunchCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(!FirebaseUtils.isGooglePlayServicesAvailable(this)){
-           showError(getString(R.string.common_google_play_services_install_text_phone));
+           showError(getString(R.string.common_google_play_services_install_text));
         }
         else{
 

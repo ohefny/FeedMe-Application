@@ -1,6 +1,6 @@
 package com.feedme.app.MainScreen.Views;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.feedme.app.MainScreen.Models.Category;

@@ -1,6 +1,6 @@
 package com.feedme.app.MainScreen.Presenters;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.feedme.app.Data.CategoriesRepository;
 import com.feedme.app.Data.SitesRepository;

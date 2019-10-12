@@ -2,7 +2,7 @@ package com.feedme.app.MainScreen.Presenters;
 
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.feedme.app.ArticleType;
 import com.feedme.app.CustomScreen.SearchModel;

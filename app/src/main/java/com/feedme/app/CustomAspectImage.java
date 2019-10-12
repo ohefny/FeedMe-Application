@@ -7,7 +7,7 @@ import android.util.AttributeSet;
  * Created by BeTheChange on 6/14/2017.
  */
 
-public class CustomAspectImage extends android.support.v7.widget.AppCompatImageView{
+public class CustomAspectImage extends androidx.appcompat.widget.AppCompatImageView{
     int heightRatio=3;
     int widthRatio=2;
     //private float mAspectRatio = 1.5f;

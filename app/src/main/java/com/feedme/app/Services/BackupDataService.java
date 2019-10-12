@@ -3,7 +3,7 @@ package com.feedme.app.Services;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.feedme.app.Data.Contracts;
 import com.feedme.app.MainScreen.Models.Category;
